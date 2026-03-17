@@ -6,67 +6,52 @@
   <title>MoneyFlux Health Platform Demo</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
-<div class="page">
-
-  <!-- HEADER -->
-  <header class="topbar">
-    
-    <div class="logos">
-
-      <div class="logo-box moneyflux-box">
-        <img src="./assets/logo_moneyflux_health.png" alt="MoneyFlux">
+  <div class="page">
+    <header class="topbar">
+      <div class="logos">
+        <div class="logo-box moneyflux-box">
+          <img src="assets/logo_moneyflux_health.png" alt="MoneyFlux Health Platform">
+        </div>
+        <div class="logo-box salud-box">
+          <img src="assets/logo_salud_digna.png" alt="Salud Digna">
+        </div>
       </div>
-
-      <div class="logo-box salud-box">
-        <img src="./assets/logo_salud_digna.png" alt="Salud Digna">
+      <div class="title-block">
+        <h1>MoneyFlux Health Platform</h1>
+        <p>Infraestructura · Diagnóstico · Liquidación</p>
       </div>
+    </header>
 
-    </div>
+    <main class="desktop-layout">
+      <section class="panel left">
+        <div class="section-head">
+          <h2>Caso clínico</h2>
+          <button id="startBtn">Iniciar demo</button>
+        </div>
 
-    <div class="title-block">
-      <h1>MoneyFlux Health Platform</h1>
-      <p>Infraestructura · Diagnóstico · Liquidación</p>
-    </div>
+        <div class="patient-card" id="patientCard"></div>
 
-  </header>
+        <div class="studies-card">
+          <h3>Estudios realizados</h3>
+          <div id="studiesList" class="studies-list"></div>
+        </div>
 
-  <!-- CONTENIDO -->
-  <main class="desktop-layout">
+        <div class="decision-card" id="decisionCard"></div>
+      </section>
 
-    <!-- PANEL IZQUIERDO -->
-    <section class="panel left">
+      <section class="panel center">
+        <h2>Flujo del paciente</h2>
+        <div id="flowBoard" class="flow-board"></div>
+      </section>
 
-      <div class="section-head">
-        <h2>Caso clínico</h2>
-        <button id="startBtn">Iniciar demo</button>
-      </div>
+      <section class="panel right">
+        <h2>Dashboard operativo</h2>
+        <div id="metricsGrid" class="metrics-grid"></div>
+      </section>
+    </main>
+  </div>
 
-      <div class="patient-card" id="patientCard"></div>
-
-      <div class="studies-card" id="studiesCard"></div>
-
-    </section>
-
-    <!-- PANEL CENTRAL -->
-    <section class="panel center">
-      <h2>Flujo del paciente</h2>
-      <div id="flowContainer"></div>
-    </section>
-
-    <!-- PANEL DERECHO -->
-    <section class="panel right">
-      <h2>Dashboard operativo</h2>
-      <div id="metricsContainer"></div>
-    </section>
-
-  </main>
-
-</div>
-
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
