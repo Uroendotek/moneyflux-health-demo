@@ -1,0 +1,95 @@
+{
+  "patient": {
+    "name": "María López García",
+    "age": 47,
+    "sex": "Femenino",
+    "insurer": "Aseguradora Demo / Póliza validada",
+    "reason": "Dolor torácico y dificultad respiratoria",
+    "diagnosis": "Sospecha de síndrome coronario agudo"
+  },
+  "studies": [
+    {
+      "name": "Triage",
+      "result": "TA 150/95, FC 104, SatO2 93%, prioridad alta"
+    },
+    {
+      "name": "ECG",
+      "result": "Cambios compatibles con isquemia; requiere valoración hospitalaria"
+    },
+    {
+      "name": "Laboratorio",
+      "result": "Marcadores cardiacos solicitados; evento clínico registrado"
+    },
+    {
+      "name": "Radiografía",
+      "result": "Sin hallazgos pulmonares agudos; se mantiene sospecha cardiaca"
+    }
+  ],
+  "decision": {
+    "route": "hospital",
+    "title": "Decisión clínica: se refiere a hospital aliado",
+    "text": "La plataforma valida cobertura, obtiene autorización médica y prepara la referencia hospitalaria con diagnóstico inicial y estudios adjuntos."
+  },
+  "flow": [
+    {
+      "title": "Admisión",
+      "detail": "Se registra al paciente en sede Salud Digna y se abre el evento clínico."
+    },
+    {
+      "title": "Triage",
+      "detail": "Se clasifican signos vitales, nivel de urgencia y motivo de consulta."
+    },
+    {
+      "title": "Diagnóstico",
+      "detail": "Se realizan ECG, laboratorio y radiografía para definir conducta médica."
+    },
+    {
+      "title": "Validación de cobertura",
+      "detail": "MoneyFlux confirma elegibilidad, póliza y condiciones de aseguramiento."
+    },
+    {
+      "title": "Autorización médica",
+      "detail": "Se documenta la necesidad de hospitalización y se obtiene autorización."
+    },
+    {
+      "title": "Hospital aliado",
+      "detail": "El paciente es referido con resumen clínico, resultados y trazabilidad."
+    },
+    {
+      "title": "Liquidación financiera",
+      "detail": "Se registra el caso para conciliación y pago entre actores."
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Tiempo de triage",
+      "value": "6 min",
+      "note": "Desde admisión hasta clasificación"
+    },
+    {
+      "label": "Tiempo de autorización",
+      "value": "12 min",
+      "note": "Promedio entre validación y aprobación"
+    },
+    {
+      "label": "Casos con referencia",
+      "value": "18",
+      "note": "Eventos enviados a hospital aliado"
+    },
+    {
+      "label": "Cobertura validada",
+      "value": "94%",
+      "note": "Casos con elegibilidad confirmada"
+    },
+    {
+      "label": "Tiempo de liquidación",
+      "value": "36 h",
+      "note": "Promedio para conciliación financiera"
+    },
+    {
+      "label": "Hospitales activos",
+      "value": "5",
+      "note": "Red hospitalaria conectada al modelo"
+    }
+  ]
+}
