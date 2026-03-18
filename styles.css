@@ -367,3 +367,35 @@ button:disabled{
     text-align:left;
   }
 }
+.flow-step{
+  position:relative;
+  padding-left:18px;
+}
+
+.flow-step::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:#e5efe8;
+  border-radius:4px;
+}
+
+.flow-step.active::before{
+  background:#00a651;
+}
+
+.flow-step.done::before{
+  background:#39a935;
+}
+
+.flow-step.active{
+  transform:scale(1.02);
+  box-shadow:0 8px 24px rgba(0,166,81,.15);
+}
+
+.flow-step.done{
+  opacity:.85;
+}
