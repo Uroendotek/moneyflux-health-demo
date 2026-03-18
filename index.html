@@ -3,1424 +3,1486 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoneyFlux Health Platform | Demo Salud Digna</title>
+  <title>MoneyFlux Health Platform + Salud Digna</title>
   <style>
     :root{
       --bg:#f4f7fb;
       --card:#ffffff;
-      --ink:#16324f;
-      --muted:#6a7d92;
-      --line:#d9e3ee;
-      --blue:#0f5ea8;
-      --blue-2:#1f77d0;
-      --green:#1f9d55;
-      --green-soft:#eaf8f0;
-      --yellow:#c58a00;
-      --yellow-soft:#fff7df;
-      --red:#c43d3d;
-      --red-soft:#fff0f0;
-      --shadow:0 10px 28px rgba(16,42,67,.08);
+      --line:#d9e2ef;
+      --text:#18324b;
+      --muted:#64748b;
+      --blue:#1f5fae;
+      --blue-2:#2f78c4;
+      --green:#159947;
+      --yellow:#d9a300;
+      --red:#cc3d3d;
+      --soft-blue:#eaf3ff;
+      --soft-green:#ecf9f0;
+      --soft-yellow:#fff8e1;
+      --soft-red:#fff0f0;
+      --shadow:0 8px 28px rgba(16, 42, 67, 0.08);
       --radius:18px;
     }
 
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      background:linear-gradient(180deg,#f8fbff 0%, #eef4fa 100%);
-      color:var(--ink);
-    }
+    html,body{margin:0;padding:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body{min-height:100vh}
 
-    .wrap{
-      max-width:1360px;
+    .app{
+      max-width:1400px;
       margin:0 auto;
-      padding:18px 18px 28px;
+      padding:20px;
     }
 
     .header{
-      background:var(--card);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
+      background:linear-gradient(135deg, var(--blue), var(--blue-2));
+      color:#fff;
       border-radius:22px;
-      padding:14px 18px;
+      box-shadow:var(--shadow);
+      padding:18px 22px;
+      margin-bottom:18px;
+    }
+
+    .header-top{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:16px;
-      margin-bottom:16px;
+      gap:18px;
+      flex-wrap:wrap;
     }
 
-    .brand-group{
+    .brand{
       display:flex;
       align-items:center;
-      gap:18px;
-      min-width:0;
+      gap:16px;
+      flex-wrap:wrap;
     }
 
-    .logo-box{
+    .brand-logo{
+      background:rgba(255,255,255,0.14);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:16px;
+      padding:10px 16px;
       display:flex;
       align-items:center;
       justify-content:center;
-      height:58px;
-      padding:6px 10px;
-      border-radius:14px;
-      background:#fff;
-      border:1px solid #edf2f8;
-      flex:0 0 auto;
+      min-height:74px;
+      min-width:180px;
+      backdrop-filter:blur(4px);
     }
 
-    .logo-box img{
+    .brand-logo img{
       display:block;
-      max-height:42px;
+      max-height:46px;
       width:auto;
+      max-width:150px;
       object-fit:contain;
     }
 
-    .logo-box.moneyflux img{ max-width:180px; }
-    .logo-box.saluddigna img{ max-width:150px; }
-
-    .title-block{
-      min-width:0;
-    }
-
-    .eyebrow{
-      font-size:12px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--blue);
-      font-weight:bold;
-      margin-bottom:4px;
-    }
-
-    .title{
-      font-size:26px;
-      font-weight:bold;
+    .header-copy h1{
       margin:0 0 4px;
+      font-size:28px;
       line-height:1.1;
+      font-weight:800;
+      letter-spacing:-0.02em;
     }
 
-    .subtitle{
+    .header-copy p{
       margin:0;
-      color:var(--muted);
+      color:rgba(255,255,255,0.9);
       font-size:14px;
     }
 
-    .status-strip{
+    .header-note{
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid rgba(255,255,255,0.18);
+      font-size:14px;
+      color:rgba(255,255,255,0.94);
+    }
+
+    .toolbar{
       display:flex;
-      align-items:center;
       gap:10px;
       flex-wrap:wrap;
-      justify-content:flex-end;
+      margin-bottom:18px;
     }
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border-radius:999px;
-      padding:10px 14px;
-      background:#f3f8fd;
-      border:1px solid #dce9f7;
-      color:var(--blue);
-      font-size:13px;
-      font-weight:bold;
-      white-space:nowrap;
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .15s ease, opacity .15s ease, background .15s ease;
+      font-size:14px;
     }
 
-    .grid{
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .btn-primary{background:var(--blue);color:#fff}
+    .btn-secondary{background:#e7eef8;color:var(--text)}
+    .btn-accent{background:#0f8a43;color:#fff}
+    .btn-danger{background:#d44d4d;color:#fff}
+
+    .status-strip{
       display:grid;
-      grid-template-columns: 360px 1fr;
-      gap:16px;
+      grid-template-columns:1.2fr 1fr 1fr 1fr;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .status-card{
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      border:1px solid var(--line);
+      min-height:96px;
+    }
+
+    .status-label{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      margin-bottom:8px;
+      font-weight:700;
+    }
+
+    .status-value{
+      font-size:22px;
+      font-weight:800;
+      line-height:1.1;
+    }
+
+    .status-sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(320px, .95fr);
+      gap:18px;
       align-items:start;
     }
 
-    .stack{
-      display:grid;
-      gap:16px;
+    .main-col,
+    .side-col{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
     }
 
     .card{
       background:var(--card);
-      border:1px solid var(--line);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      padding:18px;
+      border:1px solid var(--line);
+      overflow:hidden;
     }
 
-    .card h2, .card h3{
-      margin:0 0 14px;
-      line-height:1.15;
-    }
-
-    .card h2{
-      font-size:21px;
-    }
-
-    .card h3{
-      font-size:17px;
-    }
-
-    .section-note{
-      font-size:13px;
-      color:var(--muted);
-      margin:-4px 0 14px;
-    }
-
-    .case-head{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-bottom:14px;
-    }
-
-    .mini{
-      background:#f7fafd;
-      border:1px solid #e6eef7;
-      border-radius:14px;
-      padding:12px;
-    }
-
-    .mini-label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--muted);
-      font-weight:bold;
-      margin-bottom:5px;
-    }
-
-    .mini-value{
-      font-size:15px;
-      font-weight:bold;
-      line-height:1.25;
-    }
-
-    .label{
-      font-size:13px;
-      font-weight:bold;
-      margin-bottom:8px;
-      display:block;
-    }
-
-    .btn-row{
+    .card-header{
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .choice-btn{
-      appearance:none;
-      border:1px solid #d7e3ef;
-      background:#fff;
-      color:var(--ink);
-      padding:11px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      font-size:14px;
-      font-weight:bold;
-      transition:.18s ease;
-    }
-
-    .choice-btn:hover{
-      border-color:#b9d0e8;
-      transform:translateY(-1px);
-    }
-
-    .choice-btn.active{
-      background:var(--blue);
-      border-color:var(--blue);
-      color:#fff;
-      box-shadow:0 6px 18px rgba(15,94,168,.18);
-    }
-
-    .triage-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-    }
-
-    .triage-btn.low.active{ background:var(--green); border-color:var(--green); }
-    .triage-btn.medium.active{ background:var(--yellow); border-color:var(--yellow); color:#fff; }
-    .triage-btn.high.active{ background:var(--red); border-color:var(--red); }
-
-    .check-grid{
-      display:grid;
-      gap:8px;
-    }
-
-    .check-item{
-      display:flex;
+      justify-content:space-between;
       align-items:center;
-      gap:10px;
-      background:#f8fbfe;
-      border:1px solid #e3edf7;
-      border-radius:12px;
-      padding:10px 12px;
-      font-size:14px;
+      gap:12px;
+      flex-wrap:wrap;
     }
 
-    .check-item input{ transform:scale(1.1); }
-
-    .actions{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:14px;
+    .card-title{
+      margin:0;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:-0.01em;
     }
 
-    .action-main{
-      grid-column:1 / -1;
-      padding:14px 16px;
-      border:none;
-      border-radius:14px;
-      background:linear-gradient(135deg,var(--blue),var(--blue-2));
-      color:#fff;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
-      box-shadow:0 12px 24px rgba(15,94,168,.22);
+    .card-subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:3px;
     }
 
-    .action-secondary{
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid #d8e3ef;
-      background:#fff;
-      color:var(--ink);
-      font-weight:bold;
-      cursor:pointer;
-    }
-
-    .hero{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:16px;
-    }
-
-    .hero-main{
-      display:grid;
-      gap:16px;
-    }
-
-    .outcome-banner{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:14px;
-      align-items:stretch;
-    }
-
-    .banner-panel{
-      border-radius:18px;
-      padding:18px;
-      border:1px solid #dce7f3;
-      background:linear-gradient(180deg,#fbfdff 0%, #f4f8fc 100%);
-    }
-
-    .route-badge{
-      display:inline-block;
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       padding:8px 12px;
       border-radius:999px;
       font-size:12px;
-      font-weight:bold;
-      letter-spacing:.04em;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    .badge-blue{background:var(--soft-blue);color:var(--blue)}
+    .badge-green{background:var(--soft-green);color:var(--green)}
+    .badge-yellow{background:var(--soft-yellow);color:#8c6b00}
+    .badge-red{background:var(--soft-red);color:var(--red)}
+    .badge-gray{background:#eef2f7;color:#475569}
+
+    .card-body{padding:18px}
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .field label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:12px 13px;
+      font-size:14px;
+      color:var(--text);
+      outline:none;
+    }
+
+    .field textarea{
+      min-height:92px;
+      resize:vertical;
+    }
+
+    .triage-banner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      border-radius:16px;
+      padding:16px;
+      border:1px solid transparent;
+      margin-bottom:14px;
+    }
+
+    .triage-main{
+      font-size:28px;
+      font-weight:900;
+      line-height:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .triage-copy{
+      font-size:14px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+
+    .triage-low{
+      background:var(--soft-green);
+      border-color:#c8efd6;
+    }
+    .triage-medium{
+      background:var(--soft-yellow);
+      border-color:#f2df9e;
+    }
+    .triage-high{
+      background:var(--soft-red);
+      border-color:#f0c2c2;
+    }
+
+    .kpi-row{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .mini{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fbfdff;
+    }
+
+    .mini .mini-label{
+      font-size:12px;
+      color:var(--muted);
       text-transform:uppercase;
-      margin-bottom:10px;
+      letter-spacing:.07em;
+      font-weight:700;
+      margin-bottom:8px;
     }
 
-    .route-amb{
-      background:var(--green-soft);
-      color:var(--green);
-      border:1px solid #cbeed6;
+    .mini .mini-value{
+      font-size:18px;
+      font-weight:800;
     }
 
-    .route-hosp{
-      background:var(--red-soft);
-      color:var(--red);
-      border:1px solid #f1c7c7;
+    .study-list,
+    .timeline,
+    .log-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
 
-    .route-obs{
-      background:var(--yellow-soft);
-      color:var(--yellow);
-      border:1px solid #f4dd92;
+    .study-item,
+    .timeline-item,
+    .log-item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:13px 14px;
+      background:#fcfdff;
+    }
+
+    .study-top,
+    .timeline-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .study-name,
+    .timeline-title{
+      font-weight:800;
+      font-size:15px;
+    }
+
+    .study-note,
+    .timeline-desc,
+    .log-desc{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      line-height:1.45;
+    }
+
+    .timeline-item.pending{opacity:.65}
+    .timeline-item.active{
+      border-color:#9fc3ef;
+      background:#f4f9ff;
+    }
+    .timeline-item.done{
+      border-color:#b9e3c7;
+      background:#f4fff7;
+    }
+
+    .result-card{
+      border-radius:18px;
+      padding:18px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#ffffff,#f8fbff);
+    }
+
+    .result-main{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
     }
 
     .result-title{
       font-size:28px;
-      font-weight:bold;
-      margin:0 0 8px;
-      line-height:1.1;
-    }
-
-    .result-sub{
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.5;
+      font-weight:900;
+      line-height:1.05;
       margin:0;
     }
 
-    .quick-kpis{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px;
-    }
-
-    .kpi{
-      background:#fff;
-      border:1px solid #e4edf6;
-      border-radius:14px;
-      padding:14px;
-    }
-
-    .kpi .mini-label{ margin-bottom:6px; }
-    .kpi .big{
-      font-size:24px;
-      font-weight:bold;
-      line-height:1;
-    }
-
-    .dual{
+    .result-meta{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:16px;
-    }
-
-    .list{
-      display:grid;
-      gap:10px;
-    }
-
-    .list-item{
-      border:1px solid #e4edf6;
-      background:#f8fbfe;
-      border-radius:14px;
-      padding:12px 14px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-    }
-
-    .list-item .left{
-      font-size:14px;
-      font-weight:bold;
-    }
-
-    .list-item .right{
-      font-size:14px;
-      color:var(--muted);
-      text-align:right;
-    }
-
-    .timeline{
-      display:grid;
-      gap:10px;
-    }
-
-    .step{
-      display:grid;
-      grid-template-columns:38px 1fr;
       gap:12px;
-      align-items:start;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid #e3edf7;
-      background:#fbfdff;
     }
 
-    .step-dot{
-      width:38px;
-      height:38px;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:bold;
-      font-size:14px;
-      background:#eaf2fb;
-      color:var(--blue);
-      border:1px solid #d6e4f3;
+    .result-meta .mini{
+      background:#fff;
     }
 
-    .step.done{
-      background:#f4fbf7;
-      border-color:#d4eeda;
-    }
+    .muted{color:var(--muted)}
+    .strong{font-weight:800}
 
-    .step.done .step-dot{
-      background:var(--green);
-      color:#fff;
-      border-color:var(--green);
-    }
-
-    .step.current{
-      background:#eef6ff;
-      border-color:#cfe0f4;
-    }
-
-    .step.current .step-dot{
-      background:var(--blue);
-      color:#fff;
-      border-color:var(--blue);
-    }
-
-    .step-title{
-      font-size:15px;
-      font-weight:bold;
-      margin:1px 0 5px;
-    }
-
-    .step-desc{
-      font-size:13px;
+    .footer-note{
+      text-align:center;
       color:var(--muted);
-      line-height:1.45;
-    }
-
-    .log{
-      display:grid;
-      gap:8px;
-      max-height:308px;
-      overflow:auto;
-      padding-right:4px;
-    }
-
-    .log-entry{
-      border:1px solid #e2ebf5;
-      background:#fbfdff;
-      border-radius:12px;
-      padding:10px 12px;
-    }
-
-    .log-time{
-      font-size:11px;
-      color:var(--muted);
-      font-weight:bold;
-      margin-bottom:4px;
-      text-transform:uppercase;
-      letter-spacing:.05em;
-    }
-
-    .log-text{
-      font-size:13px;
-      line-height:1.4;
-    }
-
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
       font-size:12px;
-      font-weight:bold;
-      border:1px solid #dce8f4;
-      background:#f7fbff;
-      color:var(--blue);
+      margin:18px 0 8px;
     }
 
-    .tag.ok{
-      background:var(--green-soft);
-      border-color:#cbeed6;
-      color:var(--green);
-    }
+    .hidden{display:none !important}
 
-    .tag.warn{
-      background:var(--yellow-soft);
-      border-color:#f0dc97;
-      color:var(--yellow);
-    }
-
-    .tag.alert{
-      background:var(--red-soft);
-      border-color:#f1c7c7;
-      color:var(--red);
-    }
-
-    .empty{
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    @media (max-width: 1100px){
-      .grid, .hero, .dual, .outcome-banner{
-        grid-template-columns:1fr;
-      }
-      .header{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-      .status-strip{
-        justify-content:flex-start;
-      }
+    @media (max-width: 1120px){
+      .status-strip{grid-template-columns:1fr 1fr}
+      .layout{grid-template-columns:1fr}
     }
 
     @media (max-width: 760px){
-      .wrap{ padding:12px; }
-      .case-head{
-        grid-template-columns:1fr;
-      }
-      .actions{
-        grid-template-columns:1fr;
-      }
-      .triage-grid{
-        grid-template-columns:1fr;
-      }
-      .quick-kpis{
-        grid-template-columns:1fr 1fr;
-      }
-      .title{ font-size:22px; }
-      .logo-box{
-        height:52px;
-      }
-      .logo-box img{
-        max-height:36px;
-      }
+      .app{padding:12px}
+      .grid-2,.grid-3,.result-meta,.kpi-row,.status-strip{grid-template-columns:1fr}
+      .header-copy h1{font-size:24px}
+      .brand-logo{min-width:145px; padding:8px 12px}
+      .brand-logo img{max-height:40px; max-width:120px}
+      .triage-main{font-size:24px}
+      .result-title{font-size:24px}
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="app">
     <header class="header">
-      <div class="brand-group">
-        <div class="logo-box moneyflux">
-          <img src="./mfh.png" alt="MoneyFlux Health Platform" />
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-logo">
+            <img src="./mfh.png" alt="MoneyFlux Health Platform" />
+          </div>
+          <div class="brand-logo">
+            <img src="./sd.png" alt="Salud Digna" />
+          </div>
         </div>
-        <div class="logo-box saluddigna">
-          <img src="./sd.png" alt="Salud Digna" />
-        </div>
-        <div class="title-block">
-          <div class="eyebrow">Demo ejecutivo</div>
-          <h1 class="title">Unidad de Resolución de Urgencias Descentralizada</h1>
-          <p class="subtitle">Salud Digna evalúa clínicamente. MoneyFlux coordina la ejecución operativa, financiera y hospitalaria.</p>
+        <div class="header-copy">
+          <h1>Demo Ejecutivo-Operativo</h1>
+          <p>Resolución de Urgencias Descentralizada en México</p>
         </div>
       </div>
-
-      <div class="status-strip">
-        <div class="pill" id="modePill">Modo interactivo</div>
-        <div class="pill" id="clockPill">00:00</div>
-        <div class="pill" id="expedientePill">Expediente: MF-2026-000001</div>
+      <div class="header-note">
+        <strong>Salud Digna</strong> evalúa y decide clínicamente · <strong>MoneyFlux</strong> coordina cobertura, autorización, referencia y trazabilidad operativa
       </div>
     </header>
 
-    <div class="grid">
-      <!-- LEFT -->
-      <div class="stack">
-        <section class="card">
-          <h2>Ingreso del caso</h2>
-          <p class="section-note">Captura rápida para urgencias dentro de Salud Digna. Sin formularios extensos.</p>
+    <div class="toolbar">
+      <button id="btnAuto" class="btn-primary">Modo automático</button>
+      <button id="btnInteractive" class="btn-secondary">Modo interactivo</button>
+      <button id="btnUpdate" class="btn-accent">Actualizar decisión / coordinación</button>
+      <button id="btnReset" class="btn-danger">Reiniciar demo</button>
+    </div>
 
-          <div class="case-head">
-            <div class="mini">
-              <div class="mini-label">Expediente</div>
-              <div class="mini-value" id="expedienteValue">MF-2026-000001</div>
-            </div>
-            <div class="mini">
-              <div class="mini-label">Paciente</div>
-              <div class="mini-value" id="patientValue">María González · 41 años · F</div>
-            </div>
-            <div class="mini">
-              <div class="mini-label">Aseguradora / esquema</div>
-              <div class="mini-value" id="coverageValue">AXA · Póliza AX-4582</div>
-            </div>
-            <div class="mini">
-              <div class="mini-label">Objetivo del modelo</div>
-              <div class="mini-value">Resolver en sede lo tratable y escalar solo lo que sí requiere hospital.</div>
-            </div>
-          </div>
-
-          <label class="label">Motivo de consulta</label>
-          <div class="btn-row" id="motivoButtons">
-            <button class="choice-btn active" data-motivo="dolor_toracico">Dolor torácico</button>
-            <button class="choice-btn" data-motivo="dolor_abdominal">Dolor abdominal</button>
-            <button class="choice-btn" data-motivo="disnea">Disnea</button>
-            <button class="choice-btn" data-motivo="trauma">Trauma</button>
-            <button class="choice-btn" data-motivo="fiebre">Fiebre</button>
-          </div>
-
-          <div style="height:14px"></div>
-
-          <label class="label">Triage clínico — Salud Digna</label>
-          <div class="triage-grid" id="triageButtons">
-            <button class="choice-btn triage-btn low" data-triage="bajo">🟢 Bajo</button>
-            <button class="choice-btn triage-btn medium active" data-triage="medio">🟡 Medio</button>
-            <button class="choice-btn triage-btn high" data-triage="alto">🔴 Alto</button>
-          </div>
-
-          <div style="height:14px"></div>
-
-          <label class="label">Hallazgos rápidos</label>
-          <div class="check-grid">
-            <label class="check-item">
-              <input type="checkbox" id="signosAlarma">
-              <span>Signos de alarma</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="inestabilidad">
-              <span>Inestabilidad hemodinámica</span>
-            </label>
-          </div>
-
-          <div class="actions">
-            <button class="action-main" id="btnEvaluar">Evaluar caso</button>
-            <button class="action-secondary" id="btnAuto">Modo automático</button>
-            <button class="action-secondary" id="btnInteractive">Modo interactivo</button>
-            <button class="action-secondary" id="btnActualizar">Actualizar coordinación</button>
-            <button class="action-secondary" id="btnReset">Reiniciar demo</button>
-          </div>
-        </section>
-
-        <section class="card">
-          <h3>Estudios realizados — Salud Digna</h3>
-          <p class="section-note">Máximo 3–4 estudios relevantes para tomar decisión rápida y segura.</p>
-          <div class="list" id="studiesList"></div>
-        </section>
-
-        <section class="card">
-          <h3>Trazabilidad operativa</h3>
-          <p class="section-note">Cada caso se guarda con expediente único para seguimiento mensual, análisis y auditoría.</p>
-          <div class="log" id="bitacora"></div>
-        </section>
+    <section class="status-strip">
+      <div class="status-card">
+        <div class="status-label">Expediente</div>
+        <div class="status-value" id="topExpediente">MF-2026-000001</div>
+        <div class="status-sub" id="topPaciente">Paciente pendiente</div>
       </div>
+      <div class="status-card">
+        <div class="status-label">Ruta del caso</div>
+        <div class="status-value" id="topRuta">En evaluación</div>
+        <div class="status-sub" id="topRutaSub">Definida por la decisión clínica</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Cobertura</div>
+        <div class="status-value" id="topCobertura">Pendiente</div>
+        <div class="status-sub" id="topCoberturaSub">MoneyFlux valida elegibilidad</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Estado final</div>
+        <div class="status-value" id="topEstadoFinal">Abierto</div>
+        <div class="status-sub" id="topEstadoSub">Caso clínico-financiero trazable</div>
+      </div>
+    </section>
 
-      <!-- RIGHT -->
-      <div class="stack">
+    <div class="layout">
+      <main class="main-col">
         <section class="card">
-          <div class="hero">
-            <div class="hero-main">
-              <div class="outcome-banner">
-                <div class="banner-panel">
-                  <div id="routeBadge" class="route-badge route-obs">Evaluación pendiente</div>
-                  <div class="result-title" id="routeTitle">Esperando evaluación clínica</div>
-                  <p class="result-sub" id="routeSummary">
-                    Salud Digna realiza triage, estudios iniciales e impresión diagnóstica. Después, MoneyFlux ejecuta la coordinación operativa y financiera según la decisión clínica.
-                  </p>
-                </div>
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Ingreso rápido del caso</h2>
+              <div class="card-subtitle">Captura mínima para arranque operativo en sede</div>
+            </div>
+            <span class="badge badge-blue" id="badgeMode">Modo interactivo</span>
+          </div>
+          <div class="card-body">
+            <div class="grid-3">
+              <div class="field">
+                <label for="expediente">Expediente</label>
+                <input id="expediente" type="text" readonly />
+              </div>
+              <div class="field">
+                <label for="paciente">Paciente</label>
+                <input id="paciente" type="text" value="María López" />
+              </div>
+              <div class="field">
+                <label for="edadSexo">Edad / sexo</label>
+                <input id="edadSexo" type="text" value="34 años · F" />
+              </div>
+            </div>
 
-                <div class="banner-panel">
-                  <div class="quick-kpis">
-                    <div class="kpi">
-                      <div class="mini-label">Tiempo estimado</div>
-                      <div class="big" id="tiempoTotal">—</div>
-                    </div>
-                    <div class="kpi">
-                      <div class="mini-label">Estado del caso</div>
-                      <div class="big" id="estadoCaso">Abierto</div>
-                    </div>
-                    <div class="kpi">
-                      <div class="mini-label">Cobertura</div>
-                      <div class="big" id="coverageKpi">—</div>
-                    </div>
-                    <div class="kpi">
-                      <div class="mini-label">Liquidación</div>
-                      <div class="big" id="liquidacionKpi">—</div>
-                    </div>
-                  </div>
+            <div class="grid-2" style="margin-top:14px;">
+              <div class="field">
+                <label for="motivo">Motivo de consulta</label>
+                <select id="motivo">
+                  <option value="dolor_abdominal">Dolor abdominal</option>
+                  <option value="dolor_toracico">Dolor torácico</option>
+                  <option value="trauma_menor">Trauma menor</option>
+                  <option value="infeccion_urinaria">Disuria / probable IVU</option>
+                  <option value="cefalea">Cefalea sin déficit focal</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="triage">Triage</label>
+                <select id="triage">
+                  <option value="medio">🟡 Medio</option>
+                  <option value="bajo">🟢 Bajo</option>
+                  <option value="alto">🔴 Alto</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-top:14px;">
+              <div class="field">
+                <label for="alarma">Signos de alarma</label>
+                <select id="alarma">
+                  <option value="no">No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="inestabilidad">Inestabilidad</label>
+                <select id="inestabilidad">
+                  <option value="no">No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="coberturaBase">Cobertura / póliza / esquema</label>
+                <select id="coberturaBase">
+                  <option value="con_cobertura">Con cobertura</option>
+                  <option value="sin_cobertura">Sin cobertura</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Evaluación clínica — Salud Digna</h2>
+              <div class="card-subtitle">Responsable clínico</div>
+            </div>
+            <span class="badge" id="clinicalBadge">Pendiente de actualización</span>
+          </div>
+          <div class="card-body">
+            <div id="triageBanner" class="triage-banner triage-medium">
+              <div>
+                <div class="triage-main" id="triageMain">🟡 Triage medio</div>
+                <div class="triage-copy" id="triageCopy">Paciente estable, requiere evaluación y estudios iniciales.</div>
+              </div>
+              <span class="badge badge-yellow" id="triageStatusBadge">En evaluación</span>
+            </div>
+
+            <div class="grid-2">
+              <div class="mini">
+                <div class="mini-label">Impresión diagnóstica</div>
+                <div class="mini-value" id="impresionDiagnostica">Probable cuadro abdominal sin datos de choque.</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Decisión clínica</div>
+                <div class="mini-value" id="decisionClinica">Evaluación en curso</div>
+              </div>
+            </div>
+
+            <div class="kpi-row">
+              <div class="mini">
+                <div class="mini-label">Signos de alarma</div>
+                <div class="mini-value" id="kpiAlarma">No</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Inestabilidad</div>
+                <div class="mini-value" id="kpiInestabilidad">No</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Tiempo clínico estimado</div>
+                <div class="mini-value" id="kpiTiempoClinico">22 min</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px;">
+              <div class="strong" style="margin-bottom:10px;">Estudios realizados</div>
+              <div id="studyList" class="study-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Coordinación operativa — MoneyFlux</h2>
+              <div class="card-subtitle">Responsable operativo-financiero</div>
+            </div>
+            <span class="badge badge-blue">MoneyFlux</span>
+          </div>
+          <div class="card-body">
+            <div class="grid-3">
+              <div class="mini">
+                <div class="mini-label">Cobertura</div>
+                <div class="mini-value" id="mfCobertura">Pendiente</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Deducible por urgencia</div>
+                <div class="mini-value" id="mfDeducible">Pendiente</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Autorización requerida</div>
+                <div class="mini-value" id="mfAutorizacion">Pendiente</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px;" class="mini">
+              <div class="mini-label">Acción operativa</div>
+              <div class="mini-value" id="mfAccion">Esperando decisión clínica de Salud Digna.</div>
+            </div>
+
+            <div id="referralBox" class="mini hidden" style="margin-top:12px;">
+              <div class="mini-label">Referencia hospitalaria</div>
+              <div class="mini-value" id="mfReferencia">Hospital receptor por asignar.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Estudios y entrega al paciente</h2>
+              <div class="card-subtitle">Resultados disponibles y trazabilidad de entrega</div>
+            </div>
+            <span class="badge badge-green" id="deliveryBadge">Pendiente</span>
+          </div>
+          <div class="card-body">
+            <div id="resultStudies" class="study-list"></div>
+
+            <div class="grid-2" style="margin-top:16px;">
+              <div class="mini">
+                <div class="mini-label">Resumen breve de resultados</div>
+                <div class="mini-value" id="resumenResultados">Pendiente de resultados.</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Entrega</div>
+                <div class="mini-value" id="entregaEstado">Pendiente de envío</div>
+                <div class="study-note" id="entregaDetalle">Se activará al cierre ambulatorio o como adjunto a referencia.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Resultado del caso</h2>
+              <div class="card-subtitle">Cierre clínico-operativo trazable</div>
+            </div>
+            <span class="badge badge-gray" id="finalBadge">Abierto</span>
+          </div>
+          <div class="card-body">
+            <div class="result-card">
+              <div class="result-main">
+                <div>
+                  <h3 class="result-title" id="resultadoTitulo">Caso en evaluación</h3>
+                  <div class="muted" id="resultadoTexto">La ruta final se define con la decisión clínica y la coordinación operativa.</div>
                 </div>
+                <span class="badge badge-blue" id="resultadoPill">Abierto</span>
               </div>
 
-              <div class="dual">
-                <section class="card" style="margin:0">
-                  <h3>Evaluación clínica — Salud Digna</h3>
-                  <div class="list">
-                    <div class="list-item">
-                      <div class="left">Triage asignado</div>
-                      <div class="right" id="triageOut">🟡 Medio</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Impresión diagnóstica</div>
-                      <div class="right" id="diagOut">Pendiente de evaluación</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Decisión clínica</div>
-                      <div class="right" id="decisionClinicaOut">Pendiente</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Justificación clínica</div>
-                      <div class="right" id="justificacionClinicaOut">Sin datos aún</div>
-                    </div>
-                  </div>
-                </section>
-
-                <section class="card" style="margin:0">
-                  <h3>Coordinación operativa — MoneyFlux</h3>
-                  <div class="list">
-                    <div class="list-item">
-                      <div class="left">Elegibilidad / póliza</div>
-                      <div class="right" id="eligibilidadOut">Pendiente</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Cobertura / viabilidad</div>
-                      <div class="right" id="viabilidadOut">Pendiente</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Autorización</div>
-                      <div class="right" id="autorizacionOut">Pendiente</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Hospital / cierre</div>
-                      <div class="right" id="hospitalOut">Pendiente</div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              <section class="card" style="margin:0">
-                <h3>Resultado del caso</h3>
-                <div class="dual">
-                  <div class="list">
-                    <div class="list-item">
-                      <div class="left">Resultado operativo</div>
-                      <div class="right" id="resultadoOperativoOut">Caso en evaluación</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Estado financiero</div>
-                      <div class="right" id="estadoFinancieroOut">Sin cierre</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Monto estimado</div>
-                      <div class="right" id="montoOut">—</div>
-                    </div>
-                  </div>
-
-                  <div class="list">
-                    <div class="list-item">
-                      <div class="left">Expediente</div>
-                      <div class="right" id="expedienteResultOut">MF-2026-000001</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Seguimiento mensual</div>
-                      <div class="right">Caso trazable para analítica mensual</div>
-                    </div>
-                    <div class="list-item">
-                      <div class="left">Modelo</div>
-                      <div class="right">Resolución de Urgencias Descentralizada</div>
-                    </div>
-                  </div>
+              <div class="result-meta">
+                <div class="mini">
+                  <div class="mini-label">Tiempo total</div>
+                  <div class="mini-value" id="resultadoTiempo">--</div>
                 </div>
-              </section>
-            </div>
-
-            <div class="card" style="margin:0">
-              <h3>Timeline del expediente</h3>
-              <p class="section-note">Flujo simple: ingreso → evaluación → decisión → coordinación → resolución.</p>
-              <div class="timeline" id="timeline"></div>
+                <div class="mini">
+                  <div class="mini-label">Expediente</div>
+                  <div class="mini-value" id="resultadoExpediente">MF-2026-000001</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">Cobertura</div>
+                  <div class="mini-value" id="resultadoCobertura">Pendiente</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">Deducible por urgencia</div>
+                  <div class="mini-value" id="resultadoDeducible">Pendiente</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">Estado de estudios</div>
+                  <div class="mini-value" id="resultadoEstudios">Pendiente</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">Ruta final</div>
+                  <div class="mini-value" id="resultadoRuta">En evaluación</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
-      </div>
+      </main>
+
+      <aside class="side-col">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Timeline</h2>
+              <div class="card-subtitle">Avance del evento clínico-financiero</div>
+            </div>
+            <span class="badge badge-blue">5 hitos</span>
+          </div>
+          <div class="card-body">
+            <div id="timeline" class="timeline"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Bitácora</h2>
+              <div class="card-subtitle">Eventos clave de trazabilidad</div>
+            </div>
+            <span class="badge badge-gray" id="logCount">0 eventos</span>
+          </div>
+          <div class="card-body">
+            <div id="logList" class="log-list"></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="footer-note">
+      Demo autocontenido · Mantener logos en rutas exactas <strong>./mfh.png</strong> y <strong>./sd.png</strong>
     </div>
   </div>
 
   <script>
-    (function () {
-      const motives = {
-        dolor_toracico: {
-          patient: "María González · 41 años · F",
-          coverage: "AXA · Póliza AX-4582",
+    const el = (id) => document.getElementById(id);
+
+    const state = {
+      mode: "interactive",
+      autoRunning: false,
+      autoTimers: [],
+      sequenceIndex: 0,
+      caseCounter: 1,
+      expediente: "",
+      patientName: "",
+      ageSex: "",
+      motivo: "",
+      triage: "",
+      alarma: "",
+      inestabilidad: "",
+      coberturaBase: "",
+      scenario: null,
+      decision: "Evaluación en curso",
+      finalRoute: "En evaluación",
+      finalStatus: "Abierto",
+      totalTime: "--",
+      deliveryStatus: "Pendiente de envío",
+      deliveryDetail: "Se activará al cierre ambulatorio o como adjunto a referencia.",
+      logs: [],
+      timeline: [
+        { id:"ingreso", title:"Ingreso", desc:"Expediente creado y caso abierto.", status:"pending" },
+        { id:"evaluacion", title:"Evaluación clínica", desc:"Triage, valoración y estudios iniciales.", status:"pending" },
+        { id:"decision", title:"Decisión clínica", desc:"Salud Digna determina ruta del caso.", status:"pending" },
+        { id:"moneyflux", title:"Coordinación MoneyFlux", desc:"Cobertura, autorización y referencia o cierre.", status:"pending" },
+        { id:"cierre", title:"Cierre / envío / referencia", desc:"Estudios enviados o adjuntos a referencia.", status:"pending" }
+      ]
+    };
+
+    const scenarios = {
+      dolor_abdominal: {
+        low: {
+          triageLabel: "🟢 Triage bajo",
+          triageCopy: "Paciente estable, sin riesgo inmediato, probable manejo ambulatorio.",
+          impres: "Dolor abdominal inespecífico sin datos de abdomen agudo.",
+          decision: "Resuelve en sede",
+          route: "Resuelto en sede",
+          totalTime: "38 min",
+          clinicalTime: "18 min",
           studies: [
-            ["ECG", "Sin elevación del ST"],
-            ["Troponina", "Negativa inicial"],
-            ["RX tórax", "Sin hallazgos agudos"]
+            { name:"Biometría hemática", status:"Disponible", note:"Sin datos de anemia o leucocitosis significativa." },
+            { name:"Química sanguínea", status:"Disponible", note:"Electrolitos y glucosa dentro de parámetros esperados." },
+            { name:"EGO", status:"Disponible", note:"Sin datos de infección urinaria complicada." }
           ],
-          diagnosisBase: "Dolor torácico no complicado, sin evidencia inicial de evento coronario agudo.",
-          outpatientDecision: "Manejo ambulatorio",
-          outpatientJustification: "Paciente estable, sin biomarcadores de daño agudo y sin signos de descompensación.",
-          outpatientResult: "Alta con seguimiento y tratamiento ambulatorio.",
-          outpatientMoney: {
-            eligibility: "AXA validada · póliza vigente",
-            viability: "Cobertura 80% · caso viable",
-            auth: "No requiere preautorización",
-            hospital: "Cierre en sede Salud Digna",
-            amount: "$3,200 MXN",
-            finance: "Autorizado",
-            liquidation: "Liquidado"
-          },
-          observeDecision: "Observación en sede",
-          observeJustification: "Síntomas moderados que requieren vigilancia clínica corta y reevaluación.",
-          observeResult: "Observación 2 horas, alta con referencia diferida si empeora.",
-          observeMoney: {
-            eligibility: "AXA validada · póliza vigente",
-            viability: "Cobertura 70% · caso viable",
-            auth: "Validación automática completada",
-            hospital: "Seguimiento en sede",
-            amount: "$4,100 MXN",
-            finance: "Autorizado",
-            liquidation: "En proceso"
-          },
-          hospitalDecision: "Referencia hospitalaria",
-          hospitalJustification: "Dolor torácico con criterios de alarma o inestabilidad; requiere mayor capacidad resolutiva.",
-          hospitalResult: "Referencia enviada a hospital con información diagnóstica completa.",
-          hospitalMoney: {
-            eligibility: "AXA validada · póliza vigente",
-            viability: "Cobertura 90% · referencia viable",
-            auth: "Preautorización inmediata",
-            hospital: "Hospital sugerido: Hospital Ángeles · aceptación preliminar",
-            amount: "$8,900 MXN",
-            finance: "Autorizado",
-            liquidation: "En conciliación"
-          }
+          resultsSummary: "Sin alteraciones críticas. Hallazgos compatibles con manejo ambulatorio y seguimiento.",
+          coverage: { covered:"Cubierto", deductible:"No", authorization:"No" },
+          action: "Validación completada. Atención ambulatoria autorizada y cierre operativo en sede.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados enviados por portal y correo al egreso." },
+          referral: null
         },
-        dolor_abdominal: {
-          patient: "José Ramírez · 33 años · M",
-          coverage: "Esquema mixto · Paciente + cobertura institucional",
+        medium: {
+          triageLabel: "🟡 Triage medio",
+          triageCopy: "Paciente estable, requiere evaluación y estudios iniciales.",
+          impres: "Probable cuadro abdominal sin datos de choque.",
+          decision: "Observación",
+          route: "Observación",
+          totalTime: "54 min",
+          clinicalTime: "22 min",
           studies: [
-            ["Biometría hemática", "Leucocitosis leve"],
-            ["Ultrasonido abdominal", "Sin datos de complicación mayor"],
-            ["EGO", "Sin hallazgos relevantes"]
+            { name:"Biometría hemática", status:"Disponible", note:"Sin alteraciones críticas." },
+            { name:"Química sanguínea", status:"Disponible", note:"Sin desequilibrio metabólico agudo." },
+            { name:"Ultrasonido abdominal", status:"Disponible", note:"Sin hallazgos quirúrgicos urgentes." }
           ],
-          diagnosisBase: "Dolor abdominal agudo sin datos iniciales de choque ni complicación grave.",
-          outpatientDecision: "Manejo ambulatorio",
-          outpatientJustification: "Dolor controlable, estudios sin datos de urgencia quirúrgica inmediata.",
-          outpatientResult: "Alta con manejo sintomático y vigilancia ambulatoria.",
-          outpatientMoney: {
-            eligibility: "Esquema validado",
-            viability: "Viable · pago mixto",
-            auth: "No requerida",
-            hospital: "Cierre en sede Salud Digna",
-            amount: "$2,850 MXN",
-            finance: "Procesado",
-            liquidation: "Liquidado"
-          },
-          observeDecision: "Observación en sede",
-          observeJustification: "Requiere reevaluación clínica y respuesta a tratamiento inicial antes de alta.",
-          observeResult: "Observación corta con nueva valoración clínica.",
-          observeMoney: {
-            eligibility: "Esquema validado",
-            viability: "Viable · observación autorizada",
-            auth: "Validación interna completada",
-            hospital: "Seguimiento en sede",
-            amount: "$3,900 MXN",
-            finance: "Autorizado",
-            liquidation: "En proceso"
-          },
-          hospitalDecision: "Referencia hospitalaria",
-          hospitalJustification: "Dolor abdominal con signos de alarma o inestabilidad; se requiere imagen avanzada / cirugía.",
-          hospitalResult: "Referencia hospitalaria por sospecha de abdomen agudo complicado.",
-          hospitalMoney: {
-            eligibility: "Esquema validado",
-            viability: "Viable con cobertura parcial",
-            auth: "Coordinación manual inmediata",
-            hospital: "Hospital sugerido: Star Médica · referencia aceptada",
-            amount: "$10,400 MXN",
-            finance: "En autorización",
-            liquidation: "Pendiente"
-          }
+          resultsSummary: "Sin criterios inmediatos de hospitalización. Se mantiene observación breve y egreso con datos de alarma.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"No" },
+          action: "Cobertura validada. Observación breve autorizada y preparación de egreso controlado.",
+          delivery: { status:"Enviado al paciente", detail:"Estudios enviados al paciente al alta en sede." },
+          referral: null
         },
-        disnea: {
-          patient: "Rosa Hernández · 58 años · F",
-          coverage: "AXA · Póliza AX-7721",
+        high: {
+          triageLabel: "🔴 Triage alto",
+          triageCopy: "Riesgo inmediato o inestabilidad; requiere escalamiento hospitalario.",
+          impres: "Dolor abdominal con sospecha de abdomen agudo o complicación quirúrgica.",
+          decision: "Referencia hospitalaria",
+          route: "Referido a hospital",
+          totalTime: "31 min",
+          clinicalTime: "12 min",
           studies: [
-            ["Oximetría", "Saturación limítrofe"],
-            ["RX tórax", "Sin consolidación extensa"],
-            ["Gasometría venosa", "Sin acidosis severa"]
+            { name:"Biometría hemática", status:"Disponible", note:"Apoya proceso inflamatorio agudo." },
+            { name:"Química sanguínea", status:"Disponible", note:"Requiere continuidad hospitalaria." },
+            { name:"Ultrasonido FAST / abdominal", status:"Disponible", note:"Hallazgos que ameritan resolución hospitalaria." }
           ],
-          diagnosisBase: "Disnea de causa no crítica inicial; requiere correlación clínica.",
-          outpatientDecision: "Manejo ambulatorio",
-          outpatientJustification: "Paciente estable, sin falla respiratoria aguda y con respuesta inicial favorable.",
-          outpatientResult: "Alta con tratamiento y vigilancia.",
-          outpatientMoney: {
-            eligibility: "AXA validada · póliza vigente",
-            viability: "Cobertura 75% · caso viable",
-            auth: "No requerida",
-            hospital: "Cierre en sede Salud Digna",
-            amount: "$3,600 MXN",
-            finance: "Autorizado",
-            liquidation: "Liquidado"
-          },
-          observeDecision: "Observación en sede",
-          observeJustification: "Disnea moderada que requiere nebulización, monitorización y nueva valoración.",
-          observeResult: "Observación y egreso tras mejoría clínica.",
-          observeMoney: {
-            eligibility: "AXA validada · póliza vigente",
-            viability: "Cobertura 75% · observación viable",
-            auth: "Validación automática",
-            hospital: "Seguimiento en sede",
-            amount: "$4,500 MXN",
-            finance: "Autorizado",
-            liquidation: "En proceso"
-          },
-          hospitalDecision: "Referencia hospitalaria",
-          hospitalJustification: "Disnea con alarma o inestabilidad; requiere manejo hospitalario y monitoreo continuo.",
-          hospitalResult: "Escalamiento a hospital por riesgo respiratorio.",
-          hospitalMoney: {
-            eligibility: "AXA validada · póliza vigente",
-            viability: "Cobertura 88% · referencia viable",
-            auth: "Preautorización prioritaria",
-            hospital: "Hospital sugerido: Médica Sur · aceptación preliminar",
-            amount: "$11,200 MXN",
-            finance: "Autorizado",
-            liquidation: "En conciliación"
-          }
-        },
-        trauma: {
-          patient: "Carlos Ortega · 27 años · M",
-          coverage: "Sin seguro · acceso financiado",
-          studies: [
-            ["RX extremidad", "Fractura no desplazada"],
-            ["FAST", "Sin líquido libre"],
-            ["Hemoglobina", "Estable"]
-          ],
-          diagnosisBase: "Trauma con lesión localizada y sin datos de sangrado interno.",
-          outpatientDecision: "Manejo ambulatorio",
-          outpatientJustification: "Lesión contenida, estabilidad hemodinámica y posibilidad de manejo inicial en sede.",
-          outpatientResult: "Inmovilización, analgesia y alta con seguimiento.",
-          outpatientMoney: {
-            eligibility: "Evento aperturado por esquema financiado",
-            viability: "Viable · pago estructurado",
-            auth: "No requerida",
-            hospital: "Cierre en sede Salud Digna",
-            amount: "$2,500 MXN",
-            finance: "Aprobado",
-            liquidation: "En proceso"
-          },
-          observeDecision: "Observación en sede",
-          observeJustification: "Trauma moderado que requiere revaloración y control del dolor.",
-          observeResult: "Observación corta y alta protegida.",
-          observeMoney: {
-            eligibility: "Evento aperturado por esquema financiado",
-            viability: "Viable · observación aprobada",
-            auth: "Validación interna completada",
-            hospital: "Seguimiento en sede",
-            amount: "$3,450 MXN",
-            finance: "Aprobado",
-            liquidation: "En proceso"
-          },
-          hospitalDecision: "Referencia hospitalaria",
-          hospitalJustification: "Trauma con inestabilidad o sospecha de lesión mayor; requiere capacidad hospitalaria.",
-          hospitalResult: "Referencia hospitalaria por complejidad traumática.",
-          hospitalMoney: {
-            eligibility: "Evento aperturado por esquema financiado",
-            viability: "Viable con respaldo financiero",
-            auth: "Autorización operativa prioritaria",
-            hospital: "Hospital sugerido: Hospital ABC · aceptación preliminar",
-            amount: "$9,800 MXN",
-            finance: "En autorización",
-            liquidation: "Pendiente"
-          }
-        },
-        fiebre: {
-          patient: "Ana López · 19 años · F",
-          coverage: "GNP · Póliza GN-1139",
-          studies: [
-            ["Biometría hemática", "Sin leucocitosis severa"],
-            ["Prueba rápida", "Negativa"],
-            ["EGO", "Sin infección complicada"]
-          ],
-          diagnosisBase: "Síndrome febril sin datos iniciales de sepsis o foco grave.",
-          outpatientDecision: "Manejo ambulatorio",
-          outpatientJustification: "Paciente estable, sin criterios de sepsis y con foco no complicado.",
-          outpatientResult: "Alta con tratamiento y vigilancia de datos de alarma.",
-          outpatientMoney: {
-            eligibility: "GNP validada · póliza vigente",
-            viability: "Cobertura 70% · caso viable",
-            auth: "No requerida",
-            hospital: "Cierre en sede Salud Digna",
-            amount: "$2,650 MXN",
-            finance: "Autorizado",
-            liquidation: "Liquidado"
-          },
-          observeDecision: "Observación en sede",
-          observeJustification: "Fiebre persistente que amerita hidratación y reevaluación clínica.",
-          observeResult: "Observación breve y egreso si mejora.",
-          observeMoney: {
-            eligibility: "GNP validada · póliza vigente",
-            viability: "Cobertura 70% · observación viable",
-            auth: "Automática",
-            hospital: "Seguimiento en sede",
-            amount: "$3,400 MXN",
-            finance: "Autorizado",
-            liquidation: "En proceso"
-          },
-          hospitalDecision: "Referencia hospitalaria",
-          hospitalJustification: "Fiebre con signos de alarma o inestabilidad; requiere evaluación hospitalaria.",
-          hospitalResult: "Escalamiento por sospecha de infección grave.",
-          hospitalMoney: {
-            eligibility: "GNP validada · póliza vigente",
-            viability: "Cobertura 85% · referencia viable",
-            auth: "Preautorización inmediata",
-            hospital: "Hospital sugerido: Christus Muguerza · aceptación preliminar",
-            amount: "$8,100 MXN",
-            finance: "Autorizado",
-            liquidation: "En conciliación"
-          }
+          resultsSummary: "Hallazgos de riesgo. Estudios adjuntos a referencia hospitalaria para continuidad inmediata.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"Sí" },
+          action: "Referencia activada. MoneyFlux coordina elegibilidad, autorización y traslado.",
+          delivery: { status:"Adjuntos a referencia", detail:"Estudios incorporados al expediente de referencia hospitalaria." },
+          referral: "Hospital receptor asignado: Red aliada de segundo nivel. Autorización prioritaria en proceso."
         }
-      };
+      },
 
-      const state = {
-        expedienteCounter: 1,
-        expediente: "MF-2026-000001",
-        mode: "interactive",
-        motive: "dolor_toracico",
-        triage: "medio",
-        signs: false,
-        instability: false,
-        evaluated: false,
-        elapsed: 0,
-        timer: null,
-        autoTimer: null,
-        logs: []
-      };
-
-      const els = {
-        motivoButtons: document.getElementById("motivoButtons"),
-        triageButtons: document.getElementById("triageButtons"),
-        signosAlarma: document.getElementById("signosAlarma"),
-        inestabilidad: document.getElementById("inestabilidad"),
-        btnEvaluar: document.getElementById("btnEvaluar"),
-        btnAuto: document.getElementById("btnAuto"),
-        btnInteractive: document.getElementById("btnInteractive"),
-        btnActualizar: document.getElementById("btnActualizar"),
-        btnReset: document.getElementById("btnReset"),
-        studiesList: document.getElementById("studiesList"),
-        bitacora: document.getElementById("bitacora"),
-        timeline: document.getElementById("timeline"),
-        routeBadge: document.getElementById("routeBadge"),
-        routeTitle: document.getElementById("routeTitle"),
-        routeSummary: document.getElementById("routeSummary"),
-        triageOut: document.getElementById("triageOut"),
-        diagOut: document.getElementById("diagOut"),
-        decisionClinicaOut: document.getElementById("decisionClinicaOut"),
-        justificacionClinicaOut: document.getElementById("justificacionClinicaOut"),
-        eligibilidadOut: document.getElementById("eligibilidadOut"),
-        viabilidadOut: document.getElementById("viabilidadOut"),
-        autorizacionOut: document.getElementById("autorizacionOut"),
-        hospitalOut: document.getElementById("hospitalOut"),
-        resultadoOperativoOut: document.getElementById("resultadoOperativoOut"),
-        estadoFinancieroOut: document.getElementById("estadoFinancieroOut"),
-        montoOut: document.getElementById("montoOut"),
-        expedienteResultOut: document.getElementById("expedienteResultOut"),
-        tiempoTotal: document.getElementById("tiempoTotal"),
-        estadoCaso: document.getElementById("estadoCaso"),
-        coverageKpi: document.getElementById("coverageKpi"),
-        liquidacionKpi: document.getElementById("liquidacionKpi"),
-        modePill: document.getElementById("modePill"),
-        clockPill: document.getElementById("clockPill"),
-        expedientePill: document.getElementById("expedientePill"),
-        expedienteValue: document.getElementById("expedienteValue"),
-        patientValue: document.getElementById("patientValue"),
-        coverageValue: document.getElementById("coverageValue")
-      };
-
-      function pad(num, len) {
-        return String(num).padStart(len, "0");
-      }
-
-      function generateExpediente() {
-        return `MF-2026-${pad(state.expedienteCounter, 6)}`;
-      }
-
-      function setMode(mode) {
-        state.mode = mode;
-        els.modePill.textContent = mode === "auto" ? "Modo automático" : "Modo interactivo";
-        addLog(`Modo cambiado a ${mode === "auto" ? "automático" : "interactivo"}.`);
-      }
-
-      function addLog(text) {
-        const time = new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-        state.logs.unshift({ time, text });
-        state.logs = state.logs.slice(0, 18);
-        renderLogs();
-      }
-
-      function renderLogs() {
-        if (!state.logs.length) {
-          els.bitacora.innerHTML = `<div class="empty">Sin actividad aún.</div>`;
-          return;
+      dolor_toracico: {
+        low: {
+          triageLabel: "🟢 Triage bajo",
+          triageCopy: "Paciente estable, sin compromiso actual, requiere descarte básico.",
+          impres: "Dolor torácico atípico sin datos de alarma mayores.",
+          decision: "Resuelve en sede",
+          route: "Resuelto en sede",
+          totalTime: "42 min",
+          clinicalTime: "20 min",
+          studies: [
+            { name:"ECG", status:"Disponible", note:"Sin cambios isquémicos agudos." },
+            { name:"Troponina", status:"Disponible", note:"Dentro de rango esperado para el contexto." },
+            { name:"RX tórax", status:"Disponible", note:"Sin hallazgos agudos relevantes." }
+          ],
+          resultsSummary: "Sin datos de evento agudo. Manejo ambulatorio con seguimiento y signos de alarma.",
+          coverage: { covered:"Cubierto", deductible:"No", authorization:"No" },
+          action: "Validación completada. Cierre operativo en sede y envío de estudios al paciente.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados enviados por portal y WhatsApp." },
+          referral: null
+        },
+        medium: {
+          triageLabel: "🟡 Triage medio",
+          triageCopy: "Paciente estable, requiere evaluación prioritaria y estudios cardiovasculares básicos.",
+          impres: "Dolor torácico en estudio, sin inestabilidad hemodinámica.",
+          decision: "Observación",
+          route: "Observación",
+          totalTime: "58 min",
+          clinicalTime: "24 min",
+          studies: [
+            { name:"ECG", status:"Disponible", note:"Sin elevación aguda del ST." },
+            { name:"Troponina", status:"Disponible", note:"Sin elevación significativa en la muestra inicial." },
+            { name:"RX tórax", status:"Disponible", note:"Sin hallazgo que amerite intervención inmediata." }
+          ],
+          resultsSummary: "Sin criterios actuales de hospitalización inmediata. Observación breve y reevaluación clínica.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"No" },
+          action: "Cobertura activa. Observación autorizada y preparación de cierre en sede si se mantiene estable.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados enviados al egreso con recomendación de seguimiento." },
+          referral: null
+        },
+        high: {
+          triageLabel: "🔴 Triage alto",
+          triageCopy: "Riesgo cardiovascular inmediato o inestabilidad; escalar a hospital.",
+          impres: "Síndrome coronario agudo a descartar con priorización hospitalaria.",
+          decision: "Referencia hospitalaria",
+          route: "Referido a hospital",
+          totalTime: "27 min",
+          clinicalTime: "9 min",
+          studies: [
+            { name:"ECG", status:"Disponible", note:"Trazado con cambios que requieren continuidad hospitalaria." },
+            { name:"Troponina", status:"Disponible", note:"Resultado de alto valor para escalamiento inmediato." },
+            { name:"Gasometría", status:"Disponible", note:"Apoya continuidad de atención en segundo nivel." }
+          ],
+          resultsSummary: "Caso de riesgo. Estudios y valoración inicial adjuntos a referencia urgente.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"Sí" },
+          action: "MoneyFlux activa red hospitalaria, autorización y continuidad del evento.",
+          delivery: { status:"Adjuntos a referencia", detail:"Resultados compartidos con hospital receptor y expediente." },
+          referral: "Hospital receptor asignado: Centro cardiovascular aliado. Aceptación clínica confirmada."
         }
-        els.bitacora.innerHTML = state.logs.map(item => `
-          <div class="log-entry">
-            <div class="log-time">${item.time}</div>
-            <div class="log-text">${item.text}</div>
+      },
+
+      trauma_menor: {
+        low: {
+          triageLabel: "🟢 Triage bajo",
+          triageCopy: "Trauma leve, paciente estable, probable resolución ambulatoria.",
+          impres: "Trauma menor sin criterios de lesión mayor.",
+          decision: "Resuelve en sede",
+          route: "Resuelto en sede",
+          totalTime: "34 min",
+          clinicalTime: "16 min",
+          studies: [
+            { name:"RX simple", status:"Disponible", note:"Sin fractura desplazada." },
+            { name:"Valoración clínica", status:"Disponible", note:"Sin compromiso neurovascular." },
+            { name:"Curación / manejo local", status:"Disponible", note:"Procedimiento completado en sede." }
+          ],
+          resultsSummary: "Manejo resuelto en sede. Sin criterios de referencia hospitalaria.",
+          coverage: { covered:"Cubierto", deductible:"No", authorization:"No" },
+          action: "Cierre operativo en sede y entrega digital de resultados e indicaciones.",
+          delivery: { status:"Enviado al paciente", detail:"Estudios e indicaciones enviados por portal." },
+          referral: null
+        },
+        medium: {
+          triageLabel: "🟡 Triage medio",
+          triageCopy: "Paciente estable, requiere estudio por imagen y observación breve.",
+          impres: "Trauma con necesidad de descartar lesión de mayor complejidad.",
+          decision: "Observación",
+          route: "Observación",
+          totalTime: "49 min",
+          clinicalTime: "19 min",
+          studies: [
+            { name:"RX simple", status:"Disponible", note:"Sin lesión desplazada evidente." },
+            { name:"USG de partes blandas", status:"Disponible", note:"Sin colección significativa." },
+            { name:"Valoración clínica seriada", status:"Disponible", note:"Se mantiene estable." }
+          ],
+          resultsSummary: "Se descartan hallazgos mayores inmediatos. Observación breve y egreso con indicaciones.",
+          coverage: { covered:"No cubierto", deductible:"No aplica", authorization:"No" },
+          action: "Caso sin cobertura. MoneyFlux deja trazabilidad del evento y cierre no cubierto.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados enviados al paciente pese a no existir cobertura." },
+          referral: null
+        },
+        high: {
+          triageLabel: "🔴 Triage alto",
+          triageCopy: "Mecanismo o hallazgos de riesgo; requiere continuidad hospitalaria.",
+          impres: "Trauma con sospecha de lesión que rebasa capacidad resolutiva en sede.",
+          decision: "Referencia hospitalaria",
+          route: "Referido a hospital",
+          totalTime: "26 min",
+          clinicalTime: "10 min",
+          studies: [
+            { name:"FAST en trauma", status:"Disponible", note:"Hallazgos que ameritan continuidad inmediata." },
+            { name:"RX inicial", status:"Disponible", note:"Apoya referencia a segundo nivel." },
+            { name:"Valoración clínica", status:"Disponible", note:"Indicación de escalamiento emitida." }
+          ],
+          resultsSummary: "Continuidad hospitalaria requerida. Estudios iniciales adjuntos a referencia.",
+          coverage: { covered:"No cubierto", deductible:"No aplica", authorization:"No" },
+          action: "MoneyFlux coordina referencia operativa aun sin cobertura y documenta trazabilidad del evento.",
+          delivery: { status:"Adjuntos a referencia", detail:"Resultados anexados al expediente de referencia." },
+          referral: "Hospital receptor asignado por convenio operativo. Referencia activada con expediente completo."
+        }
+      },
+
+      infeccion_urinaria: {
+        low: {
+          triageLabel: "🟢 Triage bajo",
+          triageCopy: "Paciente estable, probable manejo ambulatorio en sede.",
+          impres: "Probable infección urinaria baja sin datos de complicación.",
+          decision: "Resuelve en sede",
+          route: "Resuelto en sede",
+          totalTime: "36 min",
+          clinicalTime: "17 min",
+          studies: [
+            { name:"EGO", status:"Disponible", note:"Compatible con infección urinaria no complicada." },
+            { name:"Biometría hemática", status:"Disponible", note:"Sin respuesta sistémica relevante." },
+            { name:"Química sanguínea", status:"Disponible", note:"Sin alteración renal aguda." }
+          ],
+          resultsSummary: "Sin datos de sepsis o complicación. Tratamiento ambulatorio y egreso.",
+          coverage: { covered:"Cubierto", deductible:"No", authorization:"No" },
+          action: "Cobertura validada. Cierre operativo en sede.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados e indicaciones compartidos por portal." },
+          referral: null
+        },
+        medium: {
+          triageLabel: "🟡 Triage medio",
+          triageCopy: "Paciente estable, requiere estudios y observación por posible complicación.",
+          impres: "Probable infección urinaria en estudio, sin inestabilidad actual.",
+          decision: "Observación",
+          route: "Observación",
+          totalTime: "52 min",
+          clinicalTime: "21 min",
+          studies: [
+            { name:"EGO", status:"Disponible", note:"Sugiere infección urinaria activa." },
+            { name:"Biometría hemática", status:"Disponible", note:"Sin datos de choque séptico." },
+            { name:"USG renal", status:"Disponible", note:"Sin obstrucción aguda evidente." }
+          ],
+          resultsSummary: "Observación breve. Sin criterios actuales de hospitalización inmediata.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"No" },
+          action: "Observación autorizada con cierre previsto en sede.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados enviados al paciente al egreso." },
+          referral: null
+        },
+        high: {
+          triageLabel: "🔴 Triage alto",
+          triageCopy: "Riesgo de complicación sistémica; escalar a hospital.",
+          impres: "Probable infección urinaria complicada con necesidad de manejo hospitalario.",
+          decision: "Referencia hospitalaria",
+          route: "Referido a hospital",
+          totalTime: "29 min",
+          clinicalTime: "11 min",
+          studies: [
+            { name:"EGO", status:"Disponible", note:"Compatible con proceso infeccioso de mayor complejidad." },
+            { name:"Biometría hemática", status:"Disponible", note:"Apoya referencia por riesgo sistémico." },
+            { name:"Química sanguínea", status:"Disponible", note:"Requiere continuidad hospitalaria." }
+          ],
+          resultsSummary: "Caso de riesgo con referencia hospitalaria. Estudios integrados a expediente.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"Sí" },
+          action: "Autorización y referencia hospitalaria activadas por MoneyFlux.",
+          delivery: { status:"Adjuntos a referencia", detail:"Resultados compartidos con hospital receptor." },
+          referral: "Hospital receptor asignado. Se comparte expediente clínico-financiero completo."
+        }
+      },
+
+      cefalea: {
+        low: {
+          triageLabel: "🟢 Triage bajo",
+          triageCopy: "Cefalea sin datos de focalización ni riesgo inmediato.",
+          impres: "Cefalea primaria probable, sin datos de alarma.",
+          decision: "Resuelve en sede",
+          route: "Resuelto en sede",
+          totalTime: "33 min",
+          clinicalTime: "15 min",
+          studies: [
+            { name:"Valoración neurológica básica", status:"Disponible", note:"Sin déficit focal." },
+            { name:"Biometría hemática", status:"Disponible", note:"Sin alteraciones relevantes." },
+            { name:"Química sanguínea", status:"Disponible", note:"Sin alteración metabólica significativa." }
+          ],
+          resultsSummary: "Sin hallazgos de alarma. Manejo ambulatorio y seguimiento.",
+          coverage: { covered:"No cubierto", deductible:"No aplica", authorization:"No" },
+          action: "Caso no cubierto; MoneyFlux documenta y mantiene trazabilidad del evento.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados e indicaciones enviados al cierre." },
+          referral: null
+        },
+        medium: {
+          triageLabel: "🟡 Triage medio",
+          triageCopy: "Paciente estable, requiere valoración y estudios básicos.",
+          impres: "Cefalea en estudio, sin focalización neurológica ni inestabilidad.",
+          decision: "Observación",
+          route: "Observación",
+          totalTime: "46 min",
+          clinicalTime: "18 min",
+          studies: [
+            { name:"Valoración neurológica básica", status:"Disponible", note:"Sin deterioro neurológico agudo." },
+            { name:"Biometría hemática", status:"Disponible", note:"Sin alteraciones críticas." },
+            { name:"Química sanguínea", status:"Disponible", note:"Sin causa metabólica evidente." }
+          ],
+          resultsSummary: "Observación breve y egreso con signos de alarma.",
+          coverage: { covered:"Cubierto", deductible:"No", authorization:"No" },
+          action: "Cobertura validada. Cierre previsto en sede.",
+          delivery: { status:"Enviado al paciente", detail:"Resultados entregados por portal." },
+          referral: null
+        },
+        high: {
+          triageLabel: "🔴 Triage alto",
+          triageCopy: "Cefalea con datos de alarma; requiere continuidad hospitalaria.",
+          impres: "Cefalea con criterios de escalamiento por riesgo neurológico.",
+          decision: "Referencia hospitalaria",
+          route: "Referido a hospital",
+          totalTime: "24 min",
+          clinicalTime: "8 min",
+          studies: [
+            { name:"Valoración neurológica", status:"Disponible", note:"Apoya necesidad de escalamiento." },
+            { name:"Biometría hemática", status:"Disponible", note:"Adjunta a referencia." },
+            { name:"Química sanguínea", status:"Disponible", note:"Adjunta a referencia hospitalaria." }
+          ],
+          resultsSummary: "No candidato a resolución en sede. Se comparte expediente con hospital receptor.",
+          coverage: { covered:"Cubierto", deductible:"Sí", authorization:"Sí" },
+          action: "MoneyFlux coordina red hospitalaria y autorización.",
+          delivery: { status:"Adjuntos a referencia", detail:"Resultados integrados a referencia urgente." },
+          referral: "Hospital receptor confirmado para continuidad diagnóstica y terapéutica."
+        }
+      }
+    };
+
+    function generateExpediente() {
+      const num = String(state.caseCounter).padStart(6, "0");
+      return `MF-2026-${num}`;
+    }
+
+    function resetAutoTimers() {
+      state.autoTimers.forEach(t => clearTimeout(t));
+      state.autoTimers = [];
+      state.autoRunning = false;
+    }
+
+    function addLog(message) {
+      const ts = new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+      state.logs.unshift({ ts, message });
+      state.logs = state.logs.slice(0, 7);
+      renderLogs();
+    }
+
+    function renderLogs() {
+      const container = el("logList");
+      container.innerHTML = "";
+      state.logs.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "log-item";
+        div.innerHTML = `
+          <div class="timeline-top">
+            <div class="timeline-title">${item.ts}</div>
+            <span class="badge badge-gray">Evento</span>
           </div>
-        `).join("");
-      }
+          <div class="log-desc">${item.message}</div>
+        `;
+        container.appendChild(div);
+      });
+      el("logCount").textContent = `${state.logs.length} evento${state.logs.length === 1 ? "" : "s"}`;
+    }
 
-      function getTriageLabel(triage) {
-        if (triage === "alto") return "🔴 Alto";
-        if (triage === "medio") return "🟡 Medio";
-        return "🟢 Bajo";
-      }
+    function setTimelineStatus(stepId, status) {
+      const step = state.timeline.find(t => t.id === stepId);
+      if (step) step.status = status;
+      renderTimeline();
+    }
 
-      function getCaseProfile() {
-        const profile = motives[state.motive];
-        const hasRisk = state.signs || state.instability || state.triage === "alto";
-        const isObserve = !hasRisk && state.triage === "medio";
+    function resetTimeline() {
+      state.timeline.forEach(t => t.status = "pending");
+      renderTimeline();
+    }
 
-        if (hasRisk) {
-          return {
-            route: "hospital",
-            decision: profile.hospitalDecision,
-            justification: profile.hospitalJustification,
-            result: profile.hospitalResult,
-            money: profile.hospitalMoney,
-            diagnosis: profile.diagnosisBase
-          };
-        }
-
-        if (isObserve) {
-          return {
-            route: "observacion",
-            decision: profile.observeDecision,
-            justification: profile.observeJustification,
-            result: profile.observeResult,
-            money: profile.observeMoney,
-            diagnosis: profile.diagnosisBase
-          };
-        }
-
-        return {
-          route: "ambulatorio",
-          decision: profile.outpatientDecision,
-          justification: profile.outpatientJustification,
-          result: profile.outpatientResult,
-          money: profile.outpatientMoney,
-          diagnosis: profile.diagnosisBase
+    function renderTimeline() {
+      const container = el("timeline");
+      container.innerHTML = "";
+      state.timeline.forEach(step => {
+        const div = document.createElement("div");
+        div.className = `timeline-item ${step.status}`;
+        const badgeMap = {
+          pending: '<span class="badge badge-gray">Pendiente</span>',
+          active: '<span class="badge badge-blue">En proceso</span>',
+          done: '<span class="badge badge-green">Completado</span>'
         };
-      }
-
-      function renderStudies() {
-        const profile = motives[state.motive];
-        els.studiesList.innerHTML = profile.studies.map(([study, value]) => `
-          <div class="list-item">
-            <div class="left">${study}</div>
-            <div class="right">${value}</div>
+        div.innerHTML = `
+          <div class="timeline-top">
+            <div class="timeline-title">${step.title}</div>
+            ${badgeMap[step.status]}
           </div>
-        `).join("");
+          <div class="timeline-desc">${step.desc}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function getSeverityKey() {
+      const triage = el("triage").value;
+      const alarma = el("alarma").value;
+      const inestabilidad = el("inestabilidad").value;
+
+      if (triage === "alto" || alarma === "si" || inestabilidad === "si") return "high";
+      if (triage === "medio") return "medium";
+      return "low";
+    }
+
+    function getScenario() {
+      const motivo = el("motivo").value;
+      const severity = getSeverityKey();
+      return scenarios[motivo][severity];
+    }
+
+    function setBadgeByText(node, text) {
+      node.className = "badge";
+      const t = String(text).toLowerCase();
+      if (t.includes("resuelto") || t.includes("enviado") || t.includes("cubierto") || t.includes("completado")) {
+        node.classList.add("badge-green");
+      } else if (t.includes("observación") || t.includes("medio") || t.includes("sí")) {
+        node.classList.add("badge-yellow");
+      } else if (t.includes("refer") || t.includes("alto") || t.includes("no cubierto")) {
+        node.classList.add("badge-red");
+      } else if (t.includes("abierto") || t.includes("pendiente") || t.includes("evaluación")) {
+        node.classList.add("badge-gray");
+      } else {
+        node.classList.add("badge-blue");
+      }
+      node.textContent = text;
+    }
+
+    function updateTopStrip(scenario) {
+      el("topExpediente").textContent = state.expediente;
+      el("topPaciente").textContent = `${state.patientName || "Paciente pendiente"} · ${state.ageSex || "--"}`;
+      el("topRuta").textContent = scenario.route;
+      el("topRutaSub").textContent = scenario.decision;
+      el("topCobertura").textContent = scenario.coverage.covered;
+      el("topCoberturaSub").textContent = `Deducible urgencia: ${scenario.coverage.deductible}`;
+      el("topEstadoFinal").textContent = state.finalStatus;
+      el("topEstadoSub").textContent = state.deliveryStatus;
+    }
+
+    function renderStudies(list, targetId) {
+      const container = el(targetId);
+      container.innerHTML = "";
+      list.forEach(study => {
+        const div = document.createElement("div");
+        div.className = "study-item";
+        div.innerHTML = `
+          <div class="study-top">
+            <div class="study-name">${study.name}</div>
+            <span class="badge badge-green">${study.status}</span>
+          </div>
+          <div class="study-note">${study.note}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateClinicalSection(scenario) {
+      const triage = el("triage").value;
+      const banner = el("triageBanner");
+      banner.className = "triage-banner";
+      if (triage === "bajo") banner.classList.add("triage-low");
+      if (triage === "medio") banner.classList.add("triage-medium");
+      if (triage === "alto") banner.classList.add("triage-high");
+
+      el("triageMain").textContent = scenario.triageLabel;
+      el("triageCopy").textContent = scenario.triageCopy;
+      el("impresionDiagnostica").textContent = scenario.impres;
+      el("decisionClinica").textContent = scenario.decision;
+      el("kpiAlarma").textContent = el("alarma").value === "si" ? "Sí" : "No";
+      el("kpiInestabilidad").textContent = el("inestabilidad").value === "si" ? "Sí" : "No";
+      el("kpiTiempoClinico").textContent = scenario.clinicalTime;
+      renderStudies(scenario.studies, "studyList");
+
+      setBadgeByText(el("clinicalBadge"), scenario.decision);
+      setBadgeByText(el("triageStatusBadge"), scenario.triageLabel.replace("🟢 ", "").replace("🟡 ", "").replace("🔴 ", ""));
+    }
+
+    function updateMoneyFluxSection(scenario) {
+      el("mfCobertura").textContent = scenario.coverage.covered;
+      el("mfDeducible").textContent = scenario.coverage.deductible;
+      el("mfAutorizacion").textContent = scenario.coverage.authorization;
+      el("mfAccion").textContent = scenario.action;
+
+      if (scenario.referral) {
+        el("referralBox").classList.remove("hidden");
+        el("mfReferencia").textContent = scenario.referral;
+      } else {
+        el("referralBox").classList.add("hidden");
+      }
+    }
+
+    function updateDeliverySection(scenario) {
+      renderStudies(scenario.studies, "resultStudies");
+      el("resumenResultados").textContent = scenario.resultsSummary;
+      el("entregaEstado").textContent = scenario.delivery.status;
+      el("entregaDetalle").textContent = scenario.delivery.detail;
+      setBadgeByText(el("deliveryBadge"), scenario.delivery.status);
+    }
+
+    function updateResultSection(scenario) {
+      state.decision = scenario.decision;
+      state.finalRoute = scenario.route;
+      state.totalTime = scenario.totalTime;
+      state.deliveryStatus = scenario.delivery.status;
+      state.finalStatus = scenario.route;
+
+      el("resultadoExpediente").textContent = state.expediente;
+      el("resultadoTiempo").textContent = scenario.totalTime;
+      el("resultadoCobertura").textContent = scenario.coverage.covered;
+      el("resultadoDeducible").textContent = scenario.coverage.deductible;
+      el("resultadoEstudios").textContent = scenario.delivery.status;
+      el("resultadoRuta").textContent = scenario.route;
+
+      el("resultadoTitulo").textContent = scenario.route;
+      el("resultadoTexto").textContent = scenario.decision === "Referencia hospitalaria"
+        ? "Salud Digna emite la referencia clínica y MoneyFlux coordina cobertura, autorización y continuidad hospitalaria."
+        : "Salud Digna resuelve clínicamente el caso y MoneyFlux documenta cobertura, cierre operativo y entrega de estudios.";
+
+      setBadgeByText(el("resultadoPill"), scenario.route);
+      setBadgeByText(el("finalBadge"), scenario.route);
+    }
+
+    function applyScenario(logReason = true) {
+      state.patientName = el("paciente").value.trim() || "Paciente sin nombre";
+      state.ageSex = el("edadSexo").value.trim() || "--";
+      state.motivo = el("motivo").value;
+      state.triage = el("triage").value;
+      state.alarma = el("alarma").value;
+      state.inestabilidad = el("inestabilidad").value;
+      state.coberturaBase = el("coberturaBase").value;
+
+      const scenario = getScenario();
+      state.scenario = scenario;
+
+      // Ajuste extra si el usuario marca sin cobertura
+      if (state.coberturaBase === "sin_cobertura") {
+        scenario.coverage.covered = "No cubierto";
+        if (scenario.coverage.deductible !== "No aplica") scenario.coverage.deductible = "No aplica";
+        if (scenario.decision !== "Referencia hospitalaria") scenario.coverage.authorization = "No";
       }
 
-      function renderTimeline(stage = 1, decisionText = "Pendiente", resolutionText = "Caso en evaluación") {
-        const items = [
-          ["Ingreso", `Expediente ${state.expediente} aperturado y paciente recibido en Salud Digna.`],
-          ["Evaluación clínica", `Triage ${getTriageLabel(state.triage)} y estudios diagnósticos iniciales.`],
-          ["Decisión clínica", decisionText],
-          ["Coordinación MoneyFlux", "Validación de cobertura, autorización y referencia o cierre."],
-          ["Resolución", resolutionText]
-        ];
+      updateClinicalSection(scenario);
+      updateMoneyFluxSection(scenario);
+      updateDeliverySection(scenario);
+      updateResultSection(scenario);
+      updateTopStrip(scenario);
 
-        els.timeline.innerHTML = items.map((item, idx) => {
-          const stepIndex = idx + 1;
-          const cls = stepIndex < stage ? "done" : (stepIndex === stage ? "current" : "");
-          return `
-            <div class="step ${cls}">
-              <div class="step-dot">${stepIndex}</div>
-              <div>
-                <div class="step-title">${item[0]}</div>
-                <div class="step-desc">${item[1]}</div>
-              </div>
-            </div>
-          `;
-        }).join("");
+      if (logReason) {
+        addLog(`Expediente ${state.expediente} actualizado. Salud Digna establece ${scenario.decision.toLowerCase()} y MoneyFlux refleja ${scenario.coverage.covered.toLowerCase()}.`);
       }
+    }
 
-      function updatePatientHeader() {
-        const profile = motives[state.motive];
-        els.patientValue.textContent = profile.patient;
-        els.coverageValue.textContent = profile.coverage;
-        els.expedienteValue.textContent = state.expediente;
-        els.expedientePill.textContent = `Expediente: ${state.expediente}`;
-        els.expedienteResultOut.textContent = state.expediente;
+    function stepIngreso() {
+      setTimelineStatus("ingreso", "active");
+      addLog(`Expediente ${state.expediente} creado para ${el("paciente").value.trim() || "paciente"}.`);
+      setTimeout(() => setTimelineStatus("ingreso", "done"), 300);
+    }
+
+    function stepEvaluacion() {
+      setTimelineStatus("evaluacion", "active");
+      addLog(`Triage ${el("triage").selectedOptions[0].textContent} asignado. Se solicitan estudios iniciales.`);
+      setTimeout(() => setTimelineStatus("evaluacion", "done"), 300);
+    }
+
+    function stepDecision() {
+      const scenario = getScenario();
+      setTimelineStatus("decision", "active");
+      addLog(`Salud Digna emite decisión clínica: ${scenario.decision}.`);
+      setTimeout(() => setTimelineStatus("decision", "done"), 300);
+    }
+
+    function stepMoneyFlux() {
+      const scenario = getScenario();
+      setTimelineStatus("moneyflux", "active");
+      addLog(`MoneyFlux valida cobertura: ${scenario.coverage.covered}. Deducible urgencia: ${scenario.coverage.deductible}.`);
+      if (scenario.decision === "Referencia hospitalaria") {
+        addLog(`MoneyFlux activa referencia hospitalaria y coordinación operativa.`);
+      } else {
+        addLog(`MoneyFlux autoriza cierre operativo en sede y trazabilidad del evento.`);
       }
+      setTimeout(() => setTimelineStatus("moneyflux", "done"), 300);
+    }
 
-      function renderSelection() {
-        [...els.motivoButtons.querySelectorAll(".choice-btn")].forEach(btn => {
-          btn.classList.toggle("active", btn.dataset.motivo === state.motive);
+    function stepCierre() {
+      const scenario = getScenario();
+      setTimelineStatus("cierre", "active");
+      if (scenario.decision === "Referencia hospitalaria") {
+        addLog(`Estudios adjuntos a referencia. Expediente listo para continuidad hospitalaria.`);
+      } else {
+        addLog(`Resultados ${scenario.delivery.status.toLowerCase()} y cierre de caso en sede.`);
+      }
+      setTimeout(() => setTimelineStatus("cierre", "done"), 300);
+    }
+
+    function updateAll() {
+      applyScenario(false);
+
+      const scenario = state.scenario;
+      resetTimeline();
+
+      setTimelineStatus("ingreso", "done");
+      setTimelineStatus("evaluacion", "done");
+      setTimelineStatus("decision", "done");
+      setTimelineStatus("moneyflux", "done");
+      setTimelineStatus("cierre", "done");
+
+      addLog(`Flujo completo actualizado. Ruta final: ${scenario.route}.`);
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      el("badgeMode").textContent = mode === "auto" ? "Modo automático" : "Modo interactivo";
+      el("btnAuto").disabled = mode === "auto" && state.autoRunning;
+      el("btnInteractive").disabled = false;
+    }
+
+    function startAutoMode() {
+      resetAutoTimers();
+      setMode("auto");
+      state.autoRunning = true;
+      el("btnAuto").disabled = true;
+
+      applyScenario(false);
+      resetTimeline();
+      state.logs = [];
+      renderLogs();
+
+      const steps = [
+        { delay: 300, fn: stepIngreso },
+        { delay: 1400, fn: stepEvaluacion },
+        { delay: 2600, fn: () => { applyScenario(false); stepDecision(); } },
+        { delay: 3900, fn: () => { applyScenario(false); stepMoneyFlux(); } },
+        { delay: 5200, fn: () => { applyScenario(false); stepCierre(); } },
+        { delay: 6100, fn: () => { applyScenario(false); state.autoRunning = false; el("btnAuto").disabled = false; } }
+      ];
+
+      steps.forEach(item => {
+        const timer = setTimeout(item.fn, item.delay);
+        state.autoTimers.push(timer);
+      });
+    }
+
+    function resetDemo() {
+      resetAutoTimers();
+      state.caseCounter += 1;
+      state.expediente = generateExpediente();
+      state.logs = [];
+      renderLogs();
+      resetTimeline();
+
+      el("expediente").value = state.expediente;
+      el("paciente").value = "María López";
+      el("edadSexo").value = "34 años · F";
+      el("motivo").value = "dolor_abdominal";
+      el("triage").value = "medio";
+      el("alarma").value = "no";
+      el("inestabilidad").value = "no";
+      el("coberturaBase").value = "con_cobertura";
+
+      setMode("interactive");
+      applyScenario(false);
+
+      addLog(`Demo reiniciado. Nuevo expediente ${state.expediente}.`);
+    }
+
+    function bindEvents() {
+      [
+        "paciente",
+        "edadSexo",
+        "motivo",
+        "triage",
+        "alarma",
+        "inestabilidad",
+        "coberturaBase"
+      ].forEach(id => {
+        el(id).addEventListener("change", () => {
+          if (state.mode === "interactive") applyScenario(true);
         });
-        [...els.triageButtons.querySelectorAll(".choice-btn")].forEach(btn => {
-          btn.classList.toggle("active", btn.dataset.triage === state.triage);
-        });
-        els.signosAlarma.checked = state.signs;
-        els.inestabilidad.checked = state.instability;
-        els.triageOut.textContent = getTriageLabel(state.triage);
-      }
-
-      function renderPending() {
-        state.evaluated = false;
-        const profile = motives[state.motive];
-        els.routeBadge.className = "route-badge route-obs";
-        els.routeBadge.textContent = "Evaluación pendiente";
-        els.routeTitle.textContent = "Esperando evaluación clínica";
-        els.routeSummary.textContent = "Salud Digna realiza triage, estudios iniciales e impresión diagnóstica. MoneyFlux coordina cobertura, referencia y cierre operativo.";
-        els.diagOut.textContent = "Pendiente de evaluación";
-        els.decisionClinicaOut.textContent = "Pendiente";
-        els.justificacionClinicaOut.textContent = "Sin datos aún";
-        els.eligibilidadOut.textContent = "Pendiente";
-        els.viabilidadOut.textContent = "Pendiente";
-        els.autorizacionOut.textContent = "Pendiente";
-        els.hospitalOut.textContent = "Pendiente";
-        els.resultadoOperativoOut.textContent = "Caso en evaluación";
-        els.estadoFinancieroOut.textContent = "Sin cierre";
-        els.montoOut.textContent = "—";
-        els.tiempoTotal.textContent = "—";
-        els.estadoCaso.textContent = "Abierto";
-        els.coverageKpi.textContent = "—";
-        els.liquidacionKpi.textContent = "—";
-        renderTimeline(1);
-        addLog(`Expediente ${state.expediente} listo para evaluación clínica.`);
-      }
-
-      function evaluateCase(source = "manual") {
-        const profile = getCaseProfile();
-        state.evaluated = true;
-
-        let routeLabel = "";
-        let badgeClass = "";
-        let bannerTitle = "";
-
-        if (profile.route === "hospital") {
-          routeLabel = "Referencia hospitalaria";
-          badgeClass = "route-badge route-hosp";
-          bannerTitle = "Escalamiento hospitalario coordinado";
-        } else if (profile.route === "observacion") {
-          routeLabel = "Observación en sede";
-          badgeClass = "route-badge route-obs";
-          bannerTitle = "Resolución intermedia en sede";
-        } else {
-          routeLabel = "Manejo ambulatorio";
-          badgeClass = "route-badge route-amb";
-          bannerTitle = "Resolución ambulatoria en sede";
+        if (id === "paciente" || id === "edadSexo") {
+          el(id).addEventListener("input", () => {
+            if (state.mode === "interactive") applyScenario(false);
+          });
         }
+      });
 
-        els.routeBadge.className = badgeClass;
-        els.routeBadge.textContent = routeLabel;
-        els.routeTitle.textContent = bannerTitle;
-        els.routeSummary.textContent = profile.result;
+      el("btnAuto").addEventListener("click", startAutoMode);
+      el("btnInteractive").addEventListener("click", () => {
+        resetAutoTimers();
+        setMode("interactive");
+        applyScenario(true);
+      });
+      el("btnUpdate").addEventListener("click", updateAll);
+      el("btnReset").addEventListener("click", resetDemo);
+    }
 
-        els.diagOut.textContent = profile.diagnosis;
-        els.decisionClinicaOut.textContent = profile.decision;
-        els.justificacionClinicaOut.textContent = profile.justification;
-        els.eligibilidadOut.textContent = profile.money.eligibility;
-        els.viabilidadOut.textContent = profile.money.viability;
-        els.autorizacionOut.textContent = profile.money.auth;
-        els.hospitalOut.textContent = profile.money.hospital;
-        els.resultadoOperativoOut.textContent = profile.result;
-        els.estadoFinancieroOut.textContent = profile.money.finance;
-        els.montoOut.textContent = profile.money.amount;
-        els.coverageKpi.textContent = profile.money.viability.includes("Cobertura") ? profile.money.viability.replace(" · caso viable","").replace(" · referencia viable","").replace(" · observación viable","") : "Viable";
-        els.liquidacionKpi.textContent = profile.money.liquidation;
-        els.tiempoTotal.textContent = profile.route === "hospital" ? "1h 35m" : (profile.route === "observacion" ? "2h 00m" : "42m");
-        els.estadoCaso.textContent = profile.route === "hospital" ? "Referido" : "Resuelto";
+    function init() {
+      state.expediente = generateExpediente();
+      el("expediente").value = state.expediente;
+      renderTimeline();
+      renderLogs();
+      bindEvents();
+      setMode("interactive");
+      applyScenario(false);
+      addLog(`Expediente ${state.expediente} creado. Caso listo para evaluación.`);
+    }
 
-        renderTimeline(
-          5,
-          `Salud Digna define: ${profile.decision}.`,
-          profile.result
-        );
-
-        const evalText = source === "auto" ? "Evaluación automática ejecutada." : "Caso evaluado por demo interactivo.";
-        addLog(`${evalText} Salud Digna definió: ${profile.decision}.`);
-        addLog(`MoneyFlux coordinó: ${profile.money.eligibility}; ${profile.money.auth.toLowerCase()}.`);
-        addLog(`Resultado del expediente ${state.expediente}: ${profile.result}`);
-      }
-
-      function resetCase() {
-        clearInterval(state.autoTimer);
-        state.autoTimer = null;
-        state.expedienteCounter += 1;
-        state.expediente = generateExpediente();
-        state.motive = "dolor_toracico";
-        state.triage = "medio";
-        state.signs = false;
-        state.instability = false;
-        updatePatientHeader();
-        renderStudies();
-        renderSelection();
-        renderPending();
-      }
-
-      function randomScenario() {
-        const motiveKeys = Object.keys(motives);
-        state.motive = motiveKeys[Math.floor(Math.random() * motiveKeys.length)];
-        const triages = ["bajo", "medio", "alto"];
-        state.triage = triages[Math.floor(Math.random() * triages.length)];
-        state.signs = Math.random() > 0.63;
-        state.instability = Math.random() > 0.78;
-        updatePatientHeader();
-        renderSelection();
-        renderStudies();
-      }
-
-      function startClock() {
-        let seconds = 0;
-        if (state.timer) clearInterval(state.timer);
-        state.timer = setInterval(() => {
-          seconds += 1;
-          const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-          const ss = String(seconds % 60).padStart(2, "0");
-          els.clockPill.textContent = `${mm}:${ss}`;
-        }, 1000);
-      }
-
-      function bindEvents() {
-        els.motivoButtons.addEventListener("click", (e) => {
-          const btn = e.target.closest("[data-motivo]");
-          if (!btn) return;
-          state.motive = btn.dataset.motivo;
-          updatePatientHeader();
-          renderSelection();
-          renderStudies();
-          renderPending();
-        });
-
-        els.triageButtons.addEventListener("click", (e) => {
-          const btn = e.target.closest("[data-triage]");
-          if (!btn) return;
-          state.triage = btn.dataset.triage;
-          renderSelection();
-          renderPending();
-        });
-
-        els.signosAlarma.addEventListener("change", () => {
-          state.signs = els.signosAlarma.checked;
-          renderPending();
-        });
-
-        els.inestabilidad.addEventListener("change", () => {
-          state.instability = els.inestabilidad.checked;
-          renderPending();
-        });
-
-        els.btnEvaluar.addEventListener("click", () => {
-          evaluateCase("manual");
-        });
-
-        els.btnActualizar.addEventListener("click", () => {
-          evaluateCase("manual");
-        });
-
-        els.btnReset.addEventListener("click", () => {
-          addLog("Reinicio completo del demo.");
-          resetCase();
-        });
-
-        els.btnAuto.addEventListener("click", () => {
-          setMode("auto");
-          clearInterval(state.autoTimer);
-          randomScenario();
-          renderPending();
-          addLog("Secuencia automática iniciada.");
-          state.autoTimer = setTimeout(() => {
-            evaluateCase("auto");
-          }, 1200);
-        });
-
-        els.btnInteractive.addEventListener("click", () => {
-          clearInterval(state.autoTimer);
-          state.autoTimer = null;
-          setMode("interactive");
-        });
-      }
-
-      function init() {
-        state.expediente = generateExpediente();
-        updatePatientHeader();
-        renderStudies();
-        renderSelection();
-        renderPending();
-        bindEvents();
-        startClock();
-      }
-
-      init();
-    })();
+    init();
   </script>
 </body>
 </html>
