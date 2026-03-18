@@ -4,13 +4,620 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MoneyFlux Health Platform | Demo ejecutivo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    :root {
+      --bg: #030d2c;
+      --panel: #0b173b;
+      --panel-2: #111f4d;
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f4f7ff;
+      --muted: #9fafcf;
+      --accent: #58a6ff;
+      --accent-2: #82c0ff;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --neutral: #94a3b8;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top right, rgba(88, 166, 255, 0.09), transparent 22%),
+        linear-gradient(180deg, #021031 0%, #020a23 100%);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body { padding: 18px; }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app-shell {
+      max-width: 1680px;
+      margin: 0 auto;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .brand-strip {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .brand-card {
+      height: 96px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 10px 18px;
+    }
+
+    .brand-card img {
+      display: block;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-card--moneyflux {
+      width: 285px;
+    }
+
+    .brand-card--moneyflux img {
+      max-width: 220px;
+      max-height: 76px;
+    }
+
+    .brand-card--saluddigna {
+      width: 220px;
+    }
+
+    .brand-card--saluddigna img {
+      max-width: 180px;
+      max-height: 48px;
+    }
+
+    .brand-divider {
+      width: 1px;
+      height: 42px;
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .demo-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+
+    .demo-title__eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .demo-title__case {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #4da1ff 0%, #2b7fe3 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-ghost {
+      background: rgba(0, 0, 0, 0.14);
+    }
+
+    .btn-full { width: 100%; }
+
+    .executive-ribbon {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .exec-pill {
+      background: rgba(13, 27, 70, 0.95);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      min-height: 76px;
+    }
+
+    .exec-pill__label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .exec-pill__value {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .exec-pill.is-success { border-color: rgba(34, 197, 94, 0.45); }
+    .exec-pill.is-warning { border-color: rgba(245, 158, 11, 0.45); }
+    .exec-pill.is-neutral { border-color: rgba(148, 163, 184, 0.35); }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 1.35fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(10, 22, 61, 0.98) 0%, rgba(7, 18, 49, 0.98) 100%);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel__eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .panel__title {
+      margin: 0 0 18px;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .form-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-grid label span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px;
+      outline: none;
+    }
+
+    .field-span-2 { grid-column: span 2; }
+
+    .form-actions { margin: 14px 0 16px; }
+
+    .summary-card,
+    .explanation-box,
+    .info-box,
+    .criteria-box,
+    .metric-card,
+    .mini-metric {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .summary-card__eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .summary-name {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.05;
+    }
+
+    .summary-status {
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .live-clock {
+      color: var(--accent-2);
+      font-weight: 700;
+      margin: 2px 0 18px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .timeline-step {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .timeline-step__marker {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      margin-top: 2px;
+      border: 2px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .timeline-step__marker::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      left: 6px;
+      width: 2px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .timeline-step:last-child .timeline-step__marker::after {
+      display: none;
+    }
+
+    .timeline-step__content h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    .timeline-step__time {
+      color: var(--accent-2);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .timeline-step__desc {
+      color: #dce6fb;
+      line-height: 1.45;
+    }
+
+    .timeline-step.is-complete .timeline-step__marker {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: rgba(34, 197, 94, 0.9);
+    }
+
+    .timeline-step.is-active .timeline-step__marker {
+      background: rgba(88, 166, 255, 0.22);
+      border-color: rgba(88, 166, 255, 0.92);
+      box-shadow: 0 0 0 5px rgba(88, 166, 255, 0.12);
+    }
+
+    .panel-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 18px 0;
+    }
+
+    .decision-engine__header,
+    .referral-card__header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .decision-engine__header h3,
+    .referral-card__header h3 {
+      margin: 0;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-badge--pending,
+    .status-badge--neutral {
+      background: rgba(148, 163, 184, 0.16);
+      color: #d7e1f4;
+    }
+
+    .status-badge--success {
+      background: rgba(34, 197, 94, 0.16);
+      color: #8ef0b2;
+    }
+
+    .status-badge--warning {
+      background: rgba(245, 158, 11, 0.16);
+      color: #ffd280;
+    }
+
+    .score-grid,
+    .criteria-grid,
+    .referral-grid,
+    .mini-metrics {
+      display: grid;
+      gap: 12px;
+    }
+
+    .score-grid,
+    .criteria-grid,
+    .referral-grid {
+      grid-template-columns: repeat(2, 1fr);
+      margin-bottom: 12px;
+    }
+
+    .metric-card__label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .metric-card__value {
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .criteria-box h4,
+    .info-box h4,
+    .explanation-box h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .criteria-box ul,
+    .info-box ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #dce7ff;
+      line-height: 1.5;
+    }
+
+    .explanation-box p {
+      margin: 0;
+      color: #e9efff;
+      line-height: 1.55;
+    }
+
+    .referral-highlight {
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, rgba(88, 166, 255, 0.16) 0%, rgba(88, 166, 255, 0.08) 100%);
+      border: 1px solid rgba(88, 166, 255, 0.24);
+      border-radius: 16px;
+      padding: 14px;
+      color: #eef5ff;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .mini-metrics {
+      grid-template-columns: repeat(2, 1fr);
+      margin-bottom: 12px;
+    }
+
+    .mini-metric {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .mini-metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .mini-metric strong {
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .dashboard-section-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      margin: 14px 0 10px;
+    }
+
+    .kpi-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .kpi-row {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .kpi-row strong {
+      font-size: 18px;
+      text-align: right;
+    }
+
+    .actors-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .actor-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .actor-item:last-child { border-bottom: 0; }
+
+    .actor-item strong { font-size: 18px; }
+
+    .actor-item span {
+      color: #d9e4ff;
+      line-height: 1.45;
+    }
+
+    .activity-log {
+      display: grid;
+      gap: 10px;
+      max-height: 410px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .activity-log__item {
+      border-left: 3px solid rgba(88, 166, 255, 0.55);
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 0 14px 14px 0;
+      padding: 10px 12px;
+    }
+
+    .activity-log__time {
+      display: block;
+      color: var(--accent-2);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .activity-log__text {
+      color: #e9efff;
+      line-height: 1.45;
+    }
+
+    .debug-banner {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #baf7cf;
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1300px) {
+      .main-grid { grid-template-columns: 1fr 1fr; }
+      .panel-dashboard { grid-column: span 2; }
+    }
+
+    @media (max-width: 980px) {
+      .top-header,
+      .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .demo-title { align-items: flex-start; }
+
+      .executive-ribbon,
+      .main-grid,
+      .score-grid,
+      .criteria-grid,
+      .referral-grid,
+      .mini-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-dashboard { grid-column: span 1; }
+      .brand-strip { flex-wrap: wrap; }
+      .brand-divider { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+
+      .brand-card--moneyflux,
+      .brand-card--saluddigna {
+        width: 100%;
+      }
+
+      .form-grid { grid-template-columns: 1fr; }
+      .field-span-2 { grid-column: span 1; }
+      .demo-title__case { font-size: 18px; }
+    }
+  </style>
 </head>
 <body>
   <div class="app-shell">
+    <div class="debug-banner" id="debug-banner">JS integrado cargado correctamente.</div>
+
     <header class="top-header">
       <div class="brand-strip">
         <div class="brand-card brand-card--moneyflux">
@@ -304,6 +911,492 @@
     </main>
   </div>
 
-  <script src="./script.js"></script>
+  <script>
+    var state = {
+      caseId: "MFH-2026-001",
+      mode: "interactive",
+      autoTimer: null,
+      autoStep: 0,
+      timelineStage: 1,
+      logs: []
+    };
+
+    function el(id) {
+      return document.getElementById(id);
+    }
+
+    function nowTime() {
+      var d = new Date();
+      return d.toLocaleTimeString("es-MX", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function logMessage(text) {
+      state.logs.unshift({ time: nowTime(), text: text });
+      if (state.logs.length > 12) state.logs = state.logs.slice(0, 12);
+      renderLog();
+    }
+
+    function renderLog() {
+      var container = el("activity-log");
+      if (!container) return;
+      var html = "";
+      for (var i = 0; i < state.logs.length; i++) {
+        html +=
+          '<div class="activity-log__item">' +
+          '<span class="activity-log__time">' + state.logs[i].time + "</span>" +
+          '<div class="activity-log__text">' + state.logs[i].text + "</div>" +
+          "</div>";
+      }
+      container.innerHTML = html;
+    }
+
+    function setModeButtons() {
+      var autoBtn = el("auto-mode-btn");
+      var interactiveBtn = el("interactive-mode-btn");
+      if (!autoBtn || !interactiveBtn) return;
+
+      if (state.mode === "auto") {
+        autoBtn.className = "btn btn-primary";
+        interactiveBtn.className = "btn btn-secondary";
+      } else {
+        autoBtn.className = "btn btn-secondary";
+        interactiveBtn.className = "btn btn-primary";
+      }
+    }
+
+    function getFormData() {
+      return {
+        patientName: el("patient-name").value,
+        patientAge: Number(el("patient-age").value || 0),
+        patientSex: el("patient-sex").value,
+        payer: el("payer").value,
+        complaint: el("complaint").value,
+        triage: el("triage").value,
+        heartRate: Number(el("heart-rate").value || 0),
+        systolicBp: Number(el("systolic-bp").value || 0),
+        spo2: Number(el("spo2").value || 0),
+        studies: el("studies").value,
+        diagnosis: el("diagnosis").value,
+        clinicalRoute: el("clinical-route").value
+      };
+    }
+
+    function computeDecision(data) {
+      var clinicalScore = 0;
+      var financialScore = 0;
+      var route = "ambulatorio";
+      var clinicalCriteria = [];
+      var financialCriteria = [];
+
+      if (data.triage === "Rojo") {
+        clinicalScore += 45;
+        clinicalCriteria.push("Triage crítico");
+      } else if (data.triage === "Amarillo") {
+        clinicalScore += 30;
+        clinicalCriteria.push("Triage alto riesgo");
+      } else {
+        clinicalScore += 12;
+        clinicalCriteria.push("Triage moderado");
+      }
+
+      if (data.heartRate > 110) {
+        clinicalScore += 18;
+        clinicalCriteria.push("Taquicardia relevante");
+      }
+
+      if (data.systolicBp > 0 && data.systolicBp < 95) {
+        clinicalScore += 20;
+        clinicalCriteria.push("Hipotensión relativa");
+      }
+
+      if (data.spo2 > 0 && data.spo2 < 90) {
+        clinicalScore += 20;
+        clinicalCriteria.push("Desaturación");
+      }
+
+      var signalText = (data.complaint + " " + data.diagnosis).toLowerCase();
+      if (signalText.indexOf("tor") !== -1 || signalText.indexOf("coron") !== -1 || signalText.indexOf("cardio") !== -1) {
+        clinicalScore += 18;
+        clinicalCriteria.push("Posible evento cardiopulmonar");
+      }
+
+      if (data.payer !== "Sin seguro") {
+        financialScore += 55;
+        financialCriteria.push("Cobertura preliminar identificada");
+        financialCriteria.push("Canal de pagador activo");
+      } else {
+        financialScore += 12;
+        financialCriteria.push("Caso sin seguro");
+      }
+
+      if (clinicalScore >= 50) {
+        financialScore += 15;
+        financialCriteria.push("Red hospitalaria justificable");
+      }
+
+      if (data.clinicalRoute === "hospitalizacion") {
+        route = "hospitalizacion";
+        clinicalCriteria.push("Ruta manual a hospitalización");
+        financialCriteria.push("Preparación operativa para referencia");
+      } else if (data.clinicalRoute === "observacion") {
+        route = "observacion";
+        clinicalCriteria.push("Ruta manual a observación");
+      } else if (data.clinicalRoute === "ambulatorio") {
+        route = "ambulatorio";
+      } else {
+        if (clinicalScore >= 68 && financialScore >= 55) {
+          route = "hospitalizacion";
+        } else if (clinicalScore >= 45) {
+          route = "observacion";
+        } else {
+          route = "ambulatorio";
+        }
+      }
+
+      if (clinicalScore > 100) clinicalScore = 100;
+      if (financialScore > 100) financialScore = 100;
+
+      var decisionText = "";
+      if (route === "hospitalizacion") {
+        decisionText = "Se recomienda referencia hospitalaria por severidad clínica y viabilidad operativa.";
+      } else if (route === "observacion") {
+        decisionText = "Se recomienda observación clínica con posible escalamiento.";
+      } else {
+        decisionText = "Se recomienda resolución ambulatoria controlada.";
+      }
+
+      return {
+        route: route,
+        clinicalScore: clinicalScore,
+        financialScore: financialScore,
+        clinicalCriteria: clinicalCriteria,
+        financialCriteria: financialCriteria,
+        decisionText: decisionText
+      };
+    }
+
+    function renderSummary(data, decision) {
+      var target = el("clinical-summary");
+      var status = "Ruta ambulatoria";
+      if (decision.route === "hospitalizacion") status = "Referencia hospitalaria recomendada";
+      if (decision.route === "observacion") status = "Observación activa";
+
+      target.innerHTML =
+        '<h3 class="summary-name">' + data.patientName + "</h3>" +
+        '<div class="summary-status">' + status + "</div>" +
+        '<div class="summary-list">' +
+        "<div><strong>Edad / sexo:</strong> " + data.patientAge + " / " + data.patientSex + "</div>" +
+        "<div><strong>Aseguradora:</strong> " + data.payer + "</div>" +
+        "<div><strong>Estudios:</strong> " + data.studies + "</div>" +
+        "<div><strong>Diagnóstico:</strong> " + data.diagnosis + "</div>" +
+        "</div>";
+    }
+
+    function renderTimeline() {
+      var target = el("timeline");
+      var steps = [
+        { title: "Ingreso y registro", desc: "Captura del paciente, motivo de consulta, triage y cobertura." },
+        { title: "Validación financiera", desc: "Elegibilidad, autorización preliminar y red hospitalaria." },
+        { title: "Motor de decisión clínica-financiera", desc: "Activación de criterios clínicos y operativos." },
+        { title: "Coordinación del siguiente nivel", desc: "Ambulatorio, observación o referencia hospitalaria." },
+        { title: "Cierre y liquidación", desc: "Consolidación del caso y estatus final." }
+      ];
+
+      var html = "";
+      for (var i = 0; i < steps.length; i++) {
+        var cls = "is-pending";
+        if (i + 1 < state.timelineStage) cls = "is-complete";
+        if (i + 1 === state.timelineStage) cls = "is-active";
+
+        html +=
+          '<div class="timeline-step ' + cls + '">' +
+          '<div class="timeline-step__marker"></div>' +
+          '<div class="timeline-step__content">' +
+          "<h4>" + steps[i].title + "</h4>" +
+          '<div class="timeline-step__time">' + (i + 1 <= state.timelineStage ? nowTime() : "--:--:--") + "</div>" +
+          '<div class="timeline-step__desc">' + steps[i].desc + "</div>" +
+          "</div>" +
+          "</div>";
+      }
+      target.innerHTML = html;
+    }
+
+    function renderDecision(decision) {
+      el("clinical-score").textContent = decision.clinicalScore;
+      el("financial-score").textContent = decision.financialScore;
+
+      var cHtml = "";
+      for (var i = 0; i < decision.clinicalCriteria.length; i++) {
+        cHtml += "<li>" + decision.clinicalCriteria[i] + "</li>";
+      }
+      el("clinical-criteria").innerHTML = cHtml;
+
+      var fHtml = "";
+      for (var j = 0; j < decision.financialCriteria.length; j++) {
+        fHtml += "<li>" + decision.financialCriteria[j] + "</li>";
+      }
+      el("financial-criteria").innerHTML = fHtml;
+
+      el("decision-result").textContent = decision.decisionText;
+
+      var badge = el("decision-badge");
+      badge.className = "status-badge";
+
+      if (decision.route === "hospitalizacion") {
+        badge.className += " status-badge--warning";
+        badge.textContent = "Escalamiento hospitalario";
+      } else if (decision.route === "observacion") {
+        badge.className += " status-badge--pending";
+        badge.textContent = "Observación";
+      } else {
+        badge.className += " status-badge--success";
+        badge.textContent = "Ambulatorio";
+      }
+    }
+
+    function renderReferral(decision, data) {
+      var badgeText = "No requerida";
+      var badgeClass = "status-badge status-badge--neutral";
+      var reason = "La referencia hospitalaria no es requerida en este momento.";
+      var clinical = "<li>No se documenta necesidad inmediata de internamiento</li>";
+      var operational = "<li>No se activa traslado hospitalario</li>";
+      var specialty = "N/A";
+      var complexity = "Baja";
+      var hospital = "No aplica";
+      var authorization = "N/A";
+      var transfer = "N/A";
+      var financials = "N/A";
+      var recommendation = "Continuar resolución ambulatoria y documentar cierre.";
+
+      if (decision.route === "observacion") {
+        badgeText = "Evaluación en curso";
+        badgeClass = "status-badge status-badge--pending";
+        reason = "El caso permanece en observación con potencial de escalamiento.";
+        clinical = "<li>Persisten criterios de vigilancia clínica</li><li>Se recomienda reevaluación seriada</li>";
+        operational = "<li>Red hospitalaria en evaluación</li><li>Autorización preliminar posible</li>";
+        specialty = "Urgencias / medicina interna";
+        complexity = "Media";
+        hospital = "Red en evaluación";
+        authorization = "14 min";
+        transfer = "18 min potencial";
+        financials = "$26,000 MXN / cobertura preliminar";
+        recommendation = "Mantener observación y preparar referencia si progresa.";
+      }
+
+      if (decision.route === "hospitalizacion") {
+        badgeText = "Recomendada";
+        badgeClass = "status-badge status-badge--warning";
+        reason = "El caso se escala por severidad clínica y viabilidad operativa suficiente.";
+        clinical = "<li>Triage de alto riesgo o crítico</li><li>Signos vitales comprometidos</li><li>Necesidad de capacidad resolutiva hospitalaria</li>";
+        operational = "<li>Hospital aliado disponible</li><li>Autorización viable</li><li>Traslado dentro de SLA</li>";
+        specialty = "Medicina interna / cardiología";
+        complexity = "Media-alta";
+        hospital = "Hospital Ángeles Roma";
+        authorization = "8 min";
+        transfer = "22 min / SLA 30 min";
+        financials = data.payer === "Sin seguro" ? "$48,000 MXN / fondeo parcial" : "$48,000 MXN / 85% cobertura";
+        recommendation = "Proceder con referencia hospitalaria controlada.";
+      }
+
+      el("referral-badge").className = badgeClass;
+      el("referral-badge").textContent = badgeText;
+      el("referral-reason").textContent = reason;
+      el("referral-clinical-criteria").innerHTML = clinical;
+      el("referral-operational-criteria").innerHTML = operational;
+      el("referral-specialty").textContent = specialty;
+      el("referral-complexity").textContent = complexity;
+      el("referral-hospital").textContent = hospital;
+      el("referral-authorization").textContent = authorization;
+      el("referral-transfer").textContent = transfer;
+      el("referral-financials").textContent = financials;
+      el("referral-recommendation").textContent = recommendation;
+    }
+
+    function setRibbonStatus(route) {
+      var caseValue = "Captura inicial";
+      var financialValue = "Pendiente";
+      var clinicalValue = "Pendiente";
+      var liquidationValue = "Pendiente";
+
+      if (route === "ambulatorio") {
+        caseValue = "Resolución ambulatoria";
+        financialValue = "Básica";
+        clinicalValue = "Ambulatorio";
+        liquidationValue = "Lista";
+      } else if (route === "observacion") {
+        caseValue = "Evaluación activa";
+        financialValue = "En revisión";
+        clinicalValue = "Observación";
+        liquidationValue = "Pendiente";
+      } else if (route === "hospitalizacion") {
+        caseValue = "Caso escalado";
+        financialValue = "Validada";
+        clinicalValue = "Escalar a hospital";
+        liquidationValue = "Pre-cierre";
+      }
+
+      el("exec-case-value").textContent = caseValue;
+      el("exec-financial-value").textContent = financialValue;
+      el("exec-clinical-value").textContent = clinicalValue;
+      el("exec-liquidation-value").textContent = liquidationValue;
+    }
+
+    function renderDashboard(decision, data) {
+      var auth = "NO REQUIERE";
+      var hospital = "No aplica";
+      var cost = "$3,800 MXN";
+      var coverage = data.payer === "Sin seguro" ? "0%" : "74%";
+      var transfer = "N/A";
+
+      if (decision.route === "observacion") {
+        auth = "PRE-AUTH-22918";
+        hospital = "Red en evaluación";
+        cost = "$26,000 MXN";
+        coverage = data.payer === "Sin seguro" ? "31%" : "81%";
+        transfer = "18 min potencial";
+      }
+
+      if (decision.route === "hospitalizacion") {
+        auth = "AUTH-874221";
+        hospital = "Hospital Ángeles Roma";
+        cost = "$48,000 MXN";
+        coverage = data.payer === "Sin seguro" ? "17%" : "85%";
+        transfer = "22 min";
+      }
+
+      el("case-id-header").textContent = state.caseId;
+      el("case-id-kpi").textContent = state.caseId;
+      el("authorization-id").textContent = auth;
+      el("destination-hospital").textContent = hospital;
+      el("estimated-cost").textContent = cost;
+      el("estimated-coverage").textContent = coverage;
+      el("estimated-transfer").textContent = transfer;
+    }
+
+    function renderAll(logText) {
+      var data = getFormData();
+      var decision = computeDecision(data);
+
+      if (decision.route === "hospitalizacion") {
+        state.timelineStage = 4;
+      } else if (decision.route === "observacion") {
+        state.timelineStage = 3;
+      } else {
+        state.timelineStage = 5;
+      }
+
+      renderSummary(data, decision);
+      renderTimeline();
+      renderDecision(decision);
+      renderReferral(decision, data);
+      renderDashboard(decision, data);
+      setRibbonStatus(decision.route);
+
+      if (logText) logMessage(logText);
+    }
+
+    function updateDecision() {
+      stopAutoMode();
+      state.mode = "interactive";
+      setModeButtons();
+      renderAll("Motor de decisión actualizado.");
+    }
+
+    function setInteractiveMode() {
+      stopAutoMode();
+      state.mode = "interactive";
+      setModeButtons();
+      renderAll("Modo interactivo activado.");
+    }
+
+    function stopAutoMode() {
+      if (state.autoTimer) {
+        clearInterval(state.autoTimer);
+        state.autoTimer = null;
+      }
+    }
+
+    function startAutoMode() {
+      stopAutoMode();
+      state.mode = "auto";
+      state.autoStep = 0;
+      setModeButtons();
+
+      renderAll("Modo automático: caso cargado.");
+
+      state.autoTimer = setInterval(function () {
+        state.autoStep++;
+
+        if (state.autoStep === 1) {
+          el("clinical-route").value = "observacion";
+          renderAll("Modo automático: el caso pasa a observación.");
+          return;
+        }
+
+        if (state.autoStep === 2) {
+          el("clinical-route").value = "hospitalizacion";
+          renderAll("Modo automático: se recomienda referencia hospitalaria.");
+          return;
+        }
+
+        if (state.autoStep === 3) {
+          state.timelineStage = 5;
+          renderTimeline();
+          logMessage("Modo automático: caso preparado para cierre y liquidación.");
+          return;
+        }
+
+        stopAutoMode();
+        state.mode = "interactive";
+        setModeButtons();
+        logMessage("Modo automático finalizado.");
+      }, 2200);
+    }
+
+    function resetDemo() {
+      stopAutoMode();
+      state.mode = "interactive";
+      state.autoStep = 0;
+      state.timelineStage = 1;
+      state.logs = [];
+
+      el("patient-name").value = "María Fernanda López";
+      el("patient-age").value = "54";
+      el("patient-sex").value = "Femenino";
+      el("payer").value = "Mapfre";
+      el("complaint").value = "Dolor torácico opresivo";
+      el("triage").value = "Amarillo";
+      el("heart-rate").value = "112";
+      el("systolic-bp").value = "92";
+      el("spo2").value = "89";
+      el("studies").value = "ECG + Laboratorio + RX";
+      el("diagnosis").value = "Síndrome coronario agudo / evento cardiopulmonar a descartar";
+      el("clinical-route").value = "automatico";
+
+      setModeButtons();
+      renderAll();
+      logMessage("Demo reiniciado.");
+    }
+
+    window.updateDecision = updateDecision;
+    window.setInteractiveMode = setInteractiveMode;
+    window.startAutoMode = startAutoMode;
+    window.resetDemo = resetDemo;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      el("case-clock").textContent = nowTime();
+      setInterval(function () {
+        el("case-clock").textContent = nowTime();
+      }, 1000);
+
+      setModeButtons();
+      resetDemo();
+      logMessage("Demo operativo con JS embebido.");
+    });
+  </script>
 </body>
 </html>
