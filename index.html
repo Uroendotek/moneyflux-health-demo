@@ -21,15 +21,108 @@
 
       <div class="title-block">
         <h1>MoneyFlux Health Platform</h1>
-        <p>Infraestructura · Diagnóstico · Liquidación</p>
+        <p>Infraestructura · Diagnóstico · Validación · Liquidación</p>
       </div>
     </header>
+
+    <section class="orchestration-strip" id="orchestrationStrip"></section>
 
     <main class="desktop-layout">
       <section class="panel left-panel">
         <div class="section-head">
-          <h2>Caso clínico</h2>
-          <button id="startBtn">Iniciar demo</button>
+          <h2>Captura médica</h2>
+          <div class="head-actions">
+            <button id="modeBtn" class="secondary-btn">Modo interactivo</button>
+            <button id="startBtn">Iniciar demo</button>
+          </div>
+        </div>
+
+        <div class="capture-card">
+          <div class="capture-grid">
+            <div class="field">
+              <label for="patientName">Paciente</label>
+              <input id="patientName" type="text" placeholder="Nombre del paciente">
+            </div>
+
+            <div class="field">
+              <label for="patientAge">Edad</label>
+              <input id="patientAge" type="number" min="0" max="120" placeholder="Edad">
+            </div>
+
+            <div class="field">
+              <label for="patientSex">Sexo</label>
+              <select id="patientSex">
+                <option value="Femenino">Femenino</option>
+                <option value="Masculino">Masculino</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="patientInsurance">Aseguradora</label>
+              <input id="patientInsurance" type="text" placeholder="Aseguradora / póliza">
+            </div>
+
+            <div class="field full">
+              <label for="patientComplaint">Motivo de consulta</label>
+              <input id="patientComplaint" type="text" placeholder="Motivo de consulta">
+            </div>
+
+            <div class="field">
+              <label for="triageLevel">Nivel de triage</label>
+              <select id="triageLevel">
+                <option value="Alto">Alto</option>
+                <option value="Medio">Medio</option>
+                <option value="Bajo">Bajo</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="vitalsInput">Signos vitales</label>
+              <input id="vitalsInput" type="text" placeholder="TA, FC, SatO2, etc.">
+            </div>
+
+            <div class="field full">
+              <label>Estudios realizados</label>
+              <div class="study-selector">
+                <label class="check-chip">
+                  <input type="checkbox" value="ECG" checked>
+                  <span>ECG</span>
+                </label>
+                <label class="check-chip">
+                  <input type="checkbox" value="Laboratorio" checked>
+                  <span>Laboratorio</span>
+                </label>
+                <label class="check-chip">
+                  <input type="checkbox" value="Radiografía" checked>
+                  <span>Radiografía</span>
+                </label>
+                <label class="check-chip">
+                  <input type="checkbox" value="Ultrasonido">
+                  <span>Ultrasonido</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label for="diagnosisInput">Diagnóstico preliminar</label>
+              <textarea id="diagnosisInput" rows="3" placeholder="Diagnóstico preliminar"></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Admisión / ruta clínica</label>
+              <div class="admission-selector" id="admissionSelector">
+                <button class="admission-btn" data-route="ambulatorio" type="button">Ambulatorio</button>
+                <button class="admission-btn" data-route="observacion" type="button">Observación</button>
+                <button class="admission-btn active" data-route="hospitalizacion" type="button">Hospitalización</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="capture-actions">
+            <button id="applyBtn" class="secondary-btn">Actualizar caso</button>
+            <button id="advanceBtn">Avanzar paso</button>
+            <button id="resetBtn" class="ghost-btn">Reiniciar</button>
+          </div>
         </div>
 
         <div class="patient-card" id="patientCard"></div>
@@ -43,7 +136,10 @@
       </section>
 
       <section class="panel center-panel">
-        <h2>Flujo del paciente</h2>
+        <div class="panel-title-row">
+          <h2>Flujo del paciente</h2>
+          <span class="mode-badge" id="modeBadge">Demo automática</span>
+        </div>
         <div id="flowBoard" class="flow-board"></div>
       </section>
 
