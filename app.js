@@ -1,95 +1,21 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const els = {
-    patientName: document.getElementById("patient-name"),
-    patientAge: document.getElementById("patient-age"),
-    patientSex: document.getElementById("patient-sex"),
-    payer: document.getElementById("payer"),
-    complaint: document.getElementById("complaint"),
-    triage: document.getElementById("triage"),
-    heartRate: document.getElementById("heart-rate"),
-    systolicBp: document.getElementById("systolic-bp"),
-    spo2: document.getElementById("spo2"),
-    studies: document.getElementById("studies"),
-    diagnosis: document.getElementById("diagnosis"),
-    clinicalRoute: document.getElementById("clinical-route"),
+const DEMO = {
+  state: {
+    caseId: "MFH-2026-001",
+    mode: "interactive",
+    autoTimer: null,
+    autoIndex: 0,
+    timelineStage: 1,
+    activity: [],
+    authorizationId: "PENDIENTE",
+    destinationHospital: "Por definir",
+    estimatedCost: "$0 MXN",
+    estimatedCoverage: "0%",
+    estimatedTransfer: "N/A"
+  },
 
-    autoBtn: document.getElementById("auto-mode-btn"),
-    interactiveBtn: document.getElementById("interactive-mode-btn"),
-    resetBtn: document.getElementById("reset-demo-btn"),
-    updateBtn: document.getElementById("update-engine-btn"),
+  els: {},
 
-    caseClock: document.getElementById("case-clock"),
-    timeline: document.getElementById("timeline"),
-    clinicalSummary: document.getElementById("clinical-summary"),
-
-    clinicalScore: document.getElementById("clinical-score"),
-    financialScore: document.getElementById("financial-score"),
-    clinicalCriteria: document.getElementById("clinical-criteria"),
-    financialCriteria: document.getElementById("financial-criteria"),
-    decisionResult: document.getElementById("decision-result"),
-    decisionBadge: document.getElementById("decision-badge"),
-
-    referralBadge: document.getElementById("referral-badge"),
-    referralReason: document.getElementById("referral-reason"),
-    referralClinicalCriteria: document.getElementById("referral-clinical-criteria"),
-    referralOperationalCriteria: document.getElementById("referral-operational-criteria"),
-    referralSpecialty: document.getElementById("referral-specialty"),
-    referralComplexity: document.getElementById("referral-complexity"),
-    referralHospital: document.getElementById("referral-hospital"),
-    referralAuthorization: document.getElementById("referral-authorization"),
-    referralTransfer: document.getElementById("referral-transfer"),
-    referralFinancials: document.getElementById("referral-financials"),
-    referralRecommendation: document.getElementById("referral-recommendation"),
-
-    activityLog: document.getElementById("activity-log"),
-
-    caseIdHeader: document.getElementById("case-id-header"),
-    caseIdKpi: document.getElementById("case-id-kpi"),
-    authorizationId: document.getElementById("authorization-id"),
-    destinationHospital: document.getElementById("destination-hospital"),
-    estimatedCost: document.getElementById("estimated-cost"),
-    estimatedCoverage: document.getElementById("estimated-coverage"),
-    estimatedTransfer: document.getElementById("estimated-transfer"),
-
-    execCase: document.getElementById("exec-case"),
-    execFinancial: document.getElementById("exec-financial"),
-    execClinical: document.getElementById("exec-clinical"),
-    execLiquidation: document.getElementById("exec-liquidation"),
-    execCaseValue: document.getElementById("exec-case-value"),
-    execFinancialValue: document.getElementById("exec-financial-value"),
-    execClinicalValue: document.getElementById("exec-clinical-value"),
-    execLiquidationValue: document.getElementById("exec-liquidation-value")
-  };
-
-  const timelineTemplate = [
-    {
-      key: "ingreso",
-      title: "Ingreso y registro",
-      description: "Captura del paciente, motivo de consulta, triage y datos de cobertura."
-    },
-    {
-      key: "financiera",
-      title: "Validación financiera",
-      description: "Evaluación de elegibilidad, autorización preliminar y red hospitalaria."
-    },
-    {
-      key: "motor",
-      title: "Motor de decisión clínica-financiera",
-      description: "Activación de criterios clínicos y operativos para definir la ruta."
-    },
-    {
-      key: "coordinacion",
-      title: "Coordinación del siguiente nivel",
-      description: "Definición ambulatoria, observación o referencia hospitalaria con trazabilidad."
-    },
-    {
-      key: "liquidacion",
-      title: "Cierre y liquidación",
-      description: "Consolidación del caso, costos estimados y estatus final."
-    }
-  ];
-
-  const initialForm = {
+  initialForm: {
     patientName: "María Fernanda López",
     patientAge: 54,
     patientSex: "Femenino",
@@ -102,611 +28,632 @@ document.addEventListener("DOMContentLoaded", () => {
     studies: "ECG + Laboratorio + RX",
     diagnosis: "Síndrome coronario agudo / evento cardiopulmonar a descartar",
     clinicalRoute: "automatico"
+  },
+
+  timelineTemplate: [
+    {
+      title: "Ingreso y registro",
+      description: "Captura del paciente, motivo de consulta, triage y datos de cobertura."
+    },
+    {
+      title: "Validación financiera",
+      description: "Evaluación de elegibilidad, autorización preliminar y red hospitalaria."
+    },
+    {
+      title: "Motor de decisión clínica-financiera",
+      description: "Activación de criterios clínicos y operativos para definir la ruta."
+    },
+    {
+      title: "Coordinación del siguiente nivel",
+      description: "Definición ambulatoria, observación o referencia hospitalaria con trazabilidad."
+    },
+    {
+      title: "Cierre y liquidación",
+      description: "Consolidación del caso, costos estimados y estatus final."
+    }
+  ]
+};
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function initDemo() {
+  DEMO.els = {
+    patientName: $("patient-name"),
+    patientAge: $("patient-age"),
+    patientSex: $("patient-sex"),
+    payer: $("payer"),
+    complaint: $("complaint"),
+    triage: $("triage"),
+    heartRate: $("heart-rate"),
+    systolicBp: $("systolic-bp"),
+    spo2: $("spo2"),
+    studies: $("studies"),
+    diagnosis: $("diagnosis"),
+    clinicalRoute: $("clinical-route"),
+
+    autoBtn: $("auto-mode-btn"),
+    interactiveBtn: $("interactive-mode-btn"),
+
+    caseClock: $("case-clock"),
+    timeline: $("timeline"),
+    clinicalSummary: $("clinical-summary"),
+
+    clinicalScore: $("clinical-score"),
+    financialScore: $("financial-score"),
+    clinicalCriteria: $("clinical-criteria"),
+    financialCriteria: $("financial-criteria"),
+    decisionResult: $("decision-result"),
+    decisionBadge: $("decision-badge"),
+
+    referralBadge: $("referral-badge"),
+    referralReason: $("referral-reason"),
+    referralClinicalCriteria: $("referral-clinical-criteria"),
+    referralOperationalCriteria: $("referral-operational-criteria"),
+    referralSpecialty: $("referral-specialty"),
+    referralComplexity: $("referral-complexity"),
+    referralHospital: $("referral-hospital"),
+    referralAuthorization: $("referral-authorization"),
+    referralTransfer: $("referral-transfer"),
+    referralFinancials: $("referral-financials"),
+    referralRecommendation: $("referral-recommendation"),
+
+    activityLog: $("activity-log"),
+
+    caseIdHeader: $("case-id-header"),
+    caseIdKpi: $("case-id-kpi"),
+    authorizationId: $("authorization-id"),
+    destinationHospital: $("destination-hospital"),
+    estimatedCost: $("estimated-cost"),
+    estimatedCoverage: $("estimated-coverage"),
+    estimatedTransfer: $("estimated-transfer"),
+
+    execCase: $("exec-case"),
+    execFinancial: $("exec-financial"),
+    execClinical: $("exec-clinical"),
+    execLiquidation: $("exec-liquidation"),
+    execCaseValue: $("exec-case-value"),
+    execFinancialValue: $("exec-financial-value"),
+    execClinicalValue: $("exec-clinical-value"),
+    execLiquidationValue: $("exec-liquidation-value")
   };
 
-  const state = {
-    caseId: "MFH-2026-001",
-    mode: "interactive",
-    autoTimer: null,
-    autoStep: 0,
-    startedAt: new Date(),
-    timelineStage: 1,
-    authorizationId: "PENDIENTE",
-    destinationHospital: "Por definir",
-    estimatedCost: "$0 MXN",
-    estimatedCoverage: "0%",
-    estimatedTransfer: "N/A",
-    financialStatus: "Pendiente",
-    clinicalStatus: "Pendiente",
-    liquidationStatus: "Pendiente",
-    caseStatus: "Captura inicial",
-    activity: []
-  };
-
-  function setFormValues(values) {
-    els.patientName.value = values.patientName;
-    els.patientAge.value = values.patientAge;
-    els.patientSex.value = values.patientSex;
-    els.payer.value = values.payer;
-    els.complaint.value = values.complaint;
-    els.triage.value = values.triage;
-    els.heartRate.value = values.heartRate;
-    els.systolicBp.value = values.systolicBp;
-    els.spo2.value = values.spo2;
-    els.studies.value = values.studies;
-    els.diagnosis.value = values.diagnosis;
-    els.clinicalRoute.value = values.clinicalRoute;
-  }
-
-  function getFormData() {
-    return {
-      patientName: els.patientName.value.trim(),
-      patientAge: Number(els.patientAge.value || 0),
-      patientSex: els.patientSex.value,
-      payer: els.payer.value,
-      complaint: els.complaint.value.trim(),
-      triage: els.triage.value,
-      heartRate: Number(els.heartRate.value || 0),
-      systolicBp: Number(els.systolicBp.value || 0),
-      spo2: Number(els.spo2.value || 0),
-      studies: els.studies.value,
-      diagnosis: els.diagnosis.value.trim(),
-      clinicalRoute: els.clinicalRoute.value
-    };
-  }
-
-  function timeStamp() {
-    const now = new Date();
-    return now.toLocaleTimeString("es-MX", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-  }
-
-  function addLog(message) {
-    state.activity.unshift({
-      time: timeStamp(),
-      text: message
-    });
-
-    state.activity = state.activity.slice(0, 14);
-    renderActivityLog();
-  }
-
-  function renderActivityLog() {
-    els.activityLog.innerHTML = state.activity
-      .map(
-        (item) => `
-          <div class="activity-log__item">
-            <span class="activity-log__time">${item.time}</span>
-            <div class="activity-log__text">${item.text}</div>
-          </div>
-        `
-      )
-      .join("");
-  }
-
-  function formatCurrency(value) {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-      maximumFractionDigits: 0
-    }).format(value);
-  }
-
-  function computeDecision(data) {
-    const clinicalCriteria = [];
-    const financialCriteria = [];
-    let clinicalScore = 0;
-    let financialScore = 0;
-
-    if (data.triage === "Rojo") {
-      clinicalScore += 45;
-      clinicalCriteria.push("Triage crítico");
-    } else if (data.triage === "Amarillo") {
-      clinicalScore += 30;
-      clinicalCriteria.push("Triage de alto riesgo");
-    } else {
-      clinicalScore += 12;
-      clinicalCriteria.push("Triage moderado");
-    }
-
-    if (data.heartRate > 110) {
-      clinicalScore += 18;
-      clinicalCriteria.push("Taquicardia relevante");
-    }
-
-    if (data.systolicBp > 0 && data.systolicBp < 95) {
-      clinicalScore += 20;
-      clinicalCriteria.push("TA sistólica baja");
-    }
-
-    if (data.spo2 > 0 && data.spo2 < 90) {
-      clinicalScore += 20;
-      clinicalCriteria.push("Saturación de oxígeno comprometida");
-    } else if (data.spo2 >= 90 && data.spo2 <= 93) {
-      clinicalScore += 10;
-      clinicalCriteria.push("Saturación limítrofe");
-    }
-
-    if (/tor[aá]cico|coronario|cardio|evento/i.test(data.complaint + " " + data.diagnosis)) {
-      clinicalScore += 18;
-      clinicalCriteria.push("Posible evento cardiopulmonar / coronario");
-    }
-
-    if (/ECG|Laboratorio|RX/i.test(data.studies)) {
-      clinicalScore += 6;
-      clinicalCriteria.push("Estudios diagnósticos ya activados");
-    }
-
-    if (data.payer !== "Sin seguro") {
-      financialScore += 40;
-      financialCriteria.push("Cobertura inicial identificada");
-    } else {
-      financialScore += 10;
-      financialCriteria.push("Caso con presión financiera alta");
-    }
-
-    if (clinicalScore >= 50) {
-      financialScore += 18;
-      financialCriteria.push("Se justifica activación de red hospitalaria");
-    }
-
-    if (data.payer === "Mapfre" || data.payer === "AXA" || data.payer === "GNP") {
-      financialScore += 22;
-      financialCriteria.push("Aseguradora con canal resolutivo activo");
-    }
-
-    if (data.clinicalRoute === "hospitalizacion") {
-      clinicalScore += 10;
-      financialScore += 8;
-      clinicalCriteria.push("Ruta manual forzada a hospitalización");
-      financialCriteria.push("Preparación operativa para referencia");
-    } else if (data.clinicalRoute === "observacion") {
-      clinicalScore += 5;
-      financialScore += 6;
-      clinicalCriteria.push("Ruta manual forzada a observación");
-      financialCriteria.push("Viabilidad operativa para observación");
-    } else if (data.clinicalRoute === "ambulatorio") {
-      financialCriteria.push("Resolución de menor costo potencial");
-    }
-
-    clinicalScore = Math.min(100, clinicalScore);
-    financialScore = Math.min(100, financialScore);
-
-    let route;
-    if (data.clinicalRoute !== "automatico") {
-      route = data.clinicalRoute;
-    } else if (clinicalScore >= 68 && financialScore >= 55) {
-      route = "hospitalizacion";
-    } else if (clinicalScore >= 45) {
-      route = "observacion";
-    } else {
-      route = "ambulatorio";
-    }
-
-    let decisionText = "";
-    if (route === "hospitalizacion") {
-      decisionText = "Se recomienda referencia hospitalaria por severidad clínica relevante, necesidad de monitoreo/capacidad resolutiva y viabilidad financiera-operativa suficiente.";
-    } else if (route === "observacion") {
-      decisionText = "Se recomienda observación clínica con escalamiento hospitalario condicionado a evolución, estudios y autorización complementaria.";
-    } else {
-      decisionText = "Se recomienda manejo ambulatorio controlado, con seguimiento y cierre operativo de bajo costo.";
-    }
-
-    return {
-      route,
-      clinicalScore,
-      financialScore,
-      clinicalCriteria,
-      financialCriteria,
-      decisionText
-    };
-  }
-
-  function computeReferral(data, decision) {
-    if (decision.route === "ambulatorio") {
-      return {
-        status: "neutral",
-        badgeText: "No requerida",
-        reason: "La referencia hospitalaria no es requerida en este momento. El caso puede resolverse fuera del hospital con seguimiento clínico y cierre operativo.",
-        clinicalCriteria: [
-          "No se documenta necesidad inmediata de internamiento",
-          "La ruta de resolución se mantiene ambulatoria"
-        ],
-        operationalCriteria: [
-          "Se evita costo hospitalario innecesario",
-          "No se activa traslado ni cama hospitalaria"
-        ],
-        specialty: "N/A",
-        complexity: "Baja",
-        hospital: "No aplica",
-        authorization: "N/A",
-        transfer: "N/A",
-        financials: "N/A",
-        recommendation: "Continuar resolución ambulatoria y documentar cierre del caso."
-      };
-    }
-
-    const severe = decision.route === "hospitalizacion";
-    const hospital = severe ? "Hospital Ángeles Roma" : "Hospital Star Médica Centro";
-    const authorizationMins = severe ? 8 : 14;
-    const transferMins = severe ? 22 : 18;
-    const totalCost = severe ? 48000 : 26000;
-    const coveredAmount = data.payer === "Sin seguro" ? 8000 : severe ? 41000 : 21000;
-    const gap = Math.max(0, totalCost - coveredAmount);
-    const coveragePct = Math.round((coveredAmount / totalCost) * 100);
-
-    const clinicalCriteria = [...decision.clinicalCriteria];
-    const operationalCriteria = [
-      "Hospital aliado con capacidad disponible",
-      "Traslado dentro de SLA operativo",
-      "Canal de autorización y referencia activo"
-    ];
-
-    if (data.payer !== "Sin seguro") {
-      operationalCriteria.push("Cobertura preliminar positiva");
-    } else {
-      operationalCriteria.push("Se requiere fondeo o acuerdo complementario");
-    }
-
-    return {
-      status: severe ? "warning" : "neutral",
-      badgeText: severe ? "Recomendada" : "Evaluación en curso",
-      reason: severe
-        ? "El caso se escala por severidad clínica, necesidad de capacidad hospitalaria y viabilidad operativa suficiente para referencia controlada."
-        : "El caso permanece en observación con posibilidad de referencia si persisten hallazgos de riesgo o si la evolución clínica se deteriora.",
-      clinicalCriteria,
-      operationalCriteria,
-      specialty: severe ? "Medicina interna / cardiología" : "Urgencias / medicina interna",
-      complexity: severe ? "Media-alta" : "Media",
-      hospital,
-      authorization: `${authorizationMins} min`,
-      transfer: `${transferMins} min / SLA total ${authorizationMins + transferMins} min`,
-      financials: `${formatCurrency(totalCost)} / ${coveragePct}% cobertura`,
-      recommendation: severe
-        ? `Proceder con referencia hospitalaria controlada. Brecha estimada: ${formatCurrency(gap)}.`
-        : "Mantener observación, repetir valoración clínica y preparar red de referencia si el caso progresa."
-    };
-  }
-
-  function updateExecutiveRibbon(route) {
-    state.caseStatus = route === "hospitalizacion"
-      ? "Caso escalado"
-      : route === "observacion"
-      ? "Evaluación activa"
-      : "Resolución ambulatoria";
-
-    state.financialStatus = route === "hospitalizacion"
-      ? "Validada"
-      : route === "observacion"
-      ? "En revisión"
-      : "Básica";
-
-    state.clinicalStatus = route === "hospitalizacion"
-      ? "Escalar a hospital"
-      : route === "observacion"
-      ? "Observación"
-      : "Ambulatorio";
-
-    state.liquidationStatus = route === "hospitalizacion"
-      ? "Pre-cierre"
-      : route === "observacion"
-      ? "Pendiente"
-      : "Lista";
-
-    els.execCaseValue.textContent = state.caseStatus;
-    els.execFinancialValue.textContent = state.financialStatus;
-    els.execClinicalValue.textContent = state.clinicalStatus;
-    els.execLiquidationValue.textContent = state.liquidationStatus;
-
-    setRibbonClass(els.execCase, "success");
-    setRibbonClass(els.execFinancial, route === "hospitalizacion" ? "success" : route === "observacion" ? "warning" : "neutral");
-    setRibbonClass(els.execClinical, route === "hospitalizacion" ? "warning" : route === "observacion" ? "warning" : "success");
-    setRibbonClass(els.execLiquidation, route === "ambulatorio" ? "success" : "neutral");
-  }
-
-  function setRibbonClass(element, type) {
-    element.classList.remove("is-success", "is-warning", "is-neutral");
-    if (type === "success") element.classList.add("is-success");
-    if (type === "warning") element.classList.add("is-warning");
-    if (type === "neutral") element.classList.add("is-neutral");
-  }
-
-  function renderSummary(data, decision) {
-    const statusText =
-      decision.route === "hospitalizacion"
-        ? "Referencia hospitalaria recomendada"
-        : decision.route === "observacion"
-        ? "Observación activa"
-        : "Ruta ambulatoria";
-
-    els.clinicalSummary.innerHTML = `
-      <h3 class="summary-name">${escapeHtml(data.patientName)}</h3>
-      <div class="summary-status">${statusText}</div>
-      <div class="summary-list">
-        <div><strong>Edad / sexo:</strong> ${data.patientAge} / ${escapeHtml(data.patientSex)}</div>
-        <div><strong>Aseguradora:</strong> ${escapeHtml(data.payer)}</div>
-        <div><strong>Estudios:</strong> ${escapeHtml(data.studies)}</div>
-        <div><strong>Diagnóstico:</strong> ${escapeHtml(data.diagnosis)}</div>
-      </div>
-    `;
-  }
-
-  function renderTimeline() {
-    els.timeline.innerHTML = timelineTemplate
-      .map((step, index) => {
-        let statusClass = "is-pending";
-        if (index + 1 < state.timelineStage) statusClass = "is-complete";
-        if (index + 1 === state.timelineStage) statusClass = "is-active";
-
-        return `
-          <div class="timeline-step ${statusClass}">
-            <div class="timeline-step__marker"></div>
-            <div class="timeline-step__content">
-              <h4>${step.title}</h4>
-              <div class="timeline-step__time">${index + 1 < state.timelineStage ? timeStamp() : "--:--:--"}</div>
-              <div class="timeline-step__desc">${step.description}</div>
-            </div>
-          </div>
-        `;
-      })
-      .join("");
-  }
-
-  function renderDecision(decision) {
-    els.clinicalScore.textContent = decision.clinicalScore;
-    els.financialScore.textContent = decision.financialScore;
-    els.clinicalCriteria.innerHTML = decision.clinicalCriteria.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    els.financialCriteria.innerHTML = decision.financialCriteria.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    els.decisionResult.textContent = decision.decisionText;
-
-    els.decisionBadge.className = "status-badge";
-    if (decision.route === "hospitalizacion") {
-      els.decisionBadge.classList.add("status-badge--warning");
-      els.decisionBadge.textContent = "Escalamiento hospitalario";
-    } else if (decision.route === "observacion") {
-      els.decisionBadge.classList.add("status-badge--pending");
-      els.decisionBadge.textContent = "Observación";
-    } else {
-      els.decisionBadge.classList.add("status-badge--success");
-      els.decisionBadge.textContent = "Ambulatorio";
-    }
-  }
-
-  function renderReferral(referral) {
-    els.referralBadge.className = "status-badge";
-    if (referral.status === "warning") {
-      els.referralBadge.classList.add("status-badge--warning");
-    } else if (referral.status === "success") {
-      els.referralBadge.classList.add("status-badge--success");
-    } else {
-      els.referralBadge.classList.add("status-badge--neutral");
-    }
-
-    els.referralBadge.textContent = referral.badgeText;
-    els.referralReason.textContent = referral.reason;
-    els.referralClinicalCriteria.innerHTML = referral.clinicalCriteria.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    els.referralOperationalCriteria.innerHTML = referral.operationalCriteria.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    els.referralSpecialty.textContent = referral.specialty;
-    els.referralComplexity.textContent = referral.complexity;
-    els.referralHospital.textContent = referral.hospital;
-    els.referralAuthorization.textContent = referral.authorization;
-    els.referralTransfer.textContent = referral.transfer;
-    els.referralFinancials.textContent = referral.financials;
-    els.referralRecommendation.textContent = referral.recommendation;
-  }
-
-  function renderDashboard(decision, referral, data) {
-    const baseCost =
-      decision.route === "hospitalizacion"
-        ? 48000
-        : decision.route === "observacion"
-        ? 26000
-        : 3800;
-
-    const coveredAmount =
-      data.payer === "Sin seguro"
-        ? decision.route === "ambulatorio"
-          ? 0
-          : 8000
-        : decision.route === "hospitalizacion"
-        ? 41000
-        : decision.route === "observacion"
-        ? 21000
-        : 2800;
-
-    const coveragePct = baseCost > 0 ? Math.round((coveredAmount / baseCost) * 100) : 0;
-
-    state.authorizationId =
-      decision.route === "hospitalizacion"
-        ? "AUTH-874221"
-        : decision.route === "observacion"
-        ? "PRE-AUTH-22918"
-        : "NO REQUIERE";
-
-    state.destinationHospital =
-      decision.route === "hospitalizacion"
-        ? referral.hospital
-        : decision.route === "observacion"
-        ? "Red en evaluación"
-        : "No aplica";
-
-    state.estimatedCost = formatCurrency(baseCost);
-    state.estimatedCoverage = `${coveragePct}%`;
-    state.estimatedTransfer =
-      decision.route === "hospitalizacion"
-        ? "22 min"
-        : decision.route === "observacion"
-        ? "18 min potencial"
-        : "N/A";
-
-    els.caseIdHeader.textContent = state.caseId;
-    els.caseIdKpi.textContent = state.caseId;
-    els.authorizationId.textContent = state.authorizationId;
-    els.destinationHospital.textContent = state.destinationHospital;
-    els.estimatedCost.textContent = state.estimatedCost;
-    els.estimatedCoverage.textContent = state.estimatedCoverage;
-    els.estimatedTransfer.textContent = state.estimatedTransfer;
-  }
-
-  function updateTimelineStage(decision) {
-    state.timelineStage =
-      decision.route === "hospitalizacion"
-        ? 4
-        : decision.route === "observacion"
-        ? 3
-        : 5;
-  }
-
-  function renderAll(options = {}) {
-    const data = getFormData();
-    const decision = computeDecision(data);
-    const referral = computeReferral(data, decision);
-
-    updateTimelineStage(decision);
-    renderSummary(data, decision);
-    renderTimeline();
-    renderDecision(decision);
-    renderReferral(referral);
-    renderDashboard(decision, referral, data);
-    updateExecutiveRibbon(decision.route);
-
-    if (!options.silentLog) {
-      addLog(`Motor actualizado: ruta ${decision.route}, score clínico ${decision.clinicalScore}, score financiero-operativo ${decision.financialScore}.`);
-    }
-  }
-
-  function setMode(mode) {
-    state.mode = mode;
-    els.autoBtn.classList.toggle("btn-primary", mode === "auto");
-    els.autoBtn.classList.toggle("btn-secondary", mode !== "auto");
-    els.interactiveBtn.classList.toggle("btn-primary", mode === "interactive");
-    els.interactiveBtn.classList.toggle("btn-secondary", mode !== "interactive");
-  }
-
-  function stopAutoMode() {
-    if (state.autoTimer) {
-      clearInterval(state.autoTimer);
-      state.autoTimer = null;
-    }
-  }
-
-  function startAutoMode() {
-    stopAutoMode();
-    setMode("auto");
-    state.autoStep = 0;
-    addLog("Modo automático activado.");
-
-    const scenes = [
-      () => {
-        setFormValues({
-          patientName: "María Fernanda López",
-          patientAge: 54,
-          patientSex: "Femenino",
-          payer: "Mapfre",
-          complaint: "Dolor torácico opresivo",
-          triage: "Amarillo",
-          heartRate: 112,
-          systolicBp: 92,
-          spo2: 89,
-          studies: "ECG + Laboratorio + RX",
-          diagnosis: "Síndrome coronario agudo / evento cardiopulmonar a descartar",
-          clinicalRoute: "automatico"
-        });
-        renderAll({ silentLog: true });
-        addLog("Caso cargado en modo automático.");
-      },
-      () => {
-        els.clinicalRoute.value = "observacion";
-        renderAll({ silentLog: true });
-        addLog("El motor mueve el caso a observación y evaluación ampliada.");
-      },
-      () => {
-        els.clinicalRoute.value = "hospitalizacion";
-        renderAll({ silentLog: true });
-        addLog("Se recomienda referencia hospitalaria y se prepara autorización.");
-      },
-      () => {
-        state.timelineStage = 5;
-        state.liquidationStatus = "En preparación";
-        renderTimeline();
-        addLog("Caso listo para cierre operativo y consolidación financiera.");
-      }
-    ];
-
-    scenes[0]();
-    state.autoTimer = setInterval(() => {
-      state.autoStep += 1;
-      if (state.autoStep >= scenes.length) {
-        stopAutoMode();
-        addLog("Modo automático finalizado.");
-        return;
-      }
-      scenes[state.autoStep]();
-    }, 2500);
-  }
-
-  function resetDemo() {
-    stopAutoMode();
-    setMode("interactive");
-    state.caseId = "MFH-2026-001";
-    state.authorizationId = "PENDIENTE";
-    state.destinationHospital = "Por definir";
-    state.estimatedCost = "$0 MXN";
-    state.estimatedCoverage = "0%";
-    state.estimatedTransfer = "N/A";
-    state.financialStatus = "Pendiente";
-    state.clinicalStatus = "Pendiente";
-    state.liquidationStatus = "Pendiente";
-    state.caseStatus = "Captura inicial";
-    state.timelineStage = 1;
-    state.activity = [];
-    setFormValues(initialForm);
-    renderAll({ silentLog: true });
-    addLog("Demo reiniciado.");
-  }
-
-  function tickClock() {
-    els.caseClock.textContent = new Date().toLocaleTimeString("es-MX", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-  }
-
-  function escapeHtml(text) {
-    return String(text)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  els.updateBtn.addEventListener("click", () => {
-    stopAutoMode();
-    setMode("interactive");
-    renderAll();
-  });
-
-  els.interactiveBtn.addEventListener("click", () => {
-    stopAutoMode();
-    setMode("interactive");
-    addLog("Modo interactivo activado.");
-    renderAll({ silentLog: true });
-  });
-
-  els.autoBtn.addEventListener("click", () => {
-    startAutoMode();
-  });
-
-  els.resetBtn.addEventListener("click", () => {
-    resetDemo();
-  });
-
+  setFormValues(DEMO.initialForm);
   tickClock();
   setInterval(tickClock, 1000);
   resetDemo();
-});
+}
+
+function setFormValues(values) {
+  DEMO.els.patientName.value = values.patientName;
+  DEMO.els.patientAge.value = values.patientAge;
+  DEMO.els.patientSex.value = values.patientSex;
+  DEMO.els.payer.value = values.payer;
+  DEMO.els.complaint.value = values.complaint;
+  DEMO.els.triage.value = values.triage;
+  DEMO.els.heartRate.value = values.heartRate;
+  DEMO.els.systolicBp.value = values.systolicBp;
+  DEMO.els.spo2.value = values.spo2;
+  DEMO.els.studies.value = values.studies;
+  DEMO.els.diagnosis.value = values.diagnosis;
+  DEMO.els.clinicalRoute.value = values.clinicalRoute;
+}
+
+function getFormData() {
+  return {
+    patientName: DEMO.els.patientName.value.trim(),
+    patientAge: Number(DEMO.els.patientAge.value || 0),
+    patientSex: DEMO.els.patientSex.value,
+    payer: DEMO.els.payer.value,
+    complaint: DEMO.els.complaint.value.trim(),
+    triage: DEMO.els.triage.value,
+    heartRate: Number(DEMO.els.heartRate.value || 0),
+    systolicBp: Number(DEMO.els.systolicBp.value || 0),
+    spo2: Number(DEMO.els.spo2.value || 0),
+    studies: DEMO.els.studies.value,
+    diagnosis: DEMO.els.diagnosis.value.trim(),
+    clinicalRoute: DEMO.els.clinicalRoute.value
+  };
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function timeStamp() {
+  return new Date().toLocaleTimeString("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+function tickClock() {
+  DEMO.els.caseClock.textContent = timeStamp();
+}
+
+function addLog(text) {
+  DEMO.state.activity.unshift({ time: timeStamp(), text });
+  DEMO.state.activity = DEMO.state.activity.slice(0, 14);
+  DEMO.els.activityLog.innerHTML = DEMO.state.activity.map(item => `
+    <div class="activity-log__item">
+      <span class="activity-log__time">${item.time}</span>
+      <div class="activity-log__text">${escapeHtml(item.text)}</div>
+    </div>
+  `).join("");
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+function computeDecision(data) {
+  let clinicalScore = 0;
+  let financialScore = 0;
+  const clinicalCriteria = [];
+  const financialCriteria = [];
+
+  if (data.triage === "Rojo") {
+    clinicalScore += 45;
+    clinicalCriteria.push("Triage crítico");
+  } else if (data.triage === "Amarillo") {
+    clinicalScore += 30;
+    clinicalCriteria.push("Triage de alto riesgo");
+  } else {
+    clinicalScore += 12;
+    clinicalCriteria.push("Triage moderado");
+  }
+
+  if (data.heartRate > 110) {
+    clinicalScore += 18;
+    clinicalCriteria.push("Taquicardia relevante");
+  }
+
+  if (data.systolicBp > 0 && data.systolicBp < 95) {
+    clinicalScore += 20;
+    clinicalCriteria.push("TA sistólica baja");
+  }
+
+  if (data.spo2 > 0 && data.spo2 < 90) {
+    clinicalScore += 20;
+    clinicalCriteria.push("Saturación comprometida");
+  } else if (data.spo2 <= 93) {
+    clinicalScore += 10;
+    clinicalCriteria.push("Saturación limítrofe");
+  }
+
+  if (/tor[aá]cico|coronario|cardio|evento/i.test(`${data.complaint} ${data.diagnosis}`)) {
+    clinicalScore += 18;
+    clinicalCriteria.push("Posible evento cardiopulmonar");
+  }
+
+  if (/ECG|Laboratorio|RX/i.test(data.studies)) {
+    clinicalScore += 6;
+    clinicalCriteria.push("Estudios diagnósticos activados");
+  }
+
+  if (data.payer !== "Sin seguro") {
+    financialScore += 40;
+    financialCriteria.push("Cobertura inicial identificada");
+    financialCriteria.push("Canal de pagador disponible");
+  } else {
+    financialScore += 10;
+    financialCriteria.push("Caso sin seguro");
+  }
+
+  if (clinicalScore >= 50) {
+    financialScore += 18;
+    financialCriteria.push("Se justifica activación de red hospitalaria");
+  }
+
+  if (data.clinicalRoute === "hospitalizacion") {
+    clinicalScore += 10;
+    financialScore += 10;
+    clinicalCriteria.push("Ruta manual a hospitalización");
+    financialCriteria.push("Preparación operativa para referencia");
+  } else if (data.clinicalRoute === "observacion") {
+    clinicalScore += 5;
+    financialScore += 6;
+    clinicalCriteria.push("Ruta manual a observación");
+  }
+
+  clinicalScore = Math.min(100, clinicalScore);
+  financialScore = Math.min(100, financialScore);
+
+  let route = "ambulatorio";
+
+  if (data.clinicalRoute !== "automatico") {
+    route = data.clinicalRoute;
+  } else if (clinicalScore >= 68 && financialScore >= 55) {
+    route = "hospitalizacion";
+  } else if (clinicalScore >= 45) {
+    route = "observacion";
+  }
+
+  let decisionText = "";
+  if (route === "hospitalizacion") {
+    decisionText = "Se recomienda referencia hospitalaria por severidad clínica, requerimiento de capacidad resolutiva y viabilidad financiera-operativa suficiente.";
+  } else if (route === "observacion") {
+    decisionText = "Se recomienda observación clínica con escalamiento condicionado a evolución y autorización complementaria.";
+  } else {
+    decisionText = "Se recomienda manejo ambulatorio controlado y cierre operativo de menor costo.";
+  }
+
+  return {
+    route,
+    clinicalScore,
+    financialScore,
+    clinicalCriteria,
+    financialCriteria,
+    decisionText
+  };
+}
+
+function computeReferral(data, decision) {
+  if (decision.route === "ambulatorio") {
+    return {
+      badgeClass: "status-badge--neutral",
+      badgeText: "No requerida",
+      reason: "La referencia hospitalaria no es requerida en este momento.",
+      clinicalCriteria: [
+        "No se documenta necesidad inmediata de internamiento",
+        "El caso puede cerrarse fuera del hospital"
+      ],
+      operationalCriteria: [
+        "No se activa traslado",
+        "No se consume capacidad hospitalaria"
+      ],
+      specialty: "N/A",
+      complexity: "Baja",
+      hospital: "No aplica",
+      authorization: "N/A",
+      transfer: "N/A",
+      financials: "N/A",
+      recommendation: "Continuar resolución ambulatoria y documentar cierre del caso."
+    };
+  }
+
+  const severe = decision.route === "hospitalizacion";
+  const totalCost = severe ? 48000 : 26000;
+  const covered = data.payer === "Sin seguro" ? 8000 : severe ? 41000 : 21000;
+  const coveragePct = Math.round((covered / totalCost) * 100);
+  const gap = Math.max(0, totalCost - covered);
+
+  return {
+    badgeClass: severe ? "status-badge--warning" : "status-badge--pending",
+    badgeText: severe ? "Recomendada" : "Evaluación en curso",
+    reason: severe
+      ? "El caso se escala por severidad clínica, necesidad de capacidad hospitalaria y viabilidad operativa suficiente."
+      : "El caso permanece en observación con potencial de escalamiento si persisten hallazgos de riesgo.",
+    clinicalCriteria: decision.clinicalCriteria,
+    operationalCriteria: [
+      "Hospital aliado con capacidad disponible",
+      "Traslado dentro de SLA operativo",
+      data.payer !== "Sin seguro" ? "Cobertura preliminar positiva" : "Se requiere fondeo complementario"
+    ],
+    specialty: severe ? "Medicina interna / cardiología" : "Urgencias / medicina interna",
+    complexity: severe ? "Media-alta" : "Media",
+    hospital: severe ? "Hospital Ángeles Roma" : "Hospital Star Médica Centro",
+    authorization: severe ? "8 min" : "14 min",
+    transfer: severe ? "22 min / SLA 30 min" : "18 min / SLA 32 min",
+    financials: `${formatCurrency(totalCost)} / ${coveragePct}% cobertura`,
+    recommendation: severe
+      ? `Proceder con referencia hospitalaria controlada. Brecha estimada: ${formatCurrency(gap)}.`
+      : "Mantener observación y preparar referencia si la evolución clínica progresa."
+  };
+}
+
+function renderSummary(data, decision) {
+  const statusText =
+    decision.route === "hospitalizacion"
+      ? "Referencia hospitalaria recomendada"
+      : decision.route === "observacion"
+      ? "Observación activa"
+      : "Ruta ambulatoria";
+
+  DEMO.els.clinicalSummary.innerHTML = `
+    <h3 class="summary-name">${escapeHtml(data.patientName)}</h3>
+    <div class="summary-status">${statusText}</div>
+    <div class="summary-list">
+      <div><strong>Edad / sexo:</strong> ${data.patientAge} / ${escapeHtml(data.patientSex)}</div>
+      <div><strong>Aseguradora:</strong> ${escapeHtml(data.payer)}</div>
+      <div><strong>Estudios:</strong> ${escapeHtml(data.studies)}</div>
+      <div><strong>Diagnóstico:</strong> ${escapeHtml(data.diagnosis)}</div>
+    </div>
+  `;
+}
+
+function renderTimeline() {
+  DEMO.els.timeline.innerHTML = DEMO.timelineTemplate.map((step, index) => {
+    let statusClass = "is-pending";
+    if (index + 1 < DEMO.state.timelineStage) statusClass = "is-complete";
+    if (index + 1 === DEMO.state.timelineStage) statusClass = "is-active";
+
+    return `
+      <div class="timeline-step ${statusClass}">
+        <div class="timeline-step__marker"></div>
+        <div class="timeline-step__content">
+          <h4>${step.title}</h4>
+          <div class="timeline-step__time">${index + 1 <= DEMO.state.timelineStage ? timeStamp() : "--:--:--"}</div>
+          <div class="timeline-step__desc">${step.description}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderDecision(decision) {
+  DEMO.els.clinicalScore.textContent = decision.clinicalScore;
+  DEMO.els.financialScore.textContent = decision.financialScore;
+  DEMO.els.clinicalCriteria.innerHTML = decision.clinicalCriteria.map(x => `<li>${escapeHtml(x)}</li>`).join("");
+  DEMO.els.financialCriteria.innerHTML = decision.financialCriteria.map(x => `<li>${escapeHtml(x)}</li>`).join("");
+  DEMO.els.decisionResult.textContent = decision.decisionText;
+
+  DEMO.els.decisionBadge.className = "status-badge";
+  if (decision.route === "hospitalizacion") {
+    DEMO.els.decisionBadge.classList.add("status-badge--warning");
+    DEMO.els.decisionBadge.textContent = "Escalamiento hospitalario";
+  } else if (decision.route === "observacion") {
+    DEMO.els.decisionBadge.classList.add("status-badge--pending");
+    DEMO.els.decisionBadge.textContent = "Observación";
+  } else {
+    DEMO.els.decisionBadge.classList.add("status-badge--success");
+    DEMO.els.decisionBadge.textContent = "Ambulatorio";
+  }
+}
+
+function renderReferral(referral) {
+  DEMO.els.referralBadge.className = `status-badge ${referral.badgeClass}`;
+  DEMO.els.referralBadge.textContent = referral.badgeText;
+  DEMO.els.referralReason.textContent = referral.reason;
+  DEMO.els.referralClinicalCriteria.innerHTML = referral.clinicalCriteria.map(x => `<li>${escapeHtml(x)}</li>`).join("");
+  DEMO.els.referralOperationalCriteria.innerHTML = referral.operationalCriteria.map(x => `<li>${escapeHtml(x)}</li>`).join("");
+  DEMO.els.referralSpecialty.textContent = referral.specialty;
+  DEMO.els.referralComplexity.textContent = referral.complexity;
+  DEMO.els.referralHospital.textContent = referral.hospital;
+  DEMO.els.referralAuthorization.textContent = referral.authorization;
+  DEMO.els.referralTransfer.textContent = referral.transfer;
+  DEMO.els.referralFinancials.textContent = referral.financials;
+  DEMO.els.referralRecommendation.textContent = referral.recommendation;
+}
+
+function setRibbonClass(element, type) {
+  element.classList.remove("is-success", "is-warning", "is-neutral");
+  element.classList.add(type);
+}
+
+function renderDashboard(data, decision, referral) {
+  const baseCost =
+    decision.route === "hospitalizacion"
+      ? 48000
+      : decision.route === "observacion"
+      ? 26000
+      : 3800;
+
+  const covered =
+    data.payer === "Sin seguro"
+      ? decision.route === "ambulatorio" ? 0 : 8000
+      : decision.route === "hospitalizacion"
+      ? 41000
+      : decision.route === "observacion"
+      ? 21000
+      : 2800;
+
+  const coveragePct = baseCost > 0 ? Math.round((covered / baseCost) * 100) : 0;
+
+  DEMO.state.authorizationId =
+    decision.route === "hospitalizacion"
+      ? "AUTH-874221"
+      : decision.route === "observacion"
+      ? "PRE-AUTH-22918"
+      : "NO REQUIERE";
+
+  DEMO.state.destinationHospital =
+    decision.route === "hospitalizacion"
+      ? referral.hospital
+      : decision.route === "observacion"
+      ? "Red en evaluación"
+      : "No aplica";
+
+  DEMO.state.estimatedCost = formatCurrency(baseCost);
+  DEMO.state.estimatedCoverage = `${coveragePct}%`;
+  DEMO.state.estimatedTransfer =
+    decision.route === "hospitalizacion"
+      ? "22 min"
+      : decision.route === "observacion"
+      ? "18 min potencial"
+      : "N/A";
+
+  DEMO.els.caseIdHeader.textContent = DEMO.state.caseId;
+  DEMO.els.caseIdKpi.textContent = DEMO.state.caseId;
+  DEMO.els.authorizationId.textContent = DEMO.state.authorizationId;
+  DEMO.els.destinationHospital.textContent = DEMO.state.destinationHospital;
+  DEMO.els.estimatedCost.textContent = DEMO.state.estimatedCost;
+  DEMO.els.estimatedCoverage.textContent = DEMO.state.estimatedCoverage;
+  DEMO.els.estimatedTransfer.textContent = DEMO.state.estimatedTransfer;
+
+  DEMO.els.execCaseValue.textContent =
+    decision.route === "hospitalizacion"
+      ? "Caso escalado"
+      : decision.route === "observacion"
+      ? "Evaluación activa"
+      : "Resolución ambulatoria";
+
+  DEMO.els.execFinancialValue.textContent =
+    decision.route === "hospitalizacion"
+      ? "Validada"
+      : decision.route === "observacion"
+      ? "En revisión"
+      : "Básica";
+
+  DEMO.els.execClinicalValue.textContent =
+    decision.route === "hospitalizacion"
+      ? "Escalar a hospital"
+      : decision.route === "observacion"
+      ? "Observación"
+      : "Ambulatorio";
+
+  DEMO.els.execLiquidationValue.textContent =
+    decision.route === "ambulatorio"
+      ? "Lista"
+      : decision.route === "hospitalizacion"
+      ? "Pre-cierre"
+      : "Pendiente";
+
+  setRibbonClass(DEMO.els.execCase, "is-success");
+  setRibbonClass(
+    DEMO.els.execFinancial,
+    decision.route === "hospitalizacion" ? "is-success" : decision.route === "observacion" ? "is-warning" : "is-neutral"
+  );
+  setRibbonClass(
+    DEMO.els.execClinical,
+    decision.route === "ambulatorio" ? "is-success" : "is-warning"
+  );
+  setRibbonClass(
+    DEMO.els.execLiquidation,
+    decision.route === "ambulatorio" ? "is-success" : "is-neutral"
+  );
+}
+
+function renderAll(logText) {
+  const data = getFormData();
+  const decision = computeDecision(data);
+  const referral = computeReferral(data, decision);
+
+  DEMO.state.timelineStage =
+    decision.route === "hospitalizacion"
+      ? 4
+      : decision.route === "observacion"
+      ? 3
+      : 5;
+
+  renderSummary(data, decision);
+  renderTimeline();
+  renderDecision(decision);
+  renderReferral(referral);
+  renderDashboard(data, decision, referral);
+
+  if (logText) addLog(logText);
+}
+
+function stopAutoMode() {
+  if (DEMO.state.autoTimer) {
+    clearInterval(DEMO.state.autoTimer);
+    DEMO.state.autoTimer = null;
+  }
+}
+
+function paintModeButtons() {
+  if (DEMO.state.mode === "auto") {
+    DEMO.els.autoBtn.className = "btn btn-primary";
+    DEMO.els.interactiveBtn.className = "btn btn-secondary";
+  } else {
+    DEMO.els.autoBtn.className = "btn btn-secondary";
+    DEMO.els.interactiveBtn.className = "btn btn-primary";
+  }
+}
+
+function setInteractiveMode() {
+  stopAutoMode();
+  DEMO.state.mode = "interactive";
+  paintModeButtons();
+  renderAll("Modo interactivo activado.");
+}
+
+function updateDecision() {
+  stopAutoMode();
+  DEMO.state.mode = "interactive";
+  paintModeButtons();
+  renderAll("Motor de decisión actualizado.");
+}
+
+function resetDemo() {
+  stopAutoMode();
+  DEMO.state.mode = "interactive";
+  DEMO.state.autoIndex = 0;
+  DEMO.state.timelineStage = 1;
+  DEMO.state.activity = [];
+  DEMO.state.authorizationId = "PENDIENTE";
+  DEMO.state.destinationHospital = "Por definir";
+  DEMO.state.estimatedCost = "$0 MXN";
+  DEMO.state.estimatedCoverage = "0%";
+  DEMO.state.estimatedTransfer = "N/A";
+
+  setFormValues(DEMO.initialForm);
+  paintModeButtons();
+  renderAll();
+  addLog("Demo reiniciado.");
+}
+
+function startAutoMode() {
+  stopAutoMode();
+  DEMO.state.mode = "auto";
+  DEMO.state.autoIndex = 0;
+  paintModeButtons();
+
+  const scenes = [
+    () => {
+      setFormValues({
+        patientName: "María Fernanda López",
+        patientAge: 54,
+        patientSex: "Femenino",
+        payer: "Mapfre",
+        complaint: "Dolor torácico opresivo",
+        triage: "Amarillo",
+        heartRate: 112,
+        systolicBp: 92,
+        spo2: 89,
+        studies: "ECG + Laboratorio + RX",
+        diagnosis: "Síndrome coronario agudo / evento cardiopulmonar a descartar",
+        clinicalRoute: "automatico"
+      });
+      renderAll("Modo automático: caso cargado.");
+    },
+    () => {
+      DEMO.els.clinicalRoute.value = "observacion";
+      renderAll("Modo automático: el caso pasa a observación.");
+    },
+    () => {
+      DEMO.els.clinicalRoute.value = "hospitalizacion";
+      renderAll("Modo automático: se recomienda referencia hospitalaria.");
+    },
+    () => {
+      DEMO.state.timelineStage = 5;
+      renderTimeline();
+      addLog("Modo automático: caso preparado para cierre y liquidación.");
+    }
+  ];
+
+  scenes[0]();
+
+  DEMO.state.autoTimer = setInterval(() => {
+    DEMO.state.autoIndex += 1;
+
+    if (DEMO.state.autoIndex >= scenes.length) {
+      stopAutoMode();
+      addLog("Modo automático finalizado.");
+      DEMO.state.mode = "interactive";
+      paintModeButtons();
+      return;
+    }
+
+    scenes[DEMO.state.autoIndex]();
+  }, 2200);
+}
+
+window.setInteractiveMode = setInteractiveMode;
+window.updateDecision = updateDecision;
+window.resetDemo = resetDemo;
+window.startAutoMode = startAutoMode;
+
+document.addEventListener("DOMContentLoaded", initDemo);
