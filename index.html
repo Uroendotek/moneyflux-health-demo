@@ -1,172 +1,403 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MoneyFlux Health Platform Demo</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoneyFlux Health Platform | Demo Salud Digna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="page">
+  <div class="app-shell">
     <header class="topbar">
-      <div class="topbar-logos">
-        <div class="logo-box moneyflux-box">
-          <img src="mfh.png" alt="MoneyFlux Health Platform">
+      <div class="brand-wrap">
+        <div class="logo-box moneyflux-logo">
+          <img src="moneyflux-logo.png" alt="MoneyFlux Health Platform" />
         </div>
-
-        <div class="logo-box salud-box">
-          <img src="sd.png" alt="Salud Digna">
+        <div class="divider"></div>
+        <div class="logo-box saluddigna-logo">
+          <img src="salud-digna-logo.png" alt="Salud Digna" />
         </div>
       </div>
 
-      <div class="title-block">
-        <h1>MoneyFlux Health Platform</h1>
-        <p>Infraestructura · Diagnóstico · Validación · Liquidación</p>
+      <div class="topbar-actions">
+        <div class="top-meta">
+          <span class="meta-chip" id="liveClock">--:--:--</span>
+          <span class="meta-chip">Demo ejecutivo</span>
+          <span class="meta-chip meta-chip-accent" id="caseIdChip">Caso: MFH-2026-001</span>
+        </div>
+        <div class="button-row">
+          <button class="btn btn-secondary" id="autoModeBtn">Modo automático</button>
+          <button class="btn btn-primary" id="interactiveModeBtn">Modo interactivo</button>
+          <button class="btn btn-ghost" id="resetBtn">Reiniciar demo</button>
+        </div>
       </div>
     </header>
 
-    <section class="orchestration-strip" id="orchestrationStrip"></section>
+    <section class="executive-ribbon">
+      <div class="ribbon-card" id="statusCaso">
+        <span class="ribbon-label">Caso</span>
+        <strong class="ribbon-value">Captura inicial</strong>
+      </div>
+      <div class="ribbon-card" id="statusFinanciero">
+        <span class="ribbon-label">Validación financiera</span>
+        <strong class="ribbon-value">Pendiente</strong>
+      </div>
+      <div class="ribbon-card" id="statusDecision">
+        <span class="ribbon-label">Decisión clínica</span>
+        <strong class="ribbon-value">Pendiente</strong>
+      </div>
+      <div class="ribbon-card" id="statusLiquidacion">
+        <span class="ribbon-label">Liquidación</span>
+        <strong class="ribbon-value">Pendiente</strong>
+      </div>
+    </section>
 
-    <main class="desktop-layout">
-      <section class="panel left-panel">
-        <div class="section-head">
-          <h2>Captura médica</h2>
-          <div class="head-actions">
-            <button id="modeBtn" class="secondary-btn">Modo interactivo</button>
-            <button id="startBtn">Iniciar demo</button>
+    <main class="dashboard-grid">
+      <!-- LEFT COLUMN -->
+      <section class="panel panel-clinical">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Captura clínica y administrativa</p>
+            <h2>Ingreso del caso</h2>
+          </div>
+          <span class="panel-badge">Salud Digna</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="patientName">Paciente</label>
+            <input type="text" id="patientName" value="María Fernanda López" />
+          </div>
+
+          <div class="field">
+            <label for="patientAge">Edad</label>
+            <input type="number" id="patientAge" value="54" />
+          </div>
+
+          <div class="field">
+            <label for="patientSex">Sexo</label>
+            <select id="patientSex">
+              <option value="F" selected>Femenino</option>
+              <option value="M">Masculino</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="insurer">Aseguradora</label>
+            <select id="insurer">
+              <option value="Mapfre" selected>Mapfre</option>
+              <option value="AXA">AXA</option>
+              <option value="GNP">GNP</option>
+              <option value="Sin cobertura">Sin cobertura</option>
+            </select>
+          </div>
+
+          <div class="field field-span-2">
+            <label for="chiefComplaint">Motivo de consulta</label>
+            <input type="text" id="chiefComplaint" value="Dolor torácico opresivo y disnea de inicio súbito" />
+          </div>
+
+          <div class="field">
+            <label for="triage">Triage</label>
+            <select id="triage">
+              <option value="2" selected>II - Alto riesgo</option>
+              <option value="3">III - Intermedio</option>
+              <option value="4">IV - Bajo riesgo</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="heartRate">FC</label>
+            <input type="number" id="heartRate" value="112" />
+          </div>
+
+          <div class="field">
+            <label for="sbp">TA sistólica</label>
+            <input type="number" id="sbp" value="92" />
+          </div>
+
+          <div class="field">
+            <label for="spo2">SpO₂</label>
+            <input type="number" id="spo2" value="89" />
+          </div>
+
+          <div class="field field-span-2">
+            <label for="studies">Estudios realizados</label>
+            <select id="studies">
+              <option value="ecg-labs-rx" selected>ECG + Laboratorio + RX</option>
+              <option value="labs-rx">Laboratorio + RX</option>
+              <option value="labs">Solo laboratorio</option>
+              <option value="none">Sin estudios aún</option>
+            </select>
+          </div>
+
+          <div class="field field-span-2">
+            <label for="diagnosis">Diagnóstico preliminar</label>
+            <input type="text" id="diagnosis" value="Síndrome coronario agudo / evento cardiopulmonar a descartar" />
+          </div>
+
+          <div class="field field-span-2">
+            <label for="route">Ruta clínica manual</label>
+            <select id="route">
+              <option value="auto" selected>Automática según motor</option>
+              <option value="ambulatorio">Ambulatorio</option>
+              <option value="observacion">Observación</option>
+              <option value="hospitalizacion">Hospitalización / referencia</option>
+            </select>
           </div>
         </div>
 
-        <div class="capture-card">
-          <div class="capture-grid">
-            <div class="field">
-              <label for="patientName">Paciente</label>
-              <input id="patientName" type="text" placeholder="Nombre del paciente">
-            </div>
-
-            <div class="field">
-              <label for="patientAge">Edad</label>
-              <input id="patientAge" type="number" min="0" max="120" placeholder="Edad">
-            </div>
-
-            <div class="field">
-              <label for="patientSex">Sexo</label>
-              <select id="patientSex">
-                <option value="Femenino">Femenino</option>
-                <option value="Masculino">Masculino</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="patientInsurance">Aseguradora</label>
-              <input id="patientInsurance" type="text" placeholder="Aseguradora / póliza">
-            </div>
-
-            <div class="field full">
-              <label for="patientComplaint">Motivo de consulta</label>
-              <input id="patientComplaint" type="text" placeholder="Motivo de consulta">
-            </div>
-
-            <div class="field">
-              <label for="triageLevel">Nivel de triage</label>
-              <select id="triageLevel">
-                <option value="Alto">Alto</option>
-                <option value="Medio">Medio</option>
-                <option value="Bajo">Bajo</option>
-              </select>
-            </div>
-
-            <div class="field full">
-              <label for="vitalsInput">Signos vitales</label>
-              <input id="vitalsInput" type="text" placeholder="TA, FC, SatO2, etc.">
-            </div>
-
-            <div class="field full">
-              <label>Estudios realizados</label>
-              <div class="study-selector">
-                <label class="check-chip">
-                  <input type="checkbox" value="ECG" checked>
-                  <span>ECG</span>
-                </label>
-                <label class="check-chip">
-                  <input type="checkbox" value="Laboratorio" checked>
-                  <span>Laboratorio</span>
-                </label>
-                <label class="check-chip">
-                  <input type="checkbox" value="Radiografía" checked>
-                  <span>Radiografía</span>
-                </label>
-                <label class="check-chip">
-                  <input type="checkbox" value="Ultrasonido">
-                  <span>Ultrasonido</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="field full">
-              <label for="diagnosisInput">Diagnóstico preliminar</label>
-              <textarea id="diagnosisInput" rows="3" placeholder="Diagnóstico preliminar"></textarea>
-            </div>
-
-            <div class="field full">
-              <label>Admisión / ruta clínica</label>
-              <div class="admission-selector" id="admissionSelector">
-                <button class="admission-btn" data-route="ambulatorio" type="button">Ambulatorio</button>
-                <button class="admission-btn" data-route="observacion" type="button">Observación</button>
-                <button class="admission-btn active" data-route="hospitalizacion" type="button">Hospitalización</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="capture-actions">
-            <button id="applyBtn" class="secondary-btn">Actualizar caso</button>
-            <button id="advanceBtn">Avanzar paso</button>
-            <button id="resetBtn" class="ghost-btn">Reiniciar</button>
-          </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="runDecisionBtn">Actualizar motor de decisión</button>
         </div>
 
-        <div class="case-meta-card" id="caseMetaCard"></div>
+        <div class="patient-summary-card">
+          <div class="summary-top">
+            <div>
+              <p class="eyebrow">Resumen clínico ejecutivo</p>
+              <h3 id="summaryPatientName">María Fernanda López</h3>
+            </div>
+            <span class="status-pill status-neutral" id="currentRoutePill">Pendiente</span>
+          </div>
 
-        <div class="patient-card" id="patientCard"></div>
-
-        <div class="summary-card" id="clinicalSummaryCard"></div>
-
-        <div class="studies-card">
-          <h3>Estudios realizados</h3>
-          <div id="studiesList" class="studies-list"></div>
+          <div class="summary-grid">
+            <div class="metric-mini">
+              <span>Edad / sexo</span>
+              <strong id="summaryDemographics">54 / F</strong>
+            </div>
+            <div class="metric-mini">
+              <span>Aseguradora</span>
+              <strong id="summaryInsurer">Mapfre</strong>
+            </div>
+            <div class="metric-mini">
+              <span>Estudios</span>
+              <strong id="summaryStudies">ECG + Laboratorio + RX</strong>
+            </div>
+            <div class="metric-mini">
+              <span>Diagnóstico</span>
+              <strong id="summaryDiagnosis">Síndrome coronario agudo / evento cardiopulmonar a descartar</strong>
+            </div>
+          </div>
         </div>
-
-        <div class="decision-card" id="decisionCard"></div>
       </section>
 
-      <section class="panel center-panel">
-        <div class="panel-title-row">
-          <h2>Flujo del paciente</h2>
-          <span class="mode-badge" id="modeBadge">Demo automática</span>
+      <!-- CENTER COLUMN -->
+      <section class="panel panel-center">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Orquestación MoneyFlux</p>
+            <h2>Timeline del caso</h2>
+          </div>
+          <span class="panel-badge accent">Tiempo real</span>
         </div>
-        <div id="flowBoard" class="flow-board"></div>
+
+        <div class="timeline" id="timeline">
+          <div class="timeline-step pending" data-step="1">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-head">
+                <h4>Ingreso y registro</h4>
+                <span class="timeline-time" id="time-step-1">--:--</span>
+              </div>
+              <p>Captura del paciente, motivo de consulta, triage y datos de cobertura.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step pending" data-step="2">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-head">
+                <h4>Validación financiera</h4>
+                <span class="timeline-time" id="time-step-2">--:--</span>
+              </div>
+              <p>Evaluación de elegibilidad, red hospitalaria, autorización y canal resolutivo.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step pending" data-step="3">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-head">
+                <h4>Motor de decisión clínica-financiera</h4>
+                <span class="timeline-time" id="time-step-3">--:--</span>
+              </div>
+              <p>Activación de criterios clínicos y operativos para definir la ruta del caso.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step pending" data-step="4">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-head">
+                <h4>Coordinación del siguiente nivel</h4>
+                <span class="timeline-time" id="time-step-4">--:--</span>
+              </div>
+              <p>Observación clínica, ambulatorio o referencia hospitalaria con trazabilidad.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step pending" data-step="5">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-head">
+                <h4>Cierre y liquidación</h4>
+                <span class="timeline-time" id="time-step-5">--:--</span>
+              </div>
+              <p>Consolidación del caso, costos estimados, cobertura y estatus de liquidación.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="decision-engine-card" id="decisionEngineCard">
+          <div class="decision-engine-header">
+            <div>
+              <p class="eyebrow">Nueva capa de inteligencia visible</p>
+              <h3>Motor de decisión</h3>
+            </div>
+            <span class="engine-state" id="engineState">Sin evaluar</span>
+          </div>
+
+          <div class="engine-score-grid">
+            <div class="engine-score-box">
+              <span>Score clínico</span>
+              <strong id="clinicalScore">0</strong>
+              <small>0–100</small>
+            </div>
+            <div class="engine-score-box">
+              <span>Score financiero-operativo</span>
+              <strong id="financialScore">0</strong>
+              <small>0–100</small>
+            </div>
+            <div class="engine-score-box result-box">
+              <span>Resultado</span>
+              <strong id="decisionResult">Pendiente</strong>
+              <small id="decisionConfidence">Sin decisión</small>
+            </div>
+          </div>
+
+          <div class="decision-columns">
+            <div class="criteria-card">
+              <div class="criteria-card-head">
+                <h4>Criterios clínicos activados</h4>
+                <span class="criteria-counter" id="clinicalCount">0</span>
+              </div>
+              <ul id="clinicalCriteriaList" class="criteria-list">
+                <li class="criteria-empty">Aún no hay criterios activados.</li>
+              </ul>
+            </div>
+
+            <div class="criteria-card">
+              <div class="criteria-card-head">
+                <h4>Criterios financieros / operativos</h4>
+                <span class="criteria-counter" id="financialCount">0</span>
+              </div>
+              <ul id="financialCriteriaList" class="criteria-list">
+                <li class="criteria-empty">Aún no hay criterios activados.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="decision-explanation">
+            <h4>Explicación ejecutiva</h4>
+            <p id="decisionExplanation">
+              El motor mostrará aquí por qué MoneyFlux recomienda la ruta del caso y qué condiciones activaron la decisión.
+            </p>
+          </div>
+        </div>
       </section>
 
-      <section class="panel right-panel">
-        <h2>Dashboard operativo</h2>
-        <div id="metricsGrid" class="metrics-grid"></div>
+      <!-- RIGHT COLUMN -->
+      <section class="panel panel-executive">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Visión operativa</p>
+            <h2>Dashboard ejecutivo</h2>
+          </div>
+          <span class="panel-badge success">En vivo</span>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <span>ID de caso</span>
+            <strong id="kpiCaseId">MFH-2026-001</strong>
+          </div>
+          <div class="kpi-card">
+            <span>ID autorización</span>
+            <strong id="kpiAuthId">PENDIENTE</strong>
+          </div>
+          <div class="kpi-card">
+            <span>Hospital destino</span>
+            <strong id="kpiHospital">Por definir</strong>
+          </div>
+          <div class="kpi-card">
+            <span>Costo estimado</span>
+            <strong id="kpiCost">$0 MXN</strong>
+          </div>
+          <div class="kpi-card">
+            <span>Cobertura estimada</span>
+            <strong id="kpiCoverage">0%</strong>
+          </div>
+          <div class="kpi-card">
+            <span>Traslado estimado</span>
+            <strong id="kpiTransfer">N/A</strong>
+          </div>
+        </div>
 
         <div class="actors-card">
-          <h3>Actores conectados</h3>
-          <div id="actorsGrid" class="actors-grid"></div>
+          <div class="card-head-line">
+            <h3>Actores conectados</h3>
+          </div>
+          <div class="actor-list">
+            <div class="actor-item">
+              <span class="actor-dot actor-sd"></span>
+              <div>
+                <strong>Salud Digna</strong>
+                <p>Punto de entrada, captura y estudios iniciales</p>
+              </div>
+            </div>
+            <div class="actor-item">
+              <span class="actor-dot actor-mf"></span>
+              <div>
+                <strong>MoneyFlux</strong>
+                <p>Motor de decisión, orquestación y trazabilidad</p>
+              </div>
+            </div>
+            <div class="actor-item">
+              <span class="actor-dot actor-ins"></span>
+              <div>
+                <strong>Aseguradora</strong>
+                <p>Validación de cobertura y autorización</p>
+              </div>
+            </div>
+            <div class="actor-item">
+              <span class="actor-dot actor-hosp"></span>
+              <div>
+                <strong>Hospital aliado</strong>
+                <p>Canal resolutivo cuando se requiere escalamiento</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="activity-card">
-          <div class="activity-head">
+        <div class="case-log-card">
+          <div class="card-head-line">
             <h3>Bitácora del caso</h3>
-            <span class="activity-live">En vivo</span>
+            <span class="mini-tag" id="caseTimer">00:00</span>
           </div>
-          <div id="activityLog" class="activity-log"></div>
+          <div id="caseLog" class="case-log">
+            <div class="log-item">
+              <span class="log-time">--:--</span>
+              <p>Esperando ejecución del caso.</p>
+            </div>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
-  <script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
