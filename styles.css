@@ -44,9 +44,10 @@ body{
 }
 
 .topbar-logos{
-  display:grid;
-  grid-template-columns:240px 500px;
+  display:flex;
+  align-items:center;
   gap:16px;
+}
   align-items:center;
 }
 
@@ -70,14 +71,14 @@ body{
 }
 
 .moneyflux-box img{
-  width:150px;
+  width:240px;
   height:auto;
   display:block;
   object-fit:contain;
 }
 
 .salud-box img{
-  width:390px;
+  width:500px;
   height:auto;
   display:block;
   object-fit:contain;
