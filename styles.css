@@ -51,21 +51,25 @@ body{
 .logo-box{
   background:rgba(255,255,255,0.98);
   border-radius:18px;
-  padding:12px 18px;
+  padding:12px 16px;
   display:flex;
   align-items:center;
   justify-content:center;
   min-height:100px;
-  min-width:260px;
+  min-width:220px;
   box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
-.moneyflux-box{
-  min-width:280px;
+.moneyflux-box img{
+  height:95px;
+  width:auto;
+  object-fit:contain;
 }
 
-.salud-box{
-  min-width:170px;
+.salud-box img{
+  height:70px;
+  width:auto;
+  object-fit:contain;
 }
 
 .moneyflux-box img{
