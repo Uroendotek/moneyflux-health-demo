@@ -5,6 +5,7 @@
   --text:#1f2937;
   --muted:#667085;
   --mf-navy:#16385f;
+  --mf-blue:#1f4c7d;
   --mf-green:#39a935;
   --sd-green:#00a651;
   --sd-yellow:#f0b43c;
@@ -29,85 +30,78 @@ body{
   padding:20px;
 }
 
+/* HEADER */
 .topbar{
-  background:linear-gradient(135deg, #16385f 0%, #1f4c7d 45%, #00a651 100%);
+  background:linear-gradient(135deg, var(--mf-navy) 0%, var(--mf-blue) 45%, var(--sd-green) 100%);
   border-radius:24px;
-  padding:24px 28px;
+  padding:22px 24px;
   color:white;
-  display:flex;
+  display:grid;
+  grid-template-columns:760px 1fr;
   align-items:center;
-  justify-content:space-between;
   gap:24px;
   box-shadow:var(--shadow);
 }
 
-.logos{
-  display:flex;
+.topbar-logos{
+  display:grid;
+  grid-template-columns:240px 500px;
+  gap:16px;
   align-items:center;
-  gap:18px;
-  flex-wrap:nowrap;
 }
 
 .logo-box{
-  background:rgba(255,255,255,0.98);
+  background:#ffffff;
   border-radius:18px;
-  padding:12px 16px;
+  height:110px;
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height:100px;
-  min-width:220px;
   box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  overflow:hidden;
+}
+
+.moneyflux-box{
+  padding:14px 18px;
+}
+
+.salud-box{
+  padding:10px 18px;
 }
 
 .moneyflux-box img{
-  height:95px;
-  width:auto;
+  width:150px;
+  height:auto;
+  display:block;
   object-fit:contain;
 }
 
 .salud-box img{
-  height:70px;
-  width:auto;
-  object-fit:contain;
-}
-
-.moneyflux-box img{
-  height:80px;
-  }
-  width:auto;
-  max-width:100%;
-  object-fit:contain;
+  width:390px;
+  height:auto;
   display:block;
-}
-
-.salud-box img{
-  overflow: visible;
-}
-  height:80px;
-  width:auto;
-  max-width:100%;
   object-fit:contain;
-  display:block;
 }
 
 .title-block{
   text-align:right;
-  flex:1;
 }
 
 .title-block h1{
   margin:0 0 8px;
   font-size:38px;
-  line-height:1.1;
+  line-height:1.05;
+  font-weight:700;
 }
 
 .title-block p{
   margin:0;
   font-size:18px;
+  line-height:1.35;
   opacity:.96;
 }
 
+/* LAYOUT */
 .desktop-layout{
   margin-top:20px;
   display:grid;
@@ -160,6 +154,7 @@ button:disabled{
   cursor:not-allowed;
 }
 
+/* CARDS */
 .patient-card,
 .studies-card,
 .decision-card{
@@ -203,6 +198,7 @@ button:disabled{
   line-height:1.4;
 }
 
+/* STUDIES */
 .studies-list{
   display:grid;
   gap:10px;
@@ -227,6 +223,7 @@ button:disabled{
   font-size:14px;
 }
 
+/* DECISION */
 .decision-card.route-hospital{
   border-color:#f6d28b;
   background:#fff9ef;
@@ -249,6 +246,7 @@ button:disabled{
   line-height:1.5;
 }
 
+/* FLOW */
 .flow-board{
   display:grid;
   gap:12px;
@@ -304,6 +302,7 @@ button:disabled{
   background:#f4fdf2;
 }
 
+/* METRICS */
 .metrics-grid{
   display:grid;
   gap:12px;
@@ -335,33 +334,35 @@ button:disabled{
   margin-top:6px;
 }
 
+/* RESPONSIVE */
 @media (max-width:1180px){
   .desktop-layout{
     grid-template-columns:1fr;
   }
 
   .topbar{
-    flex-direction:column;
-    align-items:flex-start;
+    grid-template-columns:1fr;
+    gap:18px;
   }
 
-  .logos{
-    flex-wrap:wrap;
+  .topbar-logos{
+    grid-template-columns:1fr;
+  }
+
+  .logo-box{
+    width:100%;
+  }
+
+  .moneyflux-box img{
+    width:150px;
+  }
+
+  .salud-box img{
+    width:300px;
+    max-width:100%;
   }
 
   .title-block{
     text-align:left;
-  }
-
-  .moneyflux-box,
-  .salud-box,
-  .logo-box{
-    min-width:auto;
-    width:auto;
-  }
-
-  .moneyflux-box img,
-  .salud-box img{
-    height:60px;
   }
 }
