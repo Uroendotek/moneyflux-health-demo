@@ -176,7 +176,7 @@ function renderPatient() {
 }
 
 function renderStudies() {
-  studiesList.innerHTML = patientData.studies.map(item => `
+  studiesList.innerHTML = patientData.studies.map((item) => `
     <div class="study-item">
       <div class="study-title">${item.titulo}</div>
       <div class="study-result">${item.resultado}</div>
@@ -204,7 +204,7 @@ function renderDecision(initial = true) {
 function renderMetrics(live = false) {
   const metrics = live ? patientData.metricsLive : patientData.metricsInitial;
 
-  metricsGrid.innerHTML = metrics.map(item => `
+  metricsGrid.innerHTML = metrics.map((item) => `
     <div class="metric-card">
       <div class="metric-label">${item.label}</div>
       <div class="metric-value">${item.value}</div>
@@ -252,32 +252,43 @@ function updateScenario() {
   } else {
     renderMetrics(false);
   }
-
-  if (currentStep >= patientData.flow.length) {
-    finishDemo();
-  }
-}
-
-function runDemoStep() {
-  currentStep += 1;
-
-  if (currentStep < patientData.flow.length) {
-    updateScenario();
-    timer = setTimeout(runDemoStep, 1400);
-  } else {
-    finishDemo();
-  }
 }
 
 function finishDemo() {
   demoRunning = false;
   clearTimeout(timer);
+  timer = null;
   startBtn.disabled = false;
   startBtn.textContent = "Reiniciar demo";
 }
 
+function runDemoStep() {
+  currentStep += 1;
+
+  if (currentStep >= patientData.flow.length) {
+    finishDemo();
+    return;
+  }
+
+  updateScenario();
+
+  if (currentStep === patientData.flow.length - 1) {
+    timer = setTimeout(() => {
+      currentStep = patientData.flow.length;
+      renderFlow();
+      renderDecision(false);
+      renderMetrics(true);
+      finishDemo();
+    }, 1400);
+    return;
+  }
+
+  timer = setTimeout(runDemoStep, 1400);
+}
+
 function startDemo() {
   clearTimeout(timer);
+  timer = null;
   currentStep = -1;
   demoRunning = true;
   startBtn.disabled = true;
@@ -286,9 +297,7 @@ function startDemo() {
   renderMetrics(false);
   renderFlow();
 
-  setTimeout(() => {
-    runDemoStep();
-  }, 500);
+  timer = setTimeout(runDemoStep, 500);
 }
 
 startBtn.addEventListener("click", startDemo);
@@ -298,3 +307,4 @@ renderStudies();
 renderDecision(true);
 renderMetrics(false);
 renderFlow();
+      
