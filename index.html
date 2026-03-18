@@ -31,9 +31,9 @@
         </div>
 
         <div class="action-buttons">
-          <button id="auto-mode-btn" class="btn btn-secondary">Modo automático</button>
-          <button id="interactive-mode-btn" class="btn btn-primary">Modo interactivo</button>
-          <button id="reset-demo-btn" class="btn btn-ghost">Reiniciar demo</button>
+          <button id="auto-mode-btn" class="btn btn-secondary" onclick="startAutoMode()">Modo automático</button>
+          <button id="interactive-mode-btn" class="btn btn-primary" onclick="setInteractiveMode()">Modo interactivo</button>
+          <button id="reset-demo-btn" class="btn btn-ghost" onclick="resetDemo()">Reiniciar demo</button>
         </div>
       </div>
     </header>
@@ -147,7 +147,7 @@
         </div>
 
         <div class="form-actions">
-          <button id="update-engine-btn" class="btn btn-primary btn-full">Actualizar motor de decisión</button>
+          <button id="update-engine-btn" class="btn btn-primary btn-full" onclick="updateDecision()">Actualizar motor de decisión</button>
         </div>
 
         <div class="summary-card">
