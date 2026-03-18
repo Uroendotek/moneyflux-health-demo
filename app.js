@@ -1,676 +1,554 @@
-const defaultCase = {
-  patient: {
-    nombre: "María López García",
-    edad: "47",
-    sexo: "Femenino",
-    aseguradora: "Aseguradora Demo / Póliza validada",
-    motivo: "Dolor torácico y dificultad respiratoria",
-    triage: "Alto",
-    vitals: "TA 150/95, FC 104, SatO2 93%",
-    diagnostico: "Sospecha de síndrome coronario agudo"
-  },
-  selectedStudies: ["ECG", "Laboratorio", "Radiografía"],
-  admission: "hospitalizacion"
+const state = {
+  autoMode: true,
+  timerSeconds: 0,
+  timerInterval: null,
+  currentDecision: null,
+  caseId: generateCaseId(),
+  authId: "PENDIENTE"
 };
 
-const studyCatalog = {
-  ECG: "Cambios compatibles con isquemia; requiere valoración hospitalaria.",
-  Laboratorio: "Marcadores cardiacos solicitados; evento clínico registrado.",
-  Radiografía: "Sin hallazgos pulmonares agudos; se mantiene sospecha cardiaca.",
-  Ultrasonido: "Estudio complementario para descartar complicaciones asociadas."
+const els = {
+  liveClock: document.getElementById("liveClock"),
+  caseTimer: document.getElementById("caseTimer"),
+  caseIdChip: document.getElementById("caseIdChip"),
+  kpiCaseId: document.getElementById("kpiCaseId"),
+  kpiAuthId: document.getElementById("kpiAuthId"),
+  kpiHospital: document.getElementById("kpiHospital"),
+  kpiCost: document.getElementById("kpiCost"),
+  kpiCoverage: document.getElementById("kpiCoverage"),
+  kpiTransfer: document.getElementById("kpiTransfer"),
+
+  patientName: document.getElementById("patientName"),
+  patientAge: document.getElementById("patientAge"),
+  patientSex: document.getElementById("patientSex"),
+  insurer: document.getElementById("insurer"),
+  chiefComplaint: document.getElementById("chiefComplaint"),
+  triage: document.getElementById("triage"),
+  heartRate: document.getElementById("heartRate"),
+  sbp: document.getElementById("sbp"),
+  spo2: document.getElementById("spo2"),
+  studies: document.getElementById("studies"),
+  diagnosis: document.getElementById("diagnosis"),
+  route: document.getElementById("route"),
+
+  summaryPatientName: document.getElementById("summaryPatientName"),
+  summaryDemographics: document.getElementById("summaryDemographics"),
+  summaryInsurer: document.getElementById("summaryInsurer"),
+  summaryStudies: document.getElementById("summaryStudies"),
+  summaryDiagnosis: document.getElementById("summaryDiagnosis"),
+  currentRoutePill: document.getElementById("currentRoutePill"),
+
+  clinicalScore: document.getElementById("clinicalScore"),
+  financialScore: document.getElementById("financialScore"),
+  decisionResult: document.getElementById("decisionResult"),
+  decisionConfidence: document.getElementById("decisionConfidence"),
+  clinicalCriteriaList: document.getElementById("clinicalCriteriaList"),
+  financialCriteriaList: document.getElementById("financialCriteriaList"),
+  clinicalCount: document.getElementById("clinicalCount"),
+  financialCount: document.getElementById("financialCount"),
+  decisionExplanation: document.getElementById("decisionExplanation"),
+  engineState: document.getElementById("engineState"),
+
+  statusCaso: document.getElementById("statusCaso"),
+  statusFinanciero: document.getElementById("statusFinanciero"),
+  statusDecision: document.getElementById("statusDecision"),
+  statusLiquidacion: document.getElementById("statusLiquidacion"),
+
+  caseLog: document.getElementById("caseLog"),
+  autoModeBtn: document.getElementById("autoModeBtn"),
+  interactiveModeBtn: document.getElementById("interactiveModeBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  runDecisionBtn: document.getElementById("runDecisionBtn")
 };
-
-const hospitalByRoute = {
-  ambulatorio: "Resolución local en sede",
-  observacion: "Unidad de observación clínica",
-  hospitalizacion: "Hospital aliado Santa Elena"
-};
-
-const authByRoute = {
-  ambulatorio: "AUTH-LOCAL-2148",
-  observacion: "AUTH-OBS-4821",
-  hospitalizacion: "AUTH-HOSP-88214"
-};
-
-const flowTemplates = {
-  ambulatorio: [
-    { numero: "Paso 1", titulo: "Admisión", detalle: "Se registra al paciente en sede Salud Digna y se activa el caso clínico." },
-    { numero: "Paso 2", titulo: "Triage", detalle: "Se clasifican signos vitales, urgencia y motivo de consulta." },
-    { numero: "Paso 3", titulo: "Integración diagnóstica", detalle: "Se concentran estudios y hallazgos para definir conducta médica." },
-    { numero: "Paso 4", titulo: "Validación financiera", detalle: "MoneyFlux confirma elegibilidad, cobertura y viabilidad del caso." },
-    { numero: "Paso 5", titulo: "Decisión clínica", detalle: "Se define manejo ambulatorio supervisado con trazabilidad completa." },
-    { numero: "Paso 6", titulo: "Resolución local", detalle: "El paciente se egresa con indicaciones, receta y seguimiento." },
-    { numero: "Paso 7", titulo: "Liquidación", detalle: "Se cierra el expediente y se inicia conciliación simplificada." }
-  ],
-  observacion: [
-    { numero: "Paso 1", titulo: "Admisión", detalle: "Se registra al paciente y se abre el evento clínico." },
-    { numero: "Paso 2", titulo: "Triage", detalle: "Se clasifican signos vitales y severidad inicial." },
-    { numero: "Paso 3", titulo: "Integración diagnóstica", detalle: "Se realizan estudios para reducir incertidumbre clínica." },
-    { numero: "Paso 4", titulo: "Validación financiera", detalle: "MoneyFlux confirma cobertura preliminar y condiciones operativas." },
-    { numero: "Paso 5", titulo: "Decisión clínica", detalle: "Se define observación con monitoreo y posible escalamiento." },
-    { numero: "Paso 6", titulo: "Seguimiento dinámico", detalle: "Se mantiene vigilancia clínica con trazabilidad del caso." },
-    { numero: "Paso 7", titulo: "Cierre / escalamiento", detalle: "Se determina egreso o referencia posterior con conciliación del evento." }
-  ],
-  hospitalizacion: [
-    { numero: "Paso 1", titulo: "Admisión", detalle: "Se registra al paciente en sede Salud Digna y se abre el evento clínico." },
-    { numero: "Paso 2", titulo: "Triage", detalle: "Se clasifican signos vitales, nivel de urgencia y motivo de consulta." },
-    { numero: "Paso 3", titulo: "Integración diagnóstica", detalle: "Se realizan estudios y se consolidan hallazgos clínicos." },
-    { numero: "Paso 4", titulo: "Validación financiera", detalle: "MoneyFlux confirma elegibilidad, póliza y condiciones de aseguramiento." },
-    { numero: "Paso 5", titulo: "Decisión clínica", detalle: "Se documenta la necesidad de hospitalización y se activa autorización." },
-    { numero: "Paso 6", titulo: "Referencia hospitalaria", detalle: "El paciente es referido con resumen clínico, resultados y trazabilidad." },
-    { numero: "Paso 7", titulo: "Liquidación", detalle: "Se consolida el expediente y se inicia conciliación financiera del caso." }
-  ]
-};
-
-const orchestrationTemplate = [
-  {
-    label: "Caso activo",
-    title: "Caso",
-    pending: "Paciente pendiente de activación",
-    active: "Caso clínico en proceso",
-    done: "Caso consolidado"
-  },
-  {
-    label: "Validación financiera",
-    title: "Validación",
-    pending: "Cobertura pendiente",
-    active: "Elegibilidad y respaldo en revisión",
-    done: "Viabilidad confirmada"
-  },
-  {
-    label: "Decisión clínica",
-    title: "Decisión",
-    pending: "Conducta pendiente",
-    active: "Ruta médica en definición",
-    done: "Ruta clínica definida"
-  },
-  {
-    label: "Destino / liquidación",
-    title: "Liquidación",
-    pending: "Sin destino operativo",
-    active: "Transferencia / cierre en curso",
-    done: "Trazabilidad financiera iniciada"
-  }
-];
-
-const patientCard = document.getElementById("patientCard");
-const studiesList = document.getElementById("studiesList");
-const decisionCard = document.getElementById("decisionCard");
-const flowBoard = document.getElementById("flowBoard");
-const metricsGrid = document.getElementById("metricsGrid");
-const orchestrationStrip = document.getElementById("orchestrationStrip");
-const caseMetaCard = document.getElementById("caseMetaCard");
-const clinicalSummaryCard = document.getElementById("clinicalSummaryCard");
-const actorsGrid = document.getElementById("actorsGrid");
-const activityLog = document.getElementById("activityLog");
-
-const startBtn = document.getElementById("startBtn");
-const modeBtn = document.getElementById("modeBtn");
-const applyBtn = document.getElementById("applyBtn");
-const advanceBtn = document.getElementById("advanceBtn");
-const resetBtn = document.getElementById("resetBtn");
-const modeBadge = document.getElementById("modeBadge");
-
-const patientName = document.getElementById("patientName");
-const patientAge = document.getElementById("patientAge");
-const patientSex = document.getElementById("patientSex");
-const patientInsurance = document.getElementById("patientInsurance");
-const patientComplaint = document.getElementById("patientComplaint");
-const triageLevel = document.getElementById("triageLevel");
-const vitalsInput = document.getElementById("vitalsInput");
-const diagnosisInput = document.getElementById("diagnosisInput");
-const admissionSelector = document.getElementById("admissionSelector");
-const studyCheckboxes = document.querySelectorAll('.study-selector input[type="checkbox"]');
-
-let caseData = structuredClone(defaultCase);
-let currentStep = -1;
-let demoRunning = false;
-let timer = null;
-let isInteractiveMode = false;
-let caseStartTime = new Date(2026, 2, 17, 18, 42, 0);
-let caseId = "MF-2026-0317-004";
-let authorizationId = authByRoute[defaultCase.admission];
 
 function generateCaseId() {
-  const routes = {
-    ambulatorio: "AMB",
-    observacion: "OBS",
-    hospitalizacion: "HSP"
-  };
-  const serial = String(Math.floor(Math.random() * 900) + 100);
-  return `MF-${routes[caseData.admission]}-2026-${serial}`;
+  const num = Math.floor(100 + Math.random() * 900);
+  return `MFH-2026-${num}`;
 }
 
-function getSelectedStudies() {
-  return Array.from(studyCheckboxes)
-    .filter(item => item.checked)
-    .map(item => item.value);
+function generateAuthId() {
+  const num = Math.floor(10000 + Math.random() * 90000);
+  return `AUTH-${num}`;
 }
 
-function populateForm() {
-  patientName.value = caseData.patient.nombre;
-  patientAge.value = caseData.patient.edad;
-  patientSex.value = caseData.patient.sexo;
-  patientInsurance.value = caseData.patient.aseguradora;
-  patientComplaint.value = caseData.patient.motivo;
-  triageLevel.value = caseData.patient.triage;
-  vitalsInput.value = caseData.patient.vitals;
-  diagnosisInput.value = caseData.patient.diagnostico;
-
-  studyCheckboxes.forEach(item => {
-    item.checked = caseData.selectedStudies.includes(item.value);
-  });
-
-  updateAdmissionButtons();
-}
-
-function updateAdmissionButtons() {
-  const buttons = admissionSelector.querySelectorAll(".admission-btn");
-  buttons.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.route === caseData.admission);
-  });
-}
-
-function readFormToCase() {
-  caseData.patient.nombre = patientName.value.trim() || "Paciente no especificado";
-  caseData.patient.edad = patientAge.value.trim() || "—";
-  caseData.patient.sexo = patientSex.value;
-  caseData.patient.aseguradora = patientInsurance.value.trim() || "Validación pendiente";
-  caseData.patient.motivo = patientComplaint.value.trim() || "Motivo pendiente";
-  caseData.patient.triage = triageLevel.value;
-  caseData.patient.vitals = vitalsInput.value.trim() || "Signos vitales pendientes";
-  caseData.patient.diagnostico = diagnosisInput.value.trim() || "Diagnóstico preliminar pendiente";
-  caseData.selectedStudies = getSelectedStudies();
-  authorizationId = authByRoute[caseData.admission];
-}
-
-function resetCaseClock() {
-  caseStartTime = new Date(2026, 2, 17, 18, 42, 0);
-}
-
-function getFlowSteps() {
-  return flowTemplates[caseData.admission];
-}
-
-function getStepMinutes(index) {
-  const maps = {
-    ambulatorio: [0, 4, 10, 16, 22, 31, 45],
-    observacion: [0, 5, 12, 20, 32, 56, 90],
-    hospitalizacion: [0, 4, 10, 19, 27, 38, 74]
-  };
-  return maps[caseData.admission][index] ?? 0;
-}
-
-function formatTime(date) {
+function formatClock(date = new Date()) {
   return date.toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false
+    second: "2-digit"
   });
 }
 
-function getStepTime(index) {
-  const d = new Date(caseStartTime.getTime() + getStepMinutes(index) * 60000);
-  return formatTime(d);
-}
-
-function getElapsedTimeLabel() {
-  if (currentStep < 0) return "0 min";
-  const minutes = currentStep >= getFlowSteps().length
-    ? getStepMinutes(getFlowSteps().length - 1)
-    : getStepMinutes(Math.max(currentStep, 0));
-  return `${minutes} min`;
-}
-
-function renderCaseMeta() {
-  caseMetaCard.innerHTML = `
-    <div class="case-meta-grid">
-      <div class="meta-pill">
-        <div class="meta-label">Caso</div>
-        <div class="meta-value">${caseId}</div>
-      </div>
-      <div class="meta-pill">
-        <div class="meta-label">Autorización</div>
-        <div class="meta-value">${currentStep >= 4 ? authorizationId : "Pendiente"}</div>
-      </div>
-      <div class="meta-pill">
-        <div class="meta-label">Hora de inicio</div>
-        <div class="meta-value">${formatTime(caseStartTime)}</div>
-      </div>
-      <div class="meta-pill">
-        <div class="meta-label">Tiempo transcurrido</div>
-        <div class="meta-value emphasis">${getElapsedTimeLabel()}</div>
-      </div>
-    </div>
-  `;
-}
-
-function renderPatient() {
-  patientCard.innerHTML = `
-    <div class="patient-grid">
-      <div class="data-box ${currentStep >= 0 ? "highlight" : ""}">
-        <div class="label">Paciente</div>
-        <div class="value">${caseData.patient.nombre}</div>
-      </div>
-
-      <div class="data-box ${currentStep >= 0 ? "highlight" : ""}">
-        <div class="label">Edad</div>
-        <div class="value">${caseData.patient.edad === "—" ? "—" : `${caseData.patient.edad} años`}</div>
-      </div>
-
-      <div class="data-box">
-        <div class="label">Sexo</div>
-        <div class="value">${caseData.patient.sexo}</div>
-      </div>
-
-      <div class="data-box ${currentStep >= 3 ? "highlight" : ""}">
-        <div class="label">Aseguradora</div>
-        <div class="value small">${caseData.patient.aseguradora}</div>
-      </div>
-
-      <div class="data-box">
-        <div class="label">Motivo</div>
-        <div class="value small">${caseData.patient.motivo}</div>
-      </div>
-
-      <div class="data-box ${currentStep >= 4 ? "highlight" : ""}">
-        <div class="label">Diagnóstico</div>
-        <div class="value small">${caseData.patient.diagnostico}</div>
-      </div>
-    </div>
-  `;
-}
-
-function buildStudiesFromCase() {
-  const triageText = `${caseData.patient.vitals}; prioridad ${caseData.patient.triage.toLowerCase()}`;
-  const studies = [
-    {
-      titulo: "Triage",
-      resultado: triageText
-    }
-  ];
-
-  caseData.selectedStudies.forEach(studyName => {
-    studies.push({
-      titulo: studyName,
-      resultado: studyCatalog[studyName] || "Resultado integrado al expediente clínico."
-    });
+function formatShortTime(date = new Date()) {
+  return date.toLocaleTimeString("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit"
   });
-
-  return studies;
 }
 
-function renderStudies() {
-  const studies = buildStudiesFromCase();
-
-  studiesList.innerHTML = studies.map((item) => `
-    <div class="study-item">
-      <div class="study-title">${item.titulo}</div>
-      <div class="study-result">${item.resultado}</div>
-    </div>
-  `).join("");
+function updateLiveClock() {
+  els.liveClock.textContent = formatClock();
 }
 
-function getDecisionContent() {
-  if (caseData.admission === "ambulatorio") {
-    return {
-      type: "route-ambulatory",
-      title: "Decisión médica: Manejo ambulatorio",
-      text: "El caso puede resolverse localmente con trazabilidad clínica, egreso supervisado e indicaciones de seguimiento. MoneyFlux mantiene validación y conciliación simplificada."
-    };
+function startCaseTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerSeconds = 0;
+  els.caseTimer.textContent = "00:00";
+
+  state.timerInterval = setInterval(() => {
+    state.timerSeconds += 1;
+    const mins = String(Math.floor(state.timerSeconds / 60)).padStart(2, "0");
+    const secs = String(state.timerSeconds % 60).padStart(2, "0");
+    els.caseTimer.textContent = `${mins}:${secs}`;
+  }, 1000);
+}
+
+function addLog(message) {
+  const div = document.createElement("div");
+  div.className = "log-item";
+  div.innerHTML = `
+    <span class="log-time">${formatShortTime()}</span>
+    <p>${message}</p>
+  `;
+  els.caseLog.prepend(div);
+}
+
+function updateSummary() {
+  els.summaryPatientName.textContent = els.patientName.value || "Paciente no especificado";
+  els.summaryDemographics.textContent = `${els.patientAge.value || "--"} / ${els.patientSex.value || "--"}`;
+  els.summaryInsurer.textContent = els.insurer.value;
+  els.summaryStudies.textContent = readableStudies(els.studies.value);
+  els.summaryDiagnosis.textContent = els.diagnosis.value || "Sin diagnóstico";
+}
+
+function readableStudies(value) {
+  const map = {
+    "ecg-labs-rx": "ECG + Laboratorio + RX",
+    "labs-rx": "Laboratorio + RX",
+    "labs": "Solo laboratorio",
+    "none": "Sin estudios aún"
+  };
+  return map[value] || value;
+}
+
+function setRibbonCard(el, value, mode) {
+  el.querySelector(".ribbon-value").textContent = value;
+  el.classList.remove("active", "done");
+  if (mode === "active") el.classList.add("active");
+  if (mode === "done") el.classList.add("done");
+}
+
+function setTimelineState(stepNumber, stateName) {
+  const step = document.querySelector(`.timeline-step[data-step="${stepNumber}"]`);
+  if (!step) return;
+  step.classList.remove("pending", "processing", "done");
+  step.classList.add(stateName);
+  const timeNode = document.getElementById(`time-step-${stepNumber}`);
+  if (stateName !== "pending" && timeNode) timeNode.textContent = formatShortTime();
+}
+
+function resetTimeline() {
+  document.querySelectorAll(".timeline-step").forEach((step) => {
+    step.classList.remove("processing", "done");
+    step.classList.add("pending");
+  });
+  for (let i = 1; i <= 5; i++) {
+    const timeNode = document.getElementById(`time-step-${i}`);
+    if (timeNode) timeNode.textContent = "--:--";
+  }
+}
+
+function setRoutePill(route) {
+  const pill = els.currentRoutePill;
+  pill.classList.remove("status-neutral", "status-warning", "status-success", "status-danger");
+
+  if (route === "ambulatorio") {
+    pill.textContent = "Ambulatorio recomendado";
+    pill.classList.add("status-success");
+  } else if (route === "observacion") {
+    pill.textContent = "Observación recomendada";
+    pill.classList.add("status-warning");
+  } else if (route === "hospitalizacion") {
+    pill.textContent = "Referencia hospitalaria";
+    pill.classList.add("status-danger");
+  } else {
+    pill.textContent = "Pendiente";
+    pill.classList.add("status-neutral");
+  }
+}
+
+function renderCriteria(listEl, items) {
+  listEl.innerHTML = "";
+  if (!items.length) {
+    listEl.innerHTML = `<li class="criteria-empty">No se activaron criterios.</li>`;
+    return;
+  }
+  items.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    listEl.appendChild(li);
+  });
+}
+
+function computeDecision() {
+  const triage = Number(els.triage.value);
+  const hr = Number(els.heartRate.value);
+  const sbp = Number(els.sbp.value);
+  const spo2 = Number(els.spo2.value);
+  const insurer = els.insurer.value;
+  const complaint = (els.chiefComplaint.value || "").toLowerCase();
+  const diagnosis = (els.diagnosis.value || "").toLowerCase();
+  const studies = els.studies.value;
+  const manualRoute = els.route.value;
+
+  const clinicalCriteria = [];
+  const financialCriteria = [];
+
+  let clinicalScore = 0;
+  let financialScore = 0;
+
+  if (complaint.includes("dolor torácico")) {
+    clinicalCriteria.push("Dolor torácico reportado en motivo de consulta");
+    clinicalScore += 22;
   }
 
-  if (caseData.admission === "observacion") {
-    return {
-      type: "route-observation",
-      title: "Decisión médica: Observación clínica",
-      text: "El paciente requiere observación, monitoreo y posible escalamiento. MoneyFlux conserva continuidad clínica, visibilidad operativa y validación financiera en curso."
-    };
+  if (complaint.includes("disnea")) {
+    clinicalCriteria.push("Disnea asociada al cuadro clínico");
+    clinicalScore += 16;
+  }
+
+  if (triage <= 2) {
+    clinicalCriteria.push("Triage alto: atención prioritaria");
+    clinicalScore += 22;
+  } else if (triage === 3) {
+    clinicalCriteria.push("Triage intermedio: requiere observación y reevaluación");
+    clinicalScore += 10;
+  }
+
+  if (hr > 110) {
+    clinicalCriteria.push("Frecuencia cardiaca elevada");
+    clinicalScore += 10;
+  }
+
+  if (sbp < 95) {
+    clinicalCriteria.push("Tensión arterial sistólica baja");
+    clinicalScore += 14;
+  }
+
+  if (spo2 < 90) {
+    clinicalCriteria.push("Desaturación clínicamente relevante");
+    clinicalScore += 18;
+  } else if (spo2 < 94) {
+    clinicalCriteria.push("Saturación limítrofe");
+    clinicalScore += 8;
+  }
+
+  if (studies === "ecg-labs-rx") {
+    clinicalCriteria.push("ECG y estudios iniciales completos disponibles");
+    clinicalScore += 8;
+  } else if (studies === "labs-rx") {
+    clinicalCriteria.push("Laboratorio e imagen inicial disponibles");
+    clinicalScore += 5;
+  }
+
+  if (
+    diagnosis.includes("coronario") ||
+    diagnosis.includes("agudo") ||
+    diagnosis.includes("evento")
+  ) {
+    clinicalCriteria.push("Sospecha de evento agudo en diagnóstico preliminar");
+    clinicalScore += 20;
+  }
+
+  if (insurer !== "Sin cobertura") {
+    financialCriteria.push(`Cobertura identificada con ${insurer}`);
+    financialScore += 30;
+
+    financialCriteria.push("Elegibilidad preliminar confirmada");
+    financialScore += 18;
+
+    financialCriteria.push("Autorización potencialmente gestionable");
+    financialScore += 16;
+  } else {
+    financialCriteria.push("Caso sin cobertura formal: requiere ruta alterna / contención financiera");
+    financialScore += 6;
+  }
+
+  if (triage <= 3) {
+    financialCriteria.push("Red hospitalaria disponible para escalamiento");
+    financialScore += 18;
+  }
+
+  if (studies !== "none") {
+    financialCriteria.push("Información diagnóstica suficiente para sustentar la decisión");
+    financialScore += 10;
+  }
+
+  if (triage <= 2 || clinicalScore >= 60) {
+    financialCriteria.push("Canal resolutivo de mayor capacidad activable");
+    financialScore += 16;
+  }
+
+  clinicalScore = Math.min(clinicalScore, 100);
+  financialScore = Math.min(financialScore, 100);
+
+  let route = "ambulatorio";
+  let resultLabel = "Manejo ambulatorio recomendado";
+  let confidence = "Confianza media";
+  let explanation = "";
+
+  if (manualRoute !== "auto") {
+    route = manualRoute;
+  } else {
+    if (clinicalScore >= 70 && financialScore >= 55) {
+      route = "hospitalizacion";
+    } else if (clinicalScore >= 38) {
+      route = "observacion";
+    } else {
+      route = "ambulatorio";
+    }
+  }
+
+  if (route === "hospitalizacion") {
+    resultLabel = "Hospitalización / referencia hospitalaria recomendada";
+    confidence = clinicalScore >= 80 ? "Alta confianza" : "Confianza media-alta";
+    explanation =
+      "MoneyFlux recomienda referencia hospitalaria porque el caso activa criterios de alto riesgo clínico y cuenta con condiciones operativas para escalarlo con trazabilidad, autorización y continuidad financiera.";
+  } else if (route === "observacion") {
+    resultLabel = "Observación clínica recomendada";
+    confidence = "Confianza media";
+    explanation =
+      "MoneyFlux recomienda observación porque el caso presenta señales intermedias o potencialmente evolutivas que justifican contención clínica, monitoreo corto y reevaluación antes de escalar o egresar.";
+  } else {
+    resultLabel = "Manejo ambulatorio recomendado";
+    confidence = "Confianza media";
+    explanation =
+      "MoneyFlux recomienda manejo ambulatorio porque la carga de riesgo clínico es controlable y no se activan suficientes criterios para justificar observación prolongada o referencia hospitalaria.";
   }
 
   return {
-    type: "route-hospital",
-    title: "Decisión médica: Hospitalización",
-    text: "Paciente con hallazgos que justifican referencia hospitalaria. MoneyFlux activa autorización, trazabilidad documental, coordinación operativa y arranque de conciliación financiera."
+    clinicalCriteria,
+    financialCriteria,
+    clinicalScore,
+    financialScore,
+    route,
+    resultLabel,
+    confidence,
+    explanation
   };
 }
 
-function renderDecision(initial = true) {
-  if (initial) {
-    decisionCard.className = "decision-card";
-    decisionCard.innerHTML = `
-      <div class="decision-title">Decisión médica</div>
-      <div class="decision-text">En espera de integración diagnóstica, validación financiera y definición de ruta clínica.</div>
-    `;
-    return;
+function updateExecutiveDashboard(decision) {
+  let hospital = "No requerido";
+  let cost = "$1,850 MXN";
+  let coverage = decision.financialScore >= 50 ? "82%" : "25%";
+  let transfer = "N/A";
+
+  if (decision.route === "observacion") {
+    hospital = "Observación Salud Digna / aliado local";
+    cost = "$6,500 MXN";
+    coverage = decision.financialScore >= 50 ? "78%" : "30%";
+    transfer = "15 min";
   }
 
-  const decision = getDecisionContent();
-  decisionCard.className = `decision-card ${decision.type}`;
-  decisionCard.innerHTML = `
-    <div class="decision-title">${decision.title}</div>
-    <div class="decision-text">${decision.text}</div>
-  `;
-}
-
-function getClinicalCriteria() {
-  const criteria = [];
-
-  if (caseData.patient.motivo.toLowerCase().includes("dolor")) {
-    criteria.push("Motivo de consulta con componente de dolor agudo.");
-  }
-
-  if (caseData.patient.motivo.toLowerCase().includes("respir")) {
-    criteria.push("Síntoma respiratorio asociado al episodio clínico.");
-  }
-
-  if (caseData.patient.triage === "Alto") {
-    criteria.push("Nivel de triage alto con priorización inmediata.");
-  } else if (caseData.patient.triage === "Medio") {
-    criteria.push("Nivel de triage medio con necesidad de evaluación estructurada.");
+  if (decision.route === "hospitalizacion") {
+    hospital = "Hospital aliado de segundo nivel";
+    cost = "$38,000 MXN";
+    coverage = decision.financialScore >= 50 ? "85%" : "40%";
+    transfer = "22 min";
+    state.authId = generateAuthId();
+  } else if (decision.route === "observacion") {
+    state.authId = "OBS-" + Math.floor(10000 + Math.random() * 90000);
   } else {
-    criteria.push("Nivel de triage bajo con menor probabilidad de escalamiento.");
+    state.authId = "AMB-" + Math.floor(10000 + Math.random() * 90000);
   }
 
-  if (caseData.selectedStudies.includes("ECG")) {
-    criteria.push("ECG integrado para valoración cardiovascular.");
-  }
-
-  if (caseData.selectedStudies.includes("Laboratorio")) {
-    criteria.push("Laboratorio disponible para soporte diagnóstico.");
-  }
-
-  if (currentStep >= 3) {
-    criteria.push("Cobertura y viabilidad financiera evaluadas por MoneyFlux.");
-  }
-
-  if (caseData.admission === "hospitalizacion") {
-    criteria.push("Red hospitalaria disponible para referencia inmediata.");
-  } else if (caseData.admission === "observacion") {
-    criteria.push("Ruta de observación activable con monitoreo continuo.");
-  } else {
-    criteria.push("Capacidad resolutiva local suficiente para cierre ambulatorio.");
-  }
-
-  return criteria.slice(0, 6);
+  els.kpiAuthId.textContent = state.authId;
+  els.kpiHospital.textContent = hospital;
+  els.kpiCost.textContent = cost;
+  els.kpiCoverage.textContent = coverage;
+  els.kpiTransfer.textContent = transfer;
 }
 
-function renderClinicalSummary() {
-  clinicalSummaryCard.innerHTML = `
-    <div class="summary-title">Resumen clínico ejecutivo</div>
+function renderDecision(decision) {
+  els.clinicalScore.textContent = decision.clinicalScore;
+  els.financialScore.textContent = decision.financialScore;
+  els.decisionResult.textContent = decision.resultLabel;
+  els.decisionConfidence.textContent = decision.confidence;
+  els.decisionExplanation.textContent = decision.explanation;
 
-    <div class="summary-grid">
-      <div class="summary-row">
-        <strong>Resumen del caso</strong>
-        <span>${caseData.patient.nombre}, ${caseData.patient.edad === "—" ? "edad no especificada" : `${caseData.patient.edad} años`}, ${caseData.patient.sexo.toLowerCase()}. Motivo principal: ${caseData.patient.motivo}.</span>
-      </div>
+  renderCriteria(els.clinicalCriteriaList, decision.clinicalCriteria);
+  renderCriteria(els.financialCriteriaList, decision.financialCriteria);
 
-      <div class="summary-row">
-        <strong>Impresión diagnóstica</strong>
-        <span>${caseData.patient.diagnostico}</span>
-      </div>
+  els.clinicalCount.textContent = decision.clinicalCriteria.length;
+  els.financialCount.textContent = decision.financialCriteria.length;
 
-      <div class="summary-row">
-        <strong>Ruta operativa sugerida</strong>
-        <span>${hospitalByRoute[caseData.admission]}.</span>
-      </div>
+  els.engineState.textContent = "Evaluado";
+  els.engineState.classList.add("ready");
 
-      <div class="summary-row">
-        <strong>Criterios activados</strong>
-        <div class="criteria-list">
-          ${getClinicalCriteria().map(item => `
-            <div class="criteria-item">
-              <div class="criteria-dot"></div>
-              <div>${item}</div>
-            </div>
-          `).join("")}
-        </div>
-      </div>
+  setRoutePill(decision.route);
+  updateExecutiveDashboard(decision);
+}
+
+function runFlow(decision) {
+  setRibbonCard(els.statusCaso, "Ingreso completado", "done");
+  setRibbonCard(els.statusFinanciero, "En validación", "active");
+  setRibbonCard(els.statusDecision, "Pendiente", "");
+  setRibbonCard(els.statusLiquidacion, "Pendiente", "");
+
+  resetTimeline();
+
+  setTimelineState(1, "done");
+  setTimelineState(2, "processing");
+
+  addLog(`Caso ${state.caseId} capturado en Salud Digna con motivo: ${els.chiefComplaint.value}.`);
+  addLog(`Paciente ${els.patientName.value}, ${els.patientAge.value} años, aseguradora: ${els.insurer.value}.`);
+
+  setTimeout(() => {
+    setTimelineState(2, "done");
+    setTimelineState(3, "processing");
+    setRibbonCard(els.statusFinanciero, "Validada", "done");
+    setRibbonCard(els.statusDecision, "Motor evaluando", "active");
+    addLog("Validación financiera concluida: elegibilidad y canal operativo revisados.");
+  }, 800);
+
+  setTimeout(() => {
+    setTimelineState(3, "done");
+    setTimelineState(4, "processing");
+    setRibbonCard(els.statusDecision, decision.resultLabel, "done");
+    addLog(`Motor de decisión activado. Resultado: ${decision.resultLabel}.`);
+  }, 1600);
+
+  setTimeout(() => {
+    setTimelineState(4, "done");
+    setTimelineState(5, "processing");
+
+    if (decision.route === "hospitalizacion") {
+      addLog(`Referencia hospitalaria activada. Destino: ${els.kpiHospital.textContent}. Autorización: ${state.authId}.`);
+    } else if (decision.route === "observacion") {
+      addLog("Ruta de observación clínica activada con seguimiento operativo y financiero.");
+    } else {
+      addLog("Ruta ambulatoria activada con cierre controlado y continuidad del caso.");
+    }
+  }, 2400);
+
+  setTimeout(() => {
+    setTimelineState(5, "done");
+    setRibbonCard(els.statusLiquidacion, "Caso consolidado", "done");
+    addLog(`Cierre ejecutivo del caso. Costo estimado ${els.kpiCost.textContent}, cobertura ${els.kpiCoverage.textContent}.`);
+  }, 3200);
+}
+
+function executeDecisionEngine() {
+  updateSummary();
+
+  state.currentDecision = computeDecision();
+  renderDecision(state.currentDecision);
+  runFlow(state.currentDecision);
+}
+
+function resetDemo() {
+  state.caseId = generateCaseId();
+  state.authId = "PENDIENTE";
+
+  els.caseIdChip.textContent = `Caso: ${state.caseId}`;
+  els.kpiCaseId.textContent = state.caseId;
+  els.kpiAuthId.textContent = "PENDIENTE";
+  els.kpiHospital.textContent = "Por definir";
+  els.kpiCost.textContent = "$0 MXN";
+  els.kpiCoverage.textContent = "0%";
+  els.kpiTransfer.textContent = "N/A";
+
+  setRibbonCard(els.statusCaso, "Captura inicial", "");
+  setRibbonCard(els.statusFinanciero, "Pendiente", "");
+  setRibbonCard(els.statusDecision, "Pendiente", "");
+  setRibbonCard(els.statusLiquidacion, "Pendiente", "");
+
+  resetTimeline();
+
+  els.clinicalScore.textContent = "0";
+  els.financialScore.textContent = "0";
+  els.decisionResult.textContent = "Pendiente";
+  els.decisionConfidence.textContent = "Sin decisión";
+  els.decisionExplanation.textContent =
+    "El motor mostrará aquí por qué MoneyFlux recomienda la ruta del caso y qué condiciones activaron la decisión.";
+  els.engineState.textContent = "Sin evaluar";
+  els.engineState.classList.remove("ready");
+
+  renderCriteria(els.clinicalCriteriaList, []);
+  renderCriteria(els.financialCriteriaList, []);
+  els.clinicalCount.textContent = "0";
+  els.financialCount.textContent = "0";
+
+  setRoutePill("pending");
+  els.caseLog.innerHTML = `
+    <div class="log-item">
+      <span class="log-time">--:--</span>
+      <p>Esperando ejecución del caso.</p>
     </div>
   `;
+
+  updateSummary();
+  startCaseTimer();
+  addLog("Demo reiniciado. Listo para nueva evaluación del caso.");
 }
 
-function getMetricsByRoute() {
-  const base = [
-    {
-      label: "Tiempo de triage",
-      value: currentStep >= 1 ? "4 min" : "Pendiente",
-      note: currentStep >= 1 ? "Clasificación completada en tiempo objetivo" : "En espera de clasificación"
-    },
-    {
-      label: "Cobertura",
-      value: currentStep >= 3 ? "Confirmada" : "Pendiente",
-      note: currentStep >= 3 ? "Elegibilidad financiera validada" : "En espera de validación"
-    }
-  ];
+function bindInputs() {
+  [
+    els.patientName,
+    els.patientAge,
+    els.patientSex,
+    els.insurer,
+    els.chiefComplaint,
+    els.triage,
+    els.heartRate,
+    els.sbp,
+    els.spo2,
+    els.studies,
+    els.diagnosis,
+    els.route
+  ].forEach((el) => {
+    el.addEventListener("input", updateSummary);
+    el.addEventListener("change", updateSummary);
+  });
+}
 
-  if (caseData.admission === "ambulatorio") {
-    return [
-      ...base,
-      {
-        label: "Ruta definida",
-        value: currentStep >= 4 ? "Ambulatorio" : "Pendiente",
-        note: "Resolución local con seguimiento"
-      },
-      {
-        label: "Costo estimado",
-        value: "$3.8K",
-        note: "Menor costo relativo del episodio"
-      },
-      {
-        label: "Tiempo estimado de resolución",
-        value: "45 min",
-        note: "Desde admisión hasta egreso"
-      },
-      {
-        label: "Liquidación",
-        value: currentStep >= 6 ? "Iniciada" : "En espera",
-        note: "Conciliación simplificada del evento"
-      }
-    ];
+function setMode(autoMode) {
+  state.autoMode = autoMode;
+  els.autoModeBtn.classList.toggle("btn-primary", autoMode);
+  els.autoModeBtn.classList.toggle("btn-secondary", !autoMode);
+
+  els.interactiveModeBtn.classList.toggle("btn-primary", !autoMode);
+  els.interactiveModeBtn.classList.toggle("btn-secondary", autoMode);
+
+  if (autoMode) {
+    els.route.value = "auto";
+    els.route.disabled = true;
+    addLog("Modo automático activo: la ruta se define por el motor.");
+  } else {
+    els.route.disabled = false;
+    addLog("Modo interactivo activo: se permite forzar ruta manual.");
   }
-
-  if (caseData.admission === "observacion") {
-    return [
-      ...base,
-      {
-        label: "Ruta definida",
-        value: currentStep >= 4 ? "Observación" : "Pendiente",
-        note: "Monitoreo y posible escalamiento"
-      },
-      {
-        label: "Costo estimado",
-        value: "$8.9K",
-        note: "Episodio intermedio con vigilancia"
-      },
-      {
-        label: "Tiempo estimado de resolución",
-        value: "2.5 h",
-        note: "Incluye observación clínica"
-      },
-      {
-        label: "Estado operativo",
-        value: currentStep >= 5 ? "Monitoreo activo" : "Pendiente",
-        note: "Seguimiento continuo del caso"
-      }
-    ];
-  }
-
-  return [
-    ...base,
-    {
-      label: "Ruta definida",
-      value: currentStep >= 4 ? "Hospitalización" : "Pendiente",
-      note: "Referencia a hospital aliado"
-    },
-    {
-      label: "Preautorización",
-      value: currentStep >= 4 ? "Autorizada" : "En proceso",
-      note: "Validación clínica-financiera activada"
-    },
-    {
-      label: "Hospital receptor",
-      value: currentStep >= 5 ? "Santa Elena" : "Pendiente",
-      note: "Red hospitalaria conectada"
-    },
-    {
-      label: "Liquidación",
-      value: currentStep >= 6 ? "En conciliación" : "Pendiente",
-      note: "Trazabilidad financiera iniciada"
-    }
-  ];
 }
 
-function renderMetrics() {
-  const metrics = getMetricsByRoute();
+function init() {
+  updateLiveClock();
+  setInterval(updateLiveClock, 1000);
 
-  metricsGrid.innerHTML = metrics.map((item) => `
-    <div class="metric-card">
-      <div class="metric-label">${item.label}</div>
-      <div class="metric-value">${item.value}</div>
-      <div class="metric-note">${item.note}</div>
-    </div>
-  `).join("");
+  els.caseIdChip.textContent = `Caso: ${state.caseId}`;
+  els.kpiCaseId.textContent = state.caseId;
+
+  bindInputs();
+  updateSummary();
+  startCaseTimer();
+  setMode(true);
+
+  els.autoModeBtn.addEventListener("click", () => setMode(true));
+  els.interactiveModeBtn.addEventListener("click", () => setMode(false));
+  els.runDecisionBtn.addEventListener("click", executeDecisionEngine);
+  els.resetBtn.addEventListener("click", resetDemo);
+
+  addLog("Demo inicializado. MoneyFlux listo para evaluar el caso.");
 }
 
-function getStepStatus(index) {
-  if (index < currentStep) return "done";
-  if (index === currentStep) return "active";
-  return "";
-}
-
-function getStepText(index) {
-  if (index < currentStep) return "Completado";
-  if (index === currentStep) return "En proceso";
-  return "Pendiente";
-}
-
-function enrichFlowDetail(step, index) {
-  if (index === 1) {
-    return `${step.detalle} ${caseData.patient.triage ? `Triage ${caseData.patient.triage.toLowerCase()}.` : ""}`;
-  }
-
-  if (index === 2) {
-    const selected = caseData.selectedStudies.length ? caseData.selectedStudies.join(", ") : "sin estudios cargados";
-    return `${step.detalle} Estudios integrados: ${selected}.`;
-  }
-
-  if (index === 4) {
-    if (caseData.admission === "ambulatorio") {
-      return "Se confirma manejo ambulatorio con control local, egreso supervisado y trazabilidad financiera.";
-    }
-    if (caseData.admission === "observacion") {
-      return "Se confirma observación clínica con monitoreo, capacidad de escalamiento y visibilidad financiera.";
-    }
-    return "Se confirma necesidad de hospitalización, autorización médica y preparación de referencia hospitalaria.";
-  }
-
-  if (index === 5) {
-    if (caseData.admission === "ambulatorio") {
-      return "El paciente continúa en canal local con indicaciones, seguimiento y cierre operacional.";
-    }
-    if (caseData.admission === "observacion") {
-      return "El caso permanece bajo observación con continuidad clínica y control de tiempos.";
-    }
-    return `El paciente es referido a ${hospitalByRoute[caseData.admission]} con expediente clínico, estudios y trazabilidad del episodio.`;
-  }
-
-  return step.detalle;
-}
-
-function renderFlow() {
-  const steps = getFlowSteps();
-
-  flowBoard.innerHTML = steps.map((step, index) => {
-    const status = getStepStatus(index);
-    const focusClass = index === 4 ? "decision-focus" : "";
-
-    return `
-      <div class="flow-step ${status} ${focusClass}">
-        <div class="step-top">
-          <div class="step-number">${step.numero}</div>
-          <div class="step-status">${getStepText(index)}</div>
-        </div>
-        <div class="step-title">${step.titulo}</div>
-        <div class="step-detail">${enrichFlowDetail(step, index)}</div>
-        <div class="step-time">${getStepTime(index)}</div>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderOrchestrationStrip() {
-  const stageState = [
-    currentStep >= 0 ? (currentStep <= 2 ? "active" : "done") : "pending",
-    currentStep === 3 ? "active" : currentStep > 3 ? "done" : "pending",
-    currentStep === 4 ? "active" : currentStep > 4 ? "done" : "pending",
-    currentStep >= 5 && currentStep <= 6 ? "active" : currentStep > 6 ? "done" : "pending"
-  ];
-
-  orchestrationStrip.innerHTML = orchestrationTemplate.map((item, index) => {
-    const state = stageState[index];
-    const statusText = state === "done" ? item.done : state === "active" ? item.active : item.pending;
-
-    return `
-      <div class="strip-card ${state}">
-        <div class="strip-label">${item.label}</div>
-        <div class="strip-title">${item.title}</div>
-        <div class="strip-status">${statusText}</div>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderActors() {
-  const actors = [
-    {
-      name: "Salud Digna",
-      status: currentStep >= 2 ? "done" : currentStep >= 0 ? "active" : "pending",
-      text: currentStep >= 2 ? "Evaluación completada" : currentStep >= 0 ? "Recepción y triage" : "Pendiente"
-    },
-    {
-      name: "MoneyFlux",
-      status: currentStep >= 4 ? "done" : currentStep >= 3 ? "active" : "pending",
-      text: currentStep >= 4 ? "Ruta y validación definidas" : currentStep >= 3 ? "Validando cobertura" : "Pendiente"
-    },
-    {
-      name: "Aseguradora",
-      status: currentStep >= 4 ? "done" : currentStep >= 3 ? "active" : "pending",
-      text: currentStep >= 4 ? "Cobertura confirmada" : currentStep >= 3 ? "Revisión de elegibilidad" : "Pendiente"
-    },
-    {
-      name: caseData.admission === "hospitalizacion" ? "Hospital aliado" : "Destino operativo",
-      status: currentStep >= 5 ? "done" : currentStep >= 5 ? "active" : "pending",
-      text: currentStep >= 5 ? hospitalByRoute[caseData.admission] : "Pendiente"
-    }
-  ];
-
-  actorsGrid.innerHTML = actors.map(actor => `
-    <div class="actor-item">
-      <div class="actor-name">${actor.name}</div>
-      <div class="actor-status ${actor.status}">${actor.text}</div>
-    </div>
-  `).join("");
-}
-
-function getActivityItems() {
-  const items = [];
-
-  if (currentStep >= 0) {
-    items.push({
-      time: getStepTime(0),
-      text: `Caso ${caseId} creado para ${caseData.patient.nombre}.`
-    });
-  }
-
-  if (currentStep >= 1) {
-    items.push({
-      time: getStepTime(1),
-      text: `Triage ${caseData.patient.triage.toLowerCase()} capturado con ${caseData.patient.vitals}.`
-    });
-  }
-
-  if (currentStep >= 2) {
-    items.push({
-      time: getStepTime(2),
-      text: `Estudios integrados al expediente: ${caseData.selectedStudies.join(", ") || "sin estudios"}.
+init();
