@@ -21,7 +21,10 @@
 
         <div class="title-wrap">
           <h1>Modelo de Urgencias con Diagnóstico Previo</h1>
-          <p>Demo clínico-financiero para atención inicial, resolución ambulatoria y traslado hospitalario coordinado.</p>
+          <p>
+            Flujo clínico-financiero para atención inicial en Salud Digna,
+            resolución ambulatoria y traslado hospitalario coordinado con expediente digital.
+          </p>
         </div>
       </div>
 
@@ -69,8 +72,32 @@
           <div class="mini-card">
             <div class="mini-label">Lógica operativa</div>
             <div class="mini-value rules-copy">
-              Todo paciente entra por Salud Digna. Solo se envía al hospital lo necesario.
-              Máximo permitido en clínica: 2 horas. Todo caso tiene liquidación financiera.
+              Todo paciente entra por Salud Digna. Se clasifica por triage bajo,
+              medio o alto. Solo se envía al hospital lo necesario. Tiempo máximo
+              en clínica: 2 horas. Todo caso debe cerrar con resolución clínica y
+              liquidación financiera.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="block-title">Estado ejecutivo del caso</h3>
+          <div class="summary-grid">
+            <div class="mini-card">
+              <div class="mini-label">Triage</div>
+              <div class="mini-value" id="summaryTriage">Medio</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Diagnóstico</div>
+              <div class="mini-value" id="summaryDiagnosis">Dolor abdominal en estudio</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Decisión</div>
+              <div class="mini-value" id="summaryDecision">Observación clínica</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Seguro</div>
+              <div class="mini-value" id="summaryCoverage">Con seguro</div>
             </div>
           </div>
         </div>
@@ -81,7 +108,9 @@
           <div class="screen-header">
             <div>
               <h2 id="screenTitle">Pantalla 1 — Admisión</h2>
-              <p id="screenDescription">Registro del paciente, motivo de atención y validación de cobertura.</p>
+              <p id="screenDescription">
+                Registro del paciente, motivo de atención y validación de cobertura.
+              </p>
             </div>
             <div class="badge" id="stepBadge">Paso 1 de 10</div>
           </div>
@@ -95,6 +124,108 @@
             </div>
             <div class="toolbar-right">
               <button class="btn btn-secondary" id="recalcBtn">Actualizar decisión</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-card">
+          <div class="screen-header">
+            <div>
+              <h2>Motor clínico-financiero visible</h2>
+              <p>
+                Resumen del caso en tiempo real para toma de decisión médica,
+                operativa y financiera.
+              </p>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="mini-card">
+              <div class="mini-label">Nivel de triage</div>
+              <div class="mini-value" id="caseTriage">Medio</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Estudios realizados</div>
+              <div class="mini-value" id="caseStudies">RX + Laboratorio</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Diagnóstico preliminar</div>
+              <div class="mini-value" id="caseDiagnosis">Pendiente de confirmación</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Decisión médica</div>
+              <div class="mini-value" id="caseMedicalDecision">Continuar evaluación</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Resolución financiera</div>
+              <div class="mini-value" id="caseFinancialDecision">Validando cobertura</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Tipo de traslado</div>
+              <div class="mini-value" id="caseTransfer">No requerido</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-card">
+          <div class="screen-header">
+            <div>
+              <h2>Expediente digital y estudios</h2>
+              <p>
+                Los estudios y el diagnóstico pueden cargarse en plataforma para consulta
+                clínica y para hospital receptor cuando aplique.
+              </p>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="mini-card">
+              <div class="mini-label">RX</div>
+              <div class="mini-value" id="fileRx">Cargado</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Laboratorio</div>
+              <div class="mini-value" id="fileLab">Cargado</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Nota clínica</div>
+              <div class="mini-value" id="fileNote">Disponible</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Compartido con hospital</div>
+              <div class="mini-value" id="fileShared">No aplica</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-card">
+          <div class="screen-header">
+            <div>
+              <h2>Resolución de traslado</h2>
+              <p>
+                Cuando el caso escala a hospital, el traslado puede realizarse de forma
+                coordinada o por sus propios medios, con hospital validado por póliza y
+                expediente enviado.
+              </p>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="mini-card">
+              <div class="mini-label">¿Requiere hospital?</div>
+              <div class="mini-value" id="transferRequired">No</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Hospital destino</div>
+              <div class="mini-value" id="transferHospital">No aplica</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Medio de traslado</div>
+              <div class="mini-value" id="transferMode">Sin traslado</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">Expediente enviado</div>
+              <div class="mini-value" id="transferFileStatus">No aplica</div>
             </div>
           </div>
         </section>
@@ -131,9 +262,27 @@
             </div>
 
             <div class="kpi-card">
-              <div class="kpi-label">Costo promedio</div>
-              <div class="kpi-value" id="kpiCost">$3,850</div>
-              <div class="kpi-note">Costo total por caso</div>
+              <div class="kpi-label">% con seguro activo</div>
+              <div class="kpi-value" id="kpiInsured">61%</div>
+              <div class="kpi-note">Cobertura validada</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">% ambulatorio con copago</div>
+              <div class="kpi-value" id="kpiCopay">42%</div>
+              <div class="kpi-note">% del deducible / copago</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">% hospitalario con deducible</div>
+              <div class="kpi-value" id="kpiDeductible">18%</div>
+              <div class="kpi-note">Pago en hospital según póliza</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">% expedientes compartidos</div>
+              <div class="kpi-value" id="kpiShared">100%</div>
+              <div class="kpi-note">Con estudios y diagnóstico</div>
             </div>
           </div>
         </section>
