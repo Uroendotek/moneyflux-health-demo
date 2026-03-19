@@ -3,1997 +3,1723 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoneyFlux Health Platform - Modelo de Urgencias con Diagnóstico Previo</title>
+  <title>MoneyFlux Health Platform | Modelo de Urgencias con Diagnóstico Previo</title>
+
   <style>
     :root{
       --bg:#f4f7fb;
       --card:#ffffff;
       --line:#d8e1ee;
+      --line-strong:#c5d4e6;
       --text:#16324f;
       --muted:#6b7b8f;
+
       --primary:#0d5cab;
       --primary-2:#2d7dd2;
+      --primary-soft:#eaf3ff;
+
       --success:#1f8f5f;
       --success-soft:#e8f7ef;
+
       --warning:#b7791f;
       --warning-soft:#fff6e5;
+
       --danger:#c0392b;
       --danger-soft:#fdeceb;
+
       --blue-route:#1d4ed8;
       --red-route:#dc2626;
-      --shadow:0 8px 24px rgba(16, 39, 68, 0.08);
+
+      --shadow:0 10px 30px rgba(16, 39, 68, 0.08);
+      --shadow-soft:0 6px 18px rgba(16, 39, 68, 0.06);
       --radius:18px;
+      --radius-sm:12px;
     }
 
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Arial,Helvetica,sans-serif;
+    }
+
     button,input,select,textarea{font:inherit}
 
     .app{
-      max-width:1500px;
+      max-width:1520px;
       margin:0 auto;
       padding:20px;
     }
 
-    .header{
-      background:#ffffff;
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:18px 22px;
-      box-shadow:var(--shadow);
-      margin-bottom:18px;
-    }
-
-    .header-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      flex-wrap:wrap;
-    }
-
-    .brand-wrap{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      flex-wrap:wrap;
-      min-width:0;
-    }
-
-    .logos-row{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      flex-wrap:wrap;
-    }
-
-    .logo-box{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#fff;
-      border:1px solid #dbe5f1;
-      border-radius:16px;
-      padding:10px 16px;
-      min-height:78px;
-      min-width:170px;
-    }
-
-    .logo-box img{
-      display:block;
-      width:auto;
-      object-fit:contain;
-    }
-
-    .logo-box.logo-mfh img{
-      max-height:42px;
-      max-width:170px;
-    }
-
-    .logo-box.logo-sd img{
-      max-height:48px;
-      max-width:170px;
-    }
-
-    .title-wrap h1{
-      margin:0 0 6px;
-      font-size:28px;
-      line-height:1.1;
-      color:#12385d;
-    }
-
-    .title-wrap p{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .header-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      border:none;
-      border-radius:12px;
-      padding:12px 16px;
-      cursor:pointer;
-      transition:.2s ease;
-      font-weight:700;
-    }
-
-    .btn:hover{transform:translateY(-1px)}
-    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-
-    .btn-light{
-      background:#eaf3ff;
-      color:var(--primary);
-      border:1px solid #cfe0f5;
-    }
-
-    .btn-dark{
-      background:#0d5cab;
-      color:#fff;
-    }
-
-    .btn-outline{
-      background:#fff;
-      color:#0d5cab;
-      border:1px solid #c7d8eb;
-    }
-
-    .top-kpis{
-      margin-top:18px;
-      display:grid;
-      grid-template-columns:repeat(6,1fr);
-      gap:12px;
-    }
-
-    .kpi-card{
-      background:#f8fbff;
-      border:1px solid #dde8f4;
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .kpi-label{
-      font-size:12px;
-      color:#6f8298;
-      margin-bottom:6px;
-      text-transform:uppercase;
-      letter-spacing:.4px;
-    }
-
-    .kpi-value{
-      font-size:20px;
-      font-weight:700;
-      color:#12385d;
-    }
-
-    .layout{
-      display:grid;
-      grid-template-columns:300px 1fr 340px;
-      gap:18px;
-      align-items:start;
-    }
-
-    .panel{
+    .card{
       background:var(--card);
       border:1px solid var(--line);
       border-radius:var(--radius);
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
     }
 
-    .panel-header{
-      padding:18px 18px 0;
-    }
-
-    .panel-header h3{
-      margin:0 0 6px;
-      font-size:18px;
-    }
-
-    .panel-header p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .panel-body{
-      padding:18px;
-    }
-
-    .timeline{
-      position:sticky;
-      top:16px;
-    }
-
-    .timeline-list{
-      list-style:none;
-      margin:18px 0 0;
-      padding:0;
-      position:relative;
-    }
-
-    .timeline-list::before{
-      content:"";
-      position:absolute;
-      left:17px;
-      top:4px;
-      bottom:4px;
-      width:3px;
-      background:#dbe6f3;
-      border-radius:4px;
-    }
-
-    .timeline-item{
-      position:relative;
-      padding-left:46px;
-      padding-bottom:18px;
-    }
-
-    .timeline-item:last-child{padding-bottom:0}
-
-    .timeline-dot{
-      position:absolute;
-      left:7px;
-      top:0;
-      width:22px;
-      height:22px;
-      border-radius:50%;
-      border:3px solid #c9d7e8;
-      background:#fff;
-      z-index:1;
-    }
-
-    .timeline-item.done .timeline-dot{
-      background:var(--success);
-      border-color:var(--success);
-    }
-
-    .timeline-item.active .timeline-dot{
-      background:var(--primary);
-      border-color:var(--primary);
-      box-shadow:0 0 0 6px rgba(13,92,171,.12);
-    }
-
-    .timeline-item.route-blue .timeline-dot{
-      background:var(--blue-route);
-      border-color:var(--blue-route);
-    }
-
-    .timeline-item.route-red .timeline-dot{
-      background:var(--red-route);
-      border-color:var(--red-route);
-    }
-
-    .timeline-step{
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:4px;
-    }
-
-    .timeline-title{
+    .section-title{
+      margin:0 0 10px;
+      font-size:1.1rem;
       font-weight:700;
-      margin-bottom:4px;
+      color:var(--text);
     }
 
-    .timeline-desc{
+    .section-subtitle{
+      margin:0;
+      font-size:0.92rem;
       color:var(--muted);
-      font-size:13px;
       line-height:1.45;
     }
 
-    .main-stage .panel-body{
-      padding-top:12px;
+    /* HEADER */
+    .topbar{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:18px;
+      align-items:center;
+      padding:18px 20px;
+      margin-bottom:18px;
+      background:linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
     }
 
-    .stage-head{
+    .brand-logos{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      min-width:280px;
+    }
+
+    .brand-logos img{
+      display:block;
+      object-fit:contain;
+      height:46px;
+      max-width:180px;
+      width:auto;
+    }
+
+    .brand-divider{
+      width:1px;
+      height:42px;
+      background:var(--line);
+    }
+
+    .hero-copy{
+      min-width:0;
+    }
+
+    .hero-eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--primary-soft);
+      color:var(--primary);
+      font-size:0.78rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .hero-title{
+      margin:0;
+      font-size:1.55rem;
+      line-height:1.15;
+      letter-spacing:-0.02em;
+    }
+
+    .hero-desc{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:0.95rem;
+      line-height:1.45;
+      max-width:780px;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:0.2s ease;
+      box-shadow:none;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+
+    .btn-primary{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--line-strong);
+    }
+
+    .btn-success{
+      background:var(--success);
+      color:#fff;
+    }
+
+    .btn-danger{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    /* TOP KPI ROW */
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .kpi{
+      padding:16px;
+      min-height:112px;
+    }
+
+    .kpi-label{
+      font-size:0.82rem;
+      color:var(--muted);
+      margin-bottom:10px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+    }
+
+    .kpi-value{
+      font-size:1.45rem;
+      font-weight:800;
+      line-height:1.1;
+      margin-bottom:8px;
+    }
+
+    .kpi-note{
+      color:var(--muted);
+      font-size:0.86rem;
+      line-height:1.35;
+    }
+
+    /* MAIN EXEC SUMMARY */
+    .summary-grid{
+      display:grid;
+      grid-template-columns:2.1fr 1.2fr 1.2fr;
+      gap:18px;
+      margin-bottom:18px;
+    }
+
+    .summary-card{
+      padding:18px;
+    }
+
+    .patient-header{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:16px;
+      gap:14px;
+      margin-bottom:14px;
     }
 
-    .stage-title{
+    .patient-name{
       margin:0;
-      font-size:26px;
-      line-height:1.15;
+      font-size:1.35rem;
+      font-weight:800;
+      line-height:1.1;
     }
 
-    .stage-subtitle{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .badge{
+    .patient-exp{
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      padding:8px 12px;
+      gap:8px;
+      padding:8px 10px;
       border-radius:999px;
-      font-size:12px;
+      background:#f8fbff;
+      border:1px solid var(--line);
+      color:var(--primary);
+      font-size:0.85rem;
       font-weight:700;
       white-space:nowrap;
     }
 
-    .badge.info{background:#e9f2ff;color:#0d5cab}
-    .badge.success{background:var(--success-soft);color:var(--success)}
-    .badge.warning{background:var(--warning-soft);color:var(--warning)}
-    .badge.danger{background:var(--danger-soft);color:var(--danger)}
-    .badge.neutral{background:#eef3f9;color:#49627c}
-
-    .grid{
+    .patient-grid{
       display:grid;
-      grid-template-columns:repeat(12,1fr);
-      gap:14px;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:12px;
+      margin-bottom:14px;
     }
 
-    .col-12{grid-column:span 12}
-    .col-8{grid-column:span 8}
-    .col-7{grid-column:span 7}
-    .col-6{grid-column:span 6}
-    .col-5{grid-column:span 5}
-    .col-4{grid-column:span 4}
-    .col-3{grid-column:span 3}
+    .mini-field{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:#fcfdff;
+    }
 
-    .field{
+    .mini-field-label{
+      font-size:0.75rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+      margin-bottom:6px;
+      font-weight:700;
+    }
+
+    .mini-field-value{
+      font-size:1rem;
+      font-weight:700;
+      line-height:1.25;
+    }
+
+    .chief-complaint{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fbfdff;
+    }
+
+    .chief-complaint p{
+      margin:6px 0 0;
+      color:var(--muted);
+      line-height:1.45;
+      font-size:0.95rem;
+    }
+
+    .decision-card{
+      padding:18px;
+      background:linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    }
+
+    .decision-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:0.82rem;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+
+    .decision-badge.medium{
+      background:var(--warning-soft);
+      color:var(--warning);
+    }
+
+    .decision-title{
+      margin:0 0 8px;
+      font-size:1.45rem;
+      line-height:1.15;
+      font-weight:800;
+    }
+
+    .decision-desc{
+      color:var(--muted);
+      font-size:0.94rem;
+      line-height:1.5;
+      margin-bottom:16px;
+    }
+
+    .decision-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .decision-item{
       display:flex;
-      flex-direction:column;
+      justify-content:space-between;
+      gap:14px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid var(--line);
+      font-size:0.92rem;
+    }
+
+    .finance-card{
+      padding:18px;
+      background:linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    }
+
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:0.82rem;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+
+    .status-pill.success{
+      background:var(--success-soft);
+      color:var(--success);
+    }
+
+    .status-pill.warning{
+      background:var(--warning-soft);
+      color:var(--warning);
+    }
+
+    .finance-rule{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .finance-row{
+      padding:10px 12px;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .finance-row strong{
+      display:block;
+      font-size:0.92rem;
+      margin-bottom:4px;
+    }
+
+    .finance-row span{
+      color:var(--muted);
+      font-size:0.9rem;
+      line-height:1.4;
+    }
+
+    /* TIMELINE */
+    .timeline-card{
+      padding:18px;
+      margin-bottom:18px;
+    }
+
+    .timeline-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:16px;
+    }
+
+    .timeline{
+      display:grid;
+      grid-template-columns:repeat(7, minmax(0,1fr));
+      gap:12px;
+    }
+
+    .step{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 12px;
+      min-height:110px;
+      background:#fff;
+    }
+
+    .step.active{
+      border-color:var(--primary-2);
+      box-shadow:0 0 0 3px rgba(45,125,210,0.10);
+      background:#f8fbff;
+    }
+
+    .step.done{
+      background:#f7fcf9;
+      border-color:#cfe9dc;
+    }
+
+    .step-num{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:#eef4fb;
+      color:var(--primary);
+      font-size:0.82rem;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    .step.active .step-num{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .step.done .step-num{
+      background:var(--success);
+      color:#fff;
+    }
+
+    .step-title{
+      font-size:0.95rem;
+      font-weight:800;
+      margin-bottom:6px;
+      line-height:1.25;
+    }
+
+    .step-desc{
+      color:var(--muted);
+      font-size:0.84rem;
+      line-height:1.35;
+    }
+
+    /* CONTENT GRID */
+    .content-grid{
+      display:grid;
+      grid-template-columns:1.5fr 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .left-stack,
+    .right-stack{
+      display:grid;
+      gap:18px;
+    }
+
+    .screen-card,
+    .studies-card,
+    .log-card,
+    .metrics-card{
+      padding:18px;
+    }
+
+    .screen-toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:16px;
+    }
+
+    .tabs{
+      display:flex;
+      flex-wrap:wrap;
       gap:8px;
     }
 
-    .field label{
-      font-size:13px;
-      font-weight:700;
-      color:#244463;
-    }
-
-    .field input,
-    .field select,
-    .field textarea{
-      border:1px solid #cfdceb;
+    .tab{
+      padding:10px 12px;
       border-radius:12px;
-      padding:12px 14px;
       background:#fff;
+      border:1px solid var(--line);
       color:var(--text);
-      outline:none;
-      transition:.2s ease;
+      font-weight:700;
+      cursor:pointer;
     }
 
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus{
-      border-color:#7fb1e3;
-      box-shadow:0 0 0 4px rgba(45,125,210,.12);
+    .tab.active{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
     }
 
-    .field textarea{
-      min-height:96px;
-      resize:vertical;
+    .screen-body{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      padding:18px;
+      min-height:420px;
     }
 
-    .option-group{
+    .screen-header{
       display:flex;
-      flex-wrap:wrap;
-      gap:10px;
+      justify-content:space-between;
+      gap:14px;
+      align-items:flex-start;
+      margin-bottom:16px;
+    }
+
+    .screen-title{
+      margin:0;
+      font-size:1.18rem;
+      font-weight:800;
+    }
+
+    .screen-caption{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:0.92rem;
+      line-height:1.45;
     }
 
     .chip{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      border:1px solid #cfdceb;
-      background:#fff;
+      padding:8px 10px;
       border-radius:999px;
-      padding:10px 14px;
-      cursor:pointer;
-      user-select:none;
+      background:#f7faff;
+      border:1px solid var(--line);
+      color:var(--primary);
+      font-size:0.8rem;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    .field label{
+      font-size:0.85rem;
       font-weight:700;
-      color:#274867;
+      color:var(--text);
     }
 
-    .chip input{
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      border:1px solid var(--line-strong);
+      border-radius:12px;
+      background:#fff;
+      padding:12px 14px;
+      outline:none;
+      color:var(--text);
+    }
+
+    .field textarea{
+      min-height:90px;
+      resize:vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus{
+      border-color:var(--primary-2);
+      box-shadow:0 0 0 3px rgba(45,125,210,0.10);
+    }
+
+    .triage-row{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .triage-card{
+      border-radius:14px;
+      padding:14px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+
+    .triage-card h4{
+      margin:0 0 8px;
+      font-size:0.95rem;
+    }
+
+    .triage-card p{
       margin:0;
-      accent-color:var(--primary);
+      color:var(--muted);
+      font-size:0.86rem;
+      line-height:1.4;
     }
 
-    .card-soft{
-      border:1px solid #d8e6f5;
-      background:#f8fbff;
+    .triage-low{border-left:5px solid var(--success)}
+    .triage-mid{border-left:5px solid var(--warning)}
+    .triage-high{border-left:5px solid var(--danger)}
+
+    /* STUDIES */
+    .study-upload{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .upload-box{
+      flex:1 1 220px;
+      border:1.5px dashed var(--line-strong);
       border-radius:16px;
       padding:14px;
+      background:#fcfdff;
     }
 
-    .stat-row{
+    .upload-box h4{
+      margin:0 0 8px;
+      font-size:0.95rem;
+    }
+
+    .upload-box p{
+      margin:0;
+      color:var(--muted);
+      font-size:0.85rem;
+      line-height:1.4;
+    }
+
+    .study-list{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
       gap:12px;
     }
 
-    .mini-stat{
-      border:1px solid #e2ebf5;
-      border-radius:14px;
-      padding:12px;
-      background:#fff;
-    }
-
-    .mini-stat .label{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:6px;
-    }
-
-    .mini-stat .value{
-      font-size:22px;
-      font-weight:700;
-    }
-
-    .decision-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .decision-btn{
-      flex:1 1 220px;
-      min-width:180px;
-    }
-
-    .decision-btn.good{background:#edf8f2;color:#176c47;border:1px solid #b9e6cb}
-    .decision-btn.warn{background:#fff8ea;color:#986111;border:1px solid #ead196}
-    .decision-btn.bad{background:#fdeeed;color:#b63c2e;border:1px solid #f2c1bc}
-
-    .alert{
-      border-radius:14px;
-      padding:14px 16px;
-      margin-top:10px;
-      font-weight:700;
-      line-height:1.5;
-    }
-
-    .alert.info{background:#edf5ff;color:#0d5cab;border:1px solid #cde0f8}
-    .alert.success{background:var(--success-soft);color:var(--success);border:1px solid #bfe7d0}
-    .alert.warning{background:var(--warning-soft);color:var(--warning);border:1px solid #f0d8a9}
-    .alert.danger{background:var(--danger-soft);color:var(--danger);border:1px solid #f2c0bd}
-
-    .uploads-list,
-    .finance-list{
-      display:grid;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .upload-item,
-    .finance-item{
-      border:1px solid #dfebf7;
-      background:#fff;
-      border-radius:14px;
-      padding:12px 14px;
-    }
-
-    .upload-head,
-    .finance-head{
+    .study-item{
       display:flex;
       justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-bottom:6px;
-    }
-
-    .upload-title,
-    .finance-title,
-    .study-title{
-      font-weight:700;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
-    }
-
-    .vitals-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .vital{
-      border:1px solid #e1ebf6;
+      gap:14px;
+      padding:14px;
+      border:1px solid var(--line);
       border-radius:14px;
-      padding:12px;
       background:#fff;
-      text-align:center;
     }
 
-    .vital .vital-label{
-      font-size:12px;
-      color:var(--muted);
+    .study-item-title{
+      font-size:0.95rem;
+      font-weight:800;
       margin-bottom:6px;
     }
 
-    .vital .vital-value{
-      font-size:20px;
+    .study-item-meta{
+      color:var(--muted);
+      font-size:0.85rem;
+      line-height:1.4;
+    }
+
+    .study-view{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      align-self:center;
+    }
+
+    /* METRICS / SIDE */
+    .metrics-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .mini-kpi{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+      min-height:100px;
+    }
+
+    .mini-kpi .label{
+      font-size:0.76rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+      margin-bottom:8px;
       font-weight:700;
     }
 
-    .time-box{
-      border:2px dashed #b7cae1;
-      border-radius:18px;
-      padding:18px;
-      text-align:center;
+    .mini-kpi .value{
+      font-size:1.18rem;
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .mini-kpi .desc{
+      color:var(--muted);
+      font-size:0.84rem;
+      line-height:1.35;
+    }
+
+    .route-box{
+      margin-top:14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .route-head{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      font-weight:800;
       background:#fbfdff;
     }
 
-    .time-big{
-      font-size:42px;
-      font-weight:700;
-      color:#103b66;
-      margin:8px 0;
+    .route-flow{
+      display:grid;
+      gap:0;
     }
 
-    .time-rule{
+    .route-flow .route-node{
+      padding:14px;
+      border-top:1px solid var(--line);
+      font-size:0.92rem;
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .route-flow .route-node:first-child{
+      border-top:none;
+    }
+
+    .route-node strong{
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .route-node span{
       color:var(--muted);
-      font-size:14px;
+      font-size:0.86rem;
+      line-height:1.35;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:8px;
-      background:#fff;
-      border-radius:14px;
-      overflow:hidden;
-    }
-
-    th,td{
-      text-align:left;
-      padding:12px 10px;
-      border-bottom:1px solid #e6edf6;
-      font-size:14px;
-    }
-
-    th{
-      background:#f6f9fd;
-      color:#385677;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.4px;
-    }
-
-    tr:last-child td{border-bottom:none}
-
-    .right-panel{
-      position:sticky;
-      top:16px;
-    }
-
+    /* LOG */
     .log-list{
       display:grid;
       gap:10px;
-      margin-top:16px;
-      max-height:420px;
+      margin-top:14px;
+      max-height:520px;
       overflow:auto;
       padding-right:4px;
     }
 
     .log-item{
-      border-left:4px solid #bfd3ea;
-      background:#f9fbfe;
-      border-radius:12px;
-      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      background:#fff;
     }
 
     .log-time{
-      font-size:11px;
+      font-size:0.78rem;
       color:var(--muted);
+      font-weight:700;
       margin-bottom:6px;
     }
 
     .log-text{
-      font-size:14px;
-      line-height:1.5;
-      color:#23415f;
+      font-size:0.92rem;
+      line-height:1.45;
+      color:var(--text);
     }
 
-    .nav-actions{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
+    /* FOOTER NOTE */
+    .footer-note{
       margin-top:18px;
-      flex-wrap:wrap;
-    }
-
-    .step-pills{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:14px;
-    }
-
-    .step-pill{
-      border:none;
-      padding:8px 12px;
-      border-radius:999px;
-      background:#eef4fb;
-      color:#335170;
-      cursor:pointer;
-      font-size:12px;
-      font-weight:700;
-    }
-
-    .step-pill.active{
-      background:#d9eaff;
-      color:#0d5cab;
-    }
-
-    .route-banner{
-      padding:14px 16px;
+      padding:16px 18px;
       border-radius:16px;
-      font-weight:700;
-      margin-bottom:14px;
+      background:#f8fbff;
+      border:1px solid var(--line);
+      color:var(--muted);
+      line-height:1.5;
+      font-size:0.9rem;
     }
 
-    .route-banner.blue{
-      background:#eef4ff;
-      color:var(--blue-route);
-      border:1px solid #c7d8ff;
+    /* RESPONSIVE */
+    @media (max-width: 1280px){
+      .kpi-grid{grid-template-columns:repeat(3, minmax(0,1fr))}
+      .summary-grid{grid-template-columns:1fr}
+      .content-grid{grid-template-columns:1fr}
+      .timeline{grid-template-columns:repeat(4, minmax(0,1fr))}
     }
 
-    .route-banner.red{
-      background:#fff0f0;
-      color:var(--red-route);
-      border:1px solid #f2c2c2;
+    @media (max-width: 920px){
+      .topbar{
+        grid-template-columns:1fr;
+        align-items:flex-start;
+      }
+
+      .hero-actions{
+        justify-content:flex-start;
+      }
+
+      .patient-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .form-grid{grid-template-columns:1fr}
+      .triage-row{grid-template-columns:1fr}
+      .timeline{grid-template-columns:repeat(2, minmax(0,1fr))}
     }
 
-    @media (max-width:1200px){
-      .layout{grid-template-columns:1fr}
-      .timeline,.right-panel{position:static}
-      .top-kpis{grid-template-columns:repeat(3,1fr)}
-    }
-
-    @media (max-width:760px){
-      .top-kpis{grid-template-columns:repeat(2,1fr)}
-      .vitals-grid{grid-template-columns:repeat(2,1fr)}
-      .stat-row{grid-template-columns:1fr}
-      .grid [class*="col-"]{grid-column:span 12}
-      .stage-title{font-size:22px}
-      .time-big{font-size:34px}
-      .logo-box{min-width:140px}
-      .logo-box.logo-mfh img,
-      .logo-box.logo-sd img{max-width:130px}
+    @media (max-width: 640px){
+      .app{padding:14px}
+      .kpi-grid{grid-template-columns:1fr}
+      .patient-grid{grid-template-columns:1fr}
+      .metrics-grid{grid-template-columns:1fr}
+      .timeline{grid-template-columns:1fr}
+      .brand-logos{
+        flex-wrap:wrap;
+        min-width:auto;
+      }
+      .brand-divider{display:none}
+      .brand-logos img{
+        height:38px;
+        max-width:150px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <header class="header">
-      <div class="header-top">
-        <div class="brand-wrap">
-          <div class="logos-row">
-            <div class="logo-box logo-mfh">
-              <img src="./mfh.png" alt="MoneyFlux Health Platform">
-            </div>
-            <div class="logo-box logo-sd">
-              <img src="./sd.png" alt="Salud Digna">
-            </div>
-          </div>
-          <div class="title-wrap">
-            <h1>MoneyFlux Health Platform</h1>
-            <p>Modelo de Urgencias con Diagnóstico Previo</p>
-          </div>
-        </div>
 
-        <div class="header-actions">
-          <button class="btn btn-light" id="btnAutoFlow">Iniciar flujo automático</button>
-          <button class="btn btn-outline" id="btnPauseFlow">Pausar flujo</button>
-          <button class="btn btn-dark" id="btnResetFlow">Reiniciar</button>
-        </div>
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="brand-logos">
+        <img src="mfh.png" alt="MoneyFlux Health Platform" />
+        <div class="brand-divider"></div>
+        <img src="sd.png" alt="Salud Digna" />
       </div>
 
-      <div class="top-kpis">
-        <div class="kpi-card">
-          <div class="kpi-label">Expediente</div>
-          <div class="kpi-value" id="kpiExpediente">MFH-2026-0001</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Cobertura</div>
-          <div class="kpi-value" id="kpiCobertura">Pendiente</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Tiempo en clínica</div>
-          <div class="kpi-value" id="kpiTiempo">00:00</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Ruta</div>
-          <div class="kpi-value" id="kpiRuta">En evaluación</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Triage</div>
-          <div class="kpi-value" id="kpiTriage">Pendiente</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Seguimiento</div>
-          <div class="kpi-value" id="kpiSeguimiento">Pendiente</div>
-        </div>
+      <div class="hero-copy">
+        <div class="hero-eyebrow">Modelo operativo clínico + financiero</div>
+        <h1 class="hero-title">Modelo de Urgencias con Diagnóstico Previo</h1>
+        <p class="hero-desc">
+          Salud Digna recibe, clasifica y diagnostica. MoneyFlux coordina el flujo operativo y financiero.
+          El paciente puede resolverse de forma ambulatoria o escalarse a hospital con estudios y diagnóstico
+          ya visibles dentro del expediente.
+        </p>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn btn-success" id="btnAutoDemo">Iniciar flujo automático</button>
+        <button class="btn btn-secondary" id="btnPauseDemo">Pausar</button>
+        <button class="btn btn-danger" id="btnResetDemo">Reiniciar</button>
       </div>
     </header>
 
-    <div class="layout">
-      <aside class="panel timeline">
-        <div class="panel-header">
-          <h3>Timeline operativo</h3>
-          <p>Ruta clínica azul · Ruta hospitalaria roja</p>
-          <div class="step-pills" id="stepPills"></div>
-        </div>
-        <div class="panel-body">
-          <ul class="timeline-list" id="timelineList"></ul>
-        </div>
-      </aside>
+    <!-- KPIs -->
+    <section class="kpi-grid">
+      <div class="card kpi">
+        <div class="kpi-label">Expediente</div>
+        <div class="kpi-value" id="kpiExpediente">MFH-URG-2026-00127</div>
+        <div class="kpi-note">Caso trazable para control operativo, auditoría y seguimiento mensual.</div>
+      </div>
 
-      <main class="panel main-stage">
-        <div class="panel-header">
-          <div class="stage-head">
+      <div class="card kpi">
+        <div class="kpi-label">Cobertura</div>
+        <div class="kpi-value" id="kpiCobertura">Con seguro</div>
+        <div class="kpi-note">La póliza define cobertura, deducible y la lógica financiera del caso.</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-label">Ruta actual</div>
+        <div class="kpi-value" id="kpiRuta">Evaluación en clínica</div>
+        <div class="kpi-note">La ruta cambia según triage, estudios, diagnóstico y decisión médica.</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-label">Triage</div>
+        <div class="kpi-value" id="kpiTriage">Medio</div>
+        <div class="kpi-note">Clasificación operativa visible para el equipo clínico y el seguimiento.</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-label">Decisión</div>
+        <div class="kpi-value" id="kpiDecision">Traslado sugerido</div>
+        <div class="kpi-note">La decisión central del modelo: ambulatorio, traslado u hospital inmediato.</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-label">Seguimiento</div>
+        <div class="kpi-value" id="kpiSeguimiento">Activo</div>
+        <div class="kpi-note">El caso permanece visible hasta cierre clínico y liquidación financiera.</div>
+      </div>
+    </section>
+
+    <!-- EXEC SUMMARY -->
+    <section class="summary-grid">
+      <div class="card summary-card">
+        <div class="patient-header">
+          <div>
+            <h2 class="patient-name" id="patientNameHeader">María Fernanda López</h2>
+            <p class="section-subtitle">
+              Resumen del caso visible en todo momento para que el flujo se entienda en segundos.
+            </p>
+          </div>
+          <div class="patient-exp" id="patientExpBadge">Expediente: MFH-URG-2026-00127</div>
+        </div>
+
+        <div class="patient-grid">
+          <div class="mini-field">
+            <div class="mini-field-label">Edad</div>
+            <div class="mini-field-value" id="patientAgeHeader">38 años</div>
+          </div>
+          <div class="mini-field">
+            <div class="mini-field-label">Sexo</div>
+            <div class="mini-field-value" id="patientSexHeader">Femenino</div>
+          </div>
+          <div class="mini-field">
+            <div class="mini-field-label">Severidad</div>
+            <div class="mini-field-value" id="patientSeverityHeader">Media</div>
+          </div>
+          <div class="mini-field">
+            <div class="mini-field-label">Estado actual</div>
+            <div class="mini-field-value" id="patientStatusHeader">En valoración clínica</div>
+          </div>
+        </div>
+
+        <div class="chief-complaint">
+          <div class="mini-field-label">Motivo de consulta</div>
+          <div class="mini-field-value" id="chiefComplaintTitle">Dolor torácico y dificultad respiratoria leve</div>
+          <p id="chiefComplaintText">
+            La paciente ingresa a Salud Digna con síntomas que requieren triage, estudios iniciales y decisión
+            clínica para definir si continúa ambulatoriamente o debe trasladarse al hospital.
+          </p>
+        </div>
+      </div>
+
+      <div class="card decision-card">
+        <div class="decision-badge medium" id="decisionBadge">Decisión clínica actual</div>
+        <h2 class="decision-title" id="decisionTitle">Traslado a hospital con diagnóstico previo</h2>
+        <div class="decision-desc" id="decisionDescription">
+          Se sugiere traslado una vez concluidos estudios y valoración clínica. El expediente viaja con resultados,
+          diagnóstico preliminar y evidencia visible para el hospital receptor.
+        </div>
+
+        <div class="decision-list">
+          <div class="decision-item">
+            <span>Diagnóstico preliminar</span>
+            <strong id="diagnosticoActual">Riesgo cardiovascular intermedio</strong>
+          </div>
+          <div class="decision-item">
+            <span>Siguiente acción</span>
+            <strong id="siguienteAccion">Validar traslado y hospital receptor</strong>
+          </div>
+          <div class="decision-item">
+            <span>Tipo de resolución</span>
+            <strong id="tipoResolucion">Hospitalaria</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card finance-card">
+        <div class="status-pill success" id="financeCoveragePill">Cobertura confirmada</div>
+        <h2 class="section-title">Reglas financieras del caso</h2>
+        <p class="section-subtitle">
+          El flujo financiero depende de si el paciente tiene seguro y de si el caso termina como ambulatorio
+          o hospitalario.
+        </p>
+
+        <div class="finance-rule">
+          <div class="finance-row">
+            <strong id="financeSeguro">Paciente con seguro</strong>
+            <span>La póliza permite activar el flujo de cobertura y validación del deducible.</span>
+          </div>
+
+          <div class="finance-row">
+            <strong id="financeAmbulatorio">Si es ambulatorio</strong>
+            <span>El paciente paga un porcentaje del deducible conforme a la póliza.</span>
+          </div>
+
+          <div class="finance-row">
+            <strong id="financeHospitalario">Si se traslada a hospital</strong>
+            <span>El deducible se liquida en hospital y el expediente llega con estudios y diagnóstico.</span>
+          </div>
+
+          <div class="finance-row">
+            <strong id="financeSinSeguro">Si no tiene seguro</strong>
+            <span>La plataforma puede marcar el caso para pago directo o ruta alternativa.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="card timeline-card">
+      <div class="timeline-head">
+        <div>
+          <h2 class="section-title">Flujo narrativo del caso</h2>
+          <p class="section-subtitle">
+            El modelo debe mostrar claramente cómo entra el paciente, qué decide Salud Digna y cómo
+            se coordina el traslado o la resolución ambulatoria.
+          </p>
+        </div>
+        <div class="chip" id="currentStepChip">Paso actual: Admisión</div>
+      </div>
+
+      <div class="timeline" id="timeline">
+        <div class="step active" data-step="1">
+          <div class="step-num">1</div>
+          <div class="step-title">Ingreso</div>
+          <div class="step-desc">Paciente entra por Salud Digna y se crea expediente.</div>
+        </div>
+
+        <div class="step" data-step="2">
+          <div class="step-num">2</div>
+          <div class="step-title">Triage</div>
+          <div class="step-desc">Se define gravedad: baja, media o alta.</div>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="step-num">3</div>
+          <div class="step-title">Estudios</div>
+          <div class="step-desc">Se realizan RX, laboratorio y carga documental.</div>
+        </div>
+
+        <div class="step" data-step="4">
+          <div class="step-num">4</div>
+          <div class="step-title">Diagnóstico</div>
+          <div class="step-desc">Salud Digna emite diagnóstico preliminar.</div>
+        </div>
+
+        <div class="step" data-step="5">
+          <div class="step-num">5</div>
+          <div class="step-title">Cobertura</div>
+          <div class="step-desc">Se valida póliza, deducible y ruta financiera.</div>
+        </div>
+
+        <div class="step" data-step="6">
+          <div class="step-num">6</div>
+          <div class="step-title">Traslado / Alta</div>
+          <div class="step-desc">Paciente se resuelve ambulatoriamente o va a hospital.</div>
+        </div>
+
+        <div class="step" data-step="7">
+          <div class="step-num">7</div>
+          <div class="step-title">Cierre</div>
+          <div class="step-desc">Seguimiento, cierre clínico y liquidación financiera.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="content-grid">
+      <div class="left-stack">
+
+        <!-- SCREEN -->
+        <div class="card screen-card">
+          <div class="screen-toolbar">
             <div>
-              <h2 class="stage-title" id="stageTitle">Pantalla 1 — Admisión</h2>
-              <p class="stage-subtitle" id="stageSubtitle">Captura inicial del paciente, póliza y motivo de atención.</p>
+              <h2 class="section-title">Pantalla operativa del caso</h2>
+              <p class="section-subtitle">
+                Este bloque debe ser el centro visual del demo. Aquí vive el caso clínico real.
+              </p>
             </div>
-            <div id="stageBadge" class="badge info">Paso 1 de 10</div>
+
+            <div class="tabs">
+              <button class="tab active" data-tab="admision">Admisión</button>
+              <button class="tab" data-tab="triage">Triage</button>
+              <button class="tab" data-tab="diagnostico">Diagnóstico</button>
+              <button class="tab" data-tab="traslado">Traslado</button>
+              <button class="tab" data-tab="cierre">Cierre</button>
+            </div>
+          </div>
+
+          <div class="screen-body" id="mainScreen">
+            <div class="screen-header">
+              <div>
+                <h3 class="screen-title">Admisión del paciente</h3>
+                <p class="screen-caption">
+                  Captura de información inicial del caso dentro de Salud Digna.
+                </p>
+              </div>
+              <div class="chip">Salud Digna decide clínicamente</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="patientName">Nombre del paciente</label>
+                <input id="patientName" type="text" value="María Fernanda López" />
+              </div>
+
+              <div class="field">
+                <label for="patientAge">Edad</label>
+                <input id="patientAge" type="number" value="38" />
+              </div>
+
+              <div class="field">
+                <label for="patientSex">Sexo</label>
+                <select id="patientSex">
+                  <option selected>Femenino</option>
+                  <option>Masculino</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="patientInsurance">¿Cuenta con seguro?</label>
+                <select id="patientInsurance">
+                  <option selected>Sí</option>
+                  <option>No</option>
+                </select>
+              </div>
+
+              <div class="field" style="grid-column:1 / -1;">
+                <label for="patientReason">Motivo de atención</label>
+                <textarea id="patientReason">Dolor torácico, opresión en pecho y dificultad respiratoria leve de inicio reciente.</textarea>
+              </div>
+            </div>
+
+            <div class="triage-row">
+              <div class="triage-card triage-low">
+                <h4>Bajo</h4>
+                <p>Paciente estable. Puede resolverse de forma ambulatoria con seguimiento.</p>
+              </div>
+
+              <div class="triage-card triage-mid">
+                <h4>Medio</h4>
+                <p>Requiere estudios, observación y evaluación clínica para definir ruta.</p>
+              </div>
+
+              <div class="triage-card triage-high">
+                <h4>Alto</h4>
+                <p>Necesita hospital inmediato o traslado urgente por riesgo clínico elevado.</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="panel-body">
-          <div id="routeBannerWrap"></div>
-          <div id="stageContent"></div>
+        <!-- STUDIES -->
+        <div class="card studies-card">
+          <h2 class="section-title">Estudios y diagnóstico visibles para traslado</h2>
+          <p class="section-subtitle">
+            El hospital debe poder recibir al paciente con resultados cargados en la plataforma.
+          </p>
 
-          <div class="nav-actions">
-            <button class="btn btn-dark" id="btnPrev">Anterior</button>
-            <button class="btn btn-light" id="btnNext">Siguiente</button>
-          </div>
-        </div>
-      </main>
-
-      <aside class="panel right-panel">
-        <div class="panel-header">
-          <h3>Bitácora del caso</h3>
-          <p>Eventos en tiempo real del flujo clínico y operativo.</p>
-        </div>
-        <div class="panel-body">
-          <div class="stat-row">
-            <div class="mini-stat">
-              <div class="label">Paciente</div>
-              <div class="value" id="sidePaciente">—</div>
+          <div class="study-upload">
+            <div class="upload-box">
+              <h4>Subir RX</h4>
+              <p>Espacio preparado para adjuntar imagen o reporte radiológico del caso.</p>
             </div>
-            <div class="mini-stat">
-              <div class="label">Seguro</div>
-              <div class="value" id="sideSeguro">—</div>
+            <div class="upload-box">
+              <h4>Subir laboratorio</h4>
+              <p>Espacio preparado para biometría, química sanguínea y otros resultados.</p>
             </div>
-            <div class="mini-stat">
-              <div class="label">Destino</div>
-              <div class="value" id="sideDestino">—</div>
+            <div class="upload-box">
+              <h4>Subir diagnóstico / nota médica</h4>
+              <p>Resumen clínico visible para el hospital receptor y para el seguimiento.</p>
             </div>
           </div>
-          <div class="log-list" id="logList"></div>
+
+          <div class="study-list">
+            <div class="study-item">
+              <div>
+                <div class="study-item-title">RX Tórax AP</div>
+                <div class="study-item-meta">Cargado al expediente · Visible para hospital receptor · Estado: disponible</div>
+              </div>
+              <div class="study-view">
+                <button class="btn btn-secondary" id="btnViewRX">Ver estudio</button>
+              </div>
+            </div>
+
+            <div class="study-item">
+              <div>
+                <div class="study-item-title">Laboratorio inicial</div>
+                <div class="study-item-meta">Troponina, BH y química básica · Estado: preliminar</div>
+              </div>
+              <div class="study-view">
+                <button class="btn btn-secondary" id="btnViewLab">Ver resultados</button>
+              </div>
+            </div>
+
+            <div class="study-item">
+              <div>
+                <div class="study-item-title">Diagnóstico preliminar</div>
+                <div class="study-item-meta">Riesgo cardiovascular intermedio · Requiere correlación hospitalaria</div>
+              </div>
+              <div class="study-view">
+                <button class="btn btn-secondary" id="btnViewDx">Ver nota clínica</button>
+              </div>
+            </div>
+          </div>
         </div>
-      </aside>
+      </div>
+
+      <div class="right-stack">
+
+        <!-- METRICS -->
+        <div class="card metrics-card">
+          <h2 class="section-title">Dashboard ejecutivo del caso</h2>
+          <p class="section-subtitle">
+            Solo los indicadores que ayudan a entender el modelo y a tomar decisiones.
+          </p>
+
+          <div class="metrics-grid">
+            <div class="mini-kpi">
+              <div class="label">% deducible</div>
+              <div class="value" id="miniDeducible">20%</div>
+              <div class="desc">Aplica en resolución ambulatoria según póliza.</div>
+            </div>
+
+            <div class="mini-kpi">
+              <div class="label">Ruta final estimada</div>
+              <div class="value" id="miniRutaFinal">Hospital</div>
+              <div class="desc">Se actualiza conforme cambie la decisión clínica.</div>
+            </div>
+
+            <div class="mini-kpi">
+              <div class="label">Tiempo en clínica</div>
+              <div class="value" id="miniTiempoClinica">32 min</div>
+              <div class="desc">Valor demostrativo para visualizar eficiencia operativa.</div>
+            </div>
+
+            <div class="mini-kpi">
+              <div class="label">Casos del mes</div>
+              <div class="value" id="miniCasosMes">148</div>
+              <div class="desc">Muestra que el modelo puede escalarse y medirse.</div>
+            </div>
+          </div>
+
+          <div class="route-box">
+            <div class="route-head">Ruta del paciente</div>
+            <div class="route-flow">
+              <div class="route-node">
+                <div>
+                  <strong>Ingreso en Salud Digna</strong>
+                  <span>Recepción, expediente, triage y estudios iniciales.</span>
+                </div>
+                <div>OK</div>
+              </div>
+
+              <div class="route-node">
+                <div>
+                  <strong>Diagnóstico preliminar</strong>
+                  <span>Salud Digna clasifica y decide el siguiente paso.</span>
+                </div>
+                <div>Activo</div>
+              </div>
+
+              <div class="route-node">
+                <div>
+                  <strong>Traslado o resolución ambulatoria</strong>
+                  <span>Paciente puede ir al hospital indicado o trasladarse por sus propios medios.</span>
+                </div>
+                <div>Pendiente</div>
+              </div>
+
+              <div class="route-node">
+                <div>
+                  <strong>Liquidación financiera</strong>
+                  <span>Con seguro o sin seguro, según deducible y tipo de atención.</span>
+                </div>
+                <div>Pendiente</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOG -->
+        <div class="card log-card">
+          <h2 class="section-title">Bitácora del caso</h2>
+          <p class="section-subtitle">
+            Registro cronológico para que la demo se sienta como plataforma real.
+          </p>
+
+          <div class="log-list" id="caseLog">
+            <div class="log-item">
+              <div class="log-time">08:14</div>
+              <div class="log-text">Se crea expediente MFH-URG-2026-00127 al ingreso del paciente en Salud Digna.</div>
+            </div>
+
+            <div class="log-item">
+              <div class="log-time">08:18</div>
+              <div class="log-text">Se inicia triage y el caso se clasifica inicialmente como severidad media.</div>
+            </div>
+
+            <div class="log-item">
+              <div class="log-time">08:24</div>
+              <div class="log-text">Se solicitan RX y laboratorio para soporte diagnóstico previo a decisión clínica.</div>
+            </div>
+
+            <div class="log-item">
+              <div class="log-time">08:31</div>
+              <div class="log-text">Se valida que el paciente cuenta con seguro y se revisa regla de deducible.</div>
+            </div>
+
+            <div class="log-item">
+              <div class="log-time">08:36</div>
+              <div class="log-text">El sistema deja listo el expediente para resolución ambulatoria o traslado hospitalario.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      <strong>Nota de diseño del demo:</strong> este layout ya integra las 10 mejoras prioritarias:
+      header más profesional, resumen del paciente siempre visible, bloque dominante de decisión clínica,
+      timeline narrativo, módulo financiero explícito, carga de estudios, dashboard simplificado,
+      expediente trazable, bitácora operativa y estructura apta para modo presentación.
     </div>
   </div>
 
   <script>
-    const steps = [
-      { id: 1, key: "admision", title: "Pantalla 1 — Admisión", subtitle: "Captura inicial del paciente, póliza y motivo de atención." },
-      { id: 2, key: "cobertura", title: "Pantalla 2 — Cobertura", subtitle: "Validación de elegibilidad, vigencia y condición de seguro." },
-      { id: 3, key: "clasificacion", title: "Pantalla 3 — Clasificación inicial", subtitle: "Determinación de gravedad y posible hospitalización inmediata." },
-      { id: 4, key: "triage", title: "Pantalla 4 — Triage", subtitle: "Clasificación operativa bajo, medio o alto con signos vitales." },
-      { id: 5, key: "diagnostico", title: "Pantalla 5 — Diagnóstico", subtitle: "Hallazgos, estudios, carga de resultados y diagnóstico clínico." },
-      { id: 6, key: "decision", title: "Pantalla 6 — Decisión clínica", subtitle: "Definición de resolución en clínica o referencia hospitalaria." },
-      { id: 7, key: "tiempo", title: "Pantalla 7 — Control de tiempo", subtitle: "Monitoreo del máximo permitido de 2 horas." },
-      { id: 8, key: "resultado", title: "Pantalla 8 — Resultado del caso", subtitle: "Cierre ambulatorio o activación de flujo hospitalario." },
-      { id: 9, key: "traslado", title: "Pantalla 9 — Traslado", subtitle: "Ambulancia o propios medios, con estudios y diagnóstico adjuntos." },
-      { id: 10, key: "liquidacion", title: "Pantalla 10 — Liquidación y dashboard", subtitle: "Deducible, seguro, KPIs ejecutivos y resumen del caso." }
-    ];
+    /*
+      Este script es mínimo y solo ayuda a que el HTML no se vea "muerto"
+      mientras ajustas tu app.js final.
 
-    function getInitialState(){
-      return {
-        currentStep: 1,
-        autoRunning: false,
-        autoPaused: false,
-        autoTimer: null,
-        autoIndex: 0,
-        expediente: "MFH-2026-0001",
-        paciente: {
-          nombre: "Ana Torres",
-          fechaNacimiento: "1991-06-14",
-          edad: 34,
-          sexo: "Femenino",
-          poliza: "POL-784512",
-          motivoAtencion: "Caída con dolor en tobillo derecho"
-        },
-        cobertura: {
-          tieneSeguro: true,
-          activa: null,
-          elegible: null,
-          vigente: null,
-          deducible: 2000,
-          porcentajeAmbulatorio: 25
-        },
-        clasificacion: {
-          grave: null
-        },
-        triage: {
-          nivel: null,
-          definicion: "",
-          sintomaPrincipal: "Dolor e inflamación en tobillo",
-          vitals: {
-            fc: "88 lpm",
-            ta: "118/76",
-            spo2: "98%",
-            temp: "36.7°C"
-          }
-        },
-        diagnostico: {
-          motivoConsulta: "Traumatismo por caída al bajar escalera.",
-          hallazgosRapidos: "Edema moderado, dolor localizado, sin pérdida de conciencia.",
-          estudiosSeleccionados: ["Radiografía"],
-          estudiosSolicitados: false,
-          resultado: "",
-          diagnosticoClinico: "",
-          archivos: []
-        },
-        decision: {
-          resolverEnClinica: null
-        },
-        tiempo: {
-          minutos: 0,
-          maximo: 120,
-          excedido: false
-        },
-        resultado: {
-          operativo: "Pendiente",
-          seguimientoMG: null
-        },
-        traslado: {
-          requerido: false,
-          modalidad: "Ambulancia",
-          hospital: "San Ángel Inn",
-          ambulanciaEstado: "Pendiente",
-          tiempoEstimado: "—",
-          folio: "REF-2026-1184",
-          autorizacion: null,
-          cubiertoPoliza: null,
-          enviaHospital: null
-        },
-        liquidacion: {
-          lugarPago: "Pendiente",
-          descripcionPago: "Pendiente",
-          porcentajeDeducible: 0
-        },
-        dashboard: {
-          pacientesAtendidos: 128,
-          pctClinica: 72,
-          pctHospital: 28,
-          tiempoPromedio: "1h 14m",
-          pctConSeguro: 68,
-          pctSinSeguro: 32,
-          pctDeducibleAplicado: 24
-        },
-        routeColor: "",
-        logs: [{ time: "", text: "Caso listo para iniciar." }]
+      Si ya tienes lógica en app.js, puedes:
+      1) dejar este bloque y complementar,
+      2) o borrarlo y conectar tus propios handlers.
+    */
+
+    const btnAutoDemo = document.getElementById('btnAutoDemo');
+    const btnPauseDemo = document.getElementById('btnPauseDemo');
+    const btnResetDemo = document.getElementById('btnResetDemo');
+
+    const patientName = document.getElementById('patientName');
+    const patientAge = document.getElementById('patientAge');
+    const patientSex = document.getElementById('patientSex');
+    const patientInsurance = document.getElementById('patientInsurance');
+    const patientReason = document.getElementById('patientReason');
+
+    const patientNameHeader = document.getElementById('patientNameHeader');
+    const patientAgeHeader = document.getElementById('patientAgeHeader');
+    const patientSexHeader = document.getElementById('patientSexHeader');
+    const chiefComplaintTitle = document.getElementById('chiefComplaintTitle');
+
+    const tabs = document.querySelectorAll('.tab');
+    const steps = document.querySelectorAll('.step');
+    const currentStepChip = document.getElementById('currentStepChip');
+    const mainScreen = document.getElementById('mainScreen');
+
+    let currentStep = 1;
+    let interval = null;
+
+    function syncPatientHeader() {
+      patientNameHeader.textContent = patientName.value || 'Paciente sin nombre';
+      patientAgeHeader.textContent = patientAge.value ? `${patientAge.value} años` : '—';
+      patientSexHeader.textContent = patientSex.value || '—';
+      chiefComplaintTitle.textContent = patientReason.value || 'Sin motivo de consulta';
+      document.getElementById('kpiCobertura').textContent =
+        patientInsurance.value === 'Sí' ? 'Con seguro' : 'Sin seguro';
+
+      const financeCoveragePill = document.getElementById('financeCoveragePill');
+      const financeSeguro = document.getElementById('financeSeguro');
+
+      if (patientInsurance.value === 'Sí') {
+        financeCoveragePill.textContent = 'Cobertura confirmada';
+        financeCoveragePill.className = 'status-pill success';
+        financeSeguro.textContent = 'Paciente con seguro';
+      } else {
+        financeCoveragePill.textContent = 'Paciente sin seguro';
+        financeCoveragePill.className = 'status-pill warning';
+        financeSeguro.textContent = 'Paciente sin seguro';
+      }
+    }
+
+    function renderStep(step) {
+      currentStep = step;
+
+      steps.forEach((el, idx) => {
+        el.classList.remove('active', 'done');
+        const s = idx + 1;
+        if (s < step) el.classList.add('done');
+        if (s === step) el.classList.add('active');
+      });
+
+      const labels = {
+        1: 'Admisión',
+        2: 'Triage',
+        3: 'Estudios',
+        4: 'Diagnóstico',
+        5: 'Cobertura',
+        6: 'Traslado / Alta',
+        7: 'Cierre'
       };
-    }
 
-    let state = getInitialState();
+      currentStepChip.textContent = `Paso actual: ${labels[step]}`;
 
-    const el = {
-      stageTitle: document.getElementById("stageTitle"),
-      stageSubtitle: document.getElementById("stageSubtitle"),
-      stageBadge: document.getElementById("stageBadge"),
-      stageContent: document.getElementById("stageContent"),
-      timelineList: document.getElementById("timelineList"),
-      stepPills: document.getElementById("stepPills"),
-      logList: document.getElementById("logList"),
-      routeBannerWrap: document.getElementById("routeBannerWrap"),
-      btnPrev: document.getElementById("btnPrev"),
-      btnNext: document.getElementById("btnNext"),
-      btnAutoFlow: document.getElementById("btnAutoFlow"),
-      btnPauseFlow: document.getElementById("btnPauseFlow"),
-      btnResetFlow: document.getElementById("btnResetFlow"),
-      kpiExpediente: document.getElementById("kpiExpediente"),
-      kpiCobertura: document.getElementById("kpiCobertura"),
-      kpiTiempo: document.getElementById("kpiTiempo"),
-      kpiRuta: document.getElementById("kpiRuta"),
-      kpiTriage: document.getElementById("kpiTriage"),
-      kpiSeguimiento: document.getElementById("kpiSeguimiento"),
-      sidePaciente: document.getElementById("sidePaciente"),
-      sideSeguro: document.getElementById("sideSeguro"),
-      sideDestino: document.getElementById("sideDestino")
-    };
+      if (step === 1) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Admisión del paciente</h3>
+              <p class="screen-caption">Captura de información inicial del caso dentro de Salud Digna.</p>
+            </div>
+            <div class="chip">Salud Digna decide clínicamente</div>
+          </div>
 
-    function nowString(){
-      const d = new Date();
-      return d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
-    }
-
-    function addLog(text){
-      state.logs.unshift({ time: nowString(), text });
-      state.logs = state.logs.slice(0, 30);
-      renderLogs();
-    }
-
-    function formatMinutes(mins){
-      const h = Math.floor(mins / 60);
-      const m = mins % 60;
-      return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-    }
-
-    function getRouteLabel(){
-      if(state.traslado.requerido) return "Hospital";
-      if(state.resultado.operativo === "Paciente resuelto en clínica") return "Clínica";
-      return "En evaluación";
-    }
-
-    function getSeguroLabel(){
-      if(state.cobertura.activa === null) return "Pendiente";
-      return state.cobertura.tieneSeguro && state.cobertura.activa ? "Sí" : "No";
-    }
-
-    function updateTopKpis(){
-      el.kpiExpediente.textContent = state.expediente;
-      el.kpiCobertura.textContent = state.cobertura.activa === null
-        ? "Pendiente"
-        : `${state.cobertura.activa ? "Sí" : "No"} / ${state.cobertura.elegible ? "Elegible" : "No elegible"}`;
-      el.kpiTiempo.textContent = formatMinutes(state.tiempo.minutos);
-      el.kpiRuta.textContent = getRouteLabel();
-      el.kpiTriage.textContent = state.triage.nivel || "Pendiente";
-      el.kpiSeguimiento.textContent = state.resultado.seguimientoMG === null ? "Pendiente" : (state.resultado.seguimientoMG ? "Sí" : "No");
-      el.sidePaciente.textContent = state.paciente.nombre || "—";
-      el.sideSeguro.textContent = getSeguroLabel();
-      el.sideDestino.textContent = state.traslado.requerido ? state.traslado.hospital : "Alta clínica";
-    }
-
-    function renderStepPills(){
-      el.stepPills.innerHTML = steps.map(step => `
-        <button class="step-pill ${state.currentStep === step.id ? "active" : ""}" onclick="goToStep(${step.id})">${step.id}</button>
-      `).join("");
-    }
-
-    function renderTimeline(){
-      el.timelineList.innerHTML = steps.map(step => {
-        let itemClass = "";
-        if(step.id < state.currentStep) itemClass = "done";
-        if(step.id === state.currentStep) itemClass = "active";
-        if(state.routeColor === "blue" && step.id >= 8) itemClass += " route-blue";
-        if(state.routeColor === "red" && step.id >= 8) itemClass += " route-red";
-
-        let desc = step.subtitle;
-        if(step.key === "traslado"){
-          desc = state.traslado.requerido
-            ? `Modalidad: ${state.traslado.modalidad}. Estudios y diagnóstico adjuntos.`
-            : "No requerido para casos resueltos en clínica.";
-        }
-        if(step.key === "resultado"){
-          desc = state.resultado.operativo;
-        }
-
-        return `
-          <li class="timeline-item ${itemClass}">
-            <span class="timeline-dot"></span>
-            <div class="timeline-step">Paso ${step.id}</div>
-            <div class="timeline-title">${step.title.replace(/^Pantalla \d+ — /, "")}</div>
-            <div class="timeline-desc">${desc}</div>
-          </li>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nombre del paciente</label>
+              <input type="text" value="${patientName.value}">
+            </div>
+            <div class="field">
+              <label>Edad</label>
+              <input type="text" value="${patientAge.value}">
+            </div>
+            <div class="field">
+              <label>Sexo</label>
+              <input type="text" value="${patientSex.value}">
+            </div>
+            <div class="field">
+              <label>¿Cuenta con seguro?</label>
+              <input type="text" value="${patientInsurance.value}">
+            </div>
+            <div class="field" style="grid-column:1 / -1;">
+              <label>Motivo de atención</label>
+              <textarea>${patientReason.value}</textarea>
+            </div>
+          </div>
         `;
-      }).join("");
-    }
-
-    function renderLogs(){
-      if(!state.logs.length){
-        state.logs = [{ time: nowString(), text: "Caso listo para iniciar." }];
-      }
-      el.logList.innerHTML = state.logs.map(log => `
-        <div class="log-item">
-          <div class="log-time">${log.time || nowString()}</div>
-          <div class="log-text">${log.text}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderRouteBanner(){
-      if(state.routeColor === "blue"){
-        el.routeBannerWrap.innerHTML = `<div class="route-banner blue">Ruta clínica activa: resolución ambulatoria con seguimiento y control de deducible.</div>`;
-        return;
-      }
-      if(state.routeColor === "red"){
-        el.routeBannerWrap.innerHTML = `<div class="route-banner red">Ruta hospitalaria activa: referencia con estudios, diagnóstico y cobertura asociada a póliza.</div>`;
-        return;
-      }
-      el.routeBannerWrap.innerHTML = "";
-    }
-
-    function renderStage(){
-      const step = steps.find(s => s.id === state.currentStep);
-      el.stageTitle.textContent = step.title;
-      el.stageSubtitle.textContent = step.subtitle;
-      el.stageBadge.className = "badge info";
-      el.stageBadge.textContent = `Paso ${step.id} de ${steps.length}`;
-      renderRouteBanner();
-
-      switch(step.key){
-        case "admision": renderAdmision(); break;
-        case "cobertura": renderCobertura(); break;
-        case "clasificacion": renderClasificacion(); break;
-        case "triage": renderTriage(); break;
-        case "diagnostico": renderDiagnostico(); break;
-        case "decision": renderDecision(); break;
-        case "tiempo": renderTiempo(); break;
-        case "resultado": renderResultado(); break;
-        case "traslado": renderTraslado(); break;
-        case "liquidacion": renderLiquidacion(); break;
+        document.getElementById('kpiRuta').textContent = 'Evaluación en clínica';
+        document.getElementById('patientStatusHeader').textContent = 'En admisión';
       }
 
-      el.btnPrev.disabled = state.currentStep === 1;
-      el.btnNext.disabled = state.currentStep === steps.length;
-
-      renderStepPills();
-      renderTimeline();
-      renderLogs();
-      updateTopKpis();
-    }
-
-    function renderAdmision(){
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-6 field">
-            <label>Nombre del paciente</label>
-            <input id="nombrePaciente" value="${state.paciente.nombre}">
-          </div>
-          <div class="col-3 field">
-            <label>Fecha de nacimiento</label>
-            <input id="fechaNacimiento" type="date" value="${state.paciente.fechaNacimiento}">
-          </div>
-          <div class="col-3 field">
-            <label>Sexo</label>
-            <select id="sexoPaciente">
-              <option ${state.paciente.sexo==="Femenino"?"selected":""}>Femenino</option>
-              <option ${state.paciente.sexo==="Masculino"?"selected":""}>Masculino</option>
-              <option ${state.paciente.sexo==="Otro"?"selected":""}>Otro</option>
-            </select>
-          </div>
-
-          <div class="col-4 field">
-            <label>Edad</label>
-            <input id="edadPaciente" type="number" min="0" max="120" value="${state.paciente.edad}">
-          </div>
-          <div class="col-4 field">
-            <label>Número de póliza</label>
-            <input id="polizaPaciente" value="${state.paciente.poliza}">
-          </div>
-          <div class="col-4 field">
-            <label>Motivo de atención</label>
-            <input id="motivoAtencion" value="${state.paciente.motivoAtencion}">
-          </div>
-
-          <div class="col-12 card-soft">
-            <div class="upload-head">
-              <div class="study-title">Datos base del caso</div>
-              <div class="badge neutral">Ingreso obligatorio por Salud Digna</div>
+      if (step === 2) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Triage y clasificación</h3>
+              <p class="screen-caption">Se determina si el caso es de severidad baja, media o alta.</p>
             </div>
-            <div class="muted">
-              Todo paciente inicia en Salud Digna. La plataforma genera expediente, valida póliza, clasifica riesgo y documenta estudios antes de decidir hospitalización.
+            <div class="chip">Clasificación operativa visible</div>
+          </div>
+
+          <div class="triage-row">
+            <div class="triage-card triage-low">
+              <h4>Bajo</h4>
+              <p>Caso estable con probabilidad de resolución ambulatoria.</p>
+            </div>
+            <div class="triage-card triage-mid">
+              <h4>Medio</h4>
+              <p>Requiere estudios y observación para definir traslado o manejo local.</p>
+            </div>
+            <div class="triage-card triage-high">
+              <h4>Alto</h4>
+              <p>Escalamiento hospitalario inmediato por riesgo clínico elevado.</p>
             </div>
           </div>
+        `;
+        document.getElementById('kpiTriage').textContent = 'Medio';
+        document.getElementById('patientSeverityHeader').textContent = 'Media';
+        document.getElementById('patientStatusHeader').textContent = 'En triage';
+      }
 
-          <div class="col-12 decision-row">
-            <button class="btn btn-light decision-btn" onclick="saveAdmision()">Guardar admisión</button>
-            <button class="btn btn-dark decision-btn" onclick="validarCobertura()">Validar cobertura</button>
+      if (step === 3) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Estudios realizados</h3>
+              <p class="screen-caption">Se generan estudios y quedan visibles en el expediente para eventual traslado.</p>
+            </div>
+            <div class="chip">Expediente con evidencia clínica</div>
           </div>
-        </div>
-      `;
-    }
 
-    function renderCobertura(){
-      const activa = state.cobertura.activa;
-      let badge = `<span class="badge neutral">Pendiente</span>`;
-      if(activa === true) badge = `<span class="badge success">Cobertura activa</span>`;
-      if(activa === false) badge = `<span class="badge danger">Sin cobertura</span>`;
-
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12">
-            <div class="card-soft">
-              <div class="upload-head">
-                <div class="study-title">Estado de cobertura</div>
-                <div>${badge}</div>
+          <div class="study-list">
+            <div class="study-item">
+              <div>
+                <div class="study-item-title">RX Tórax AP</div>
+                <div class="study-item-meta">Cargado al expediente · Estado: disponible</div>
               </div>
-              <div class="stat-row">
-                <div class="mini-stat">
-                  <div class="label">Seguro</div>
-                  <div class="value">${state.cobertura.tieneSeguro ? "Sí" : "No"}</div>
+              <div class="study-view"><button class="btn btn-secondary">Ver</button></div>
+            </div>
+            <div class="study-item">
+              <div>
+                <div class="study-item-title">Laboratorio inicial</div>
+                <div class="study-item-meta">Estado: preliminar · Biomarcadores en revisión</div>
+              </div>
+              <div class="study-view"><button class="btn btn-secondary">Ver</button></div>
+            </div>
+          </div>
+        `;
+        document.getElementById('kpiRuta').textContent = 'Estudios en proceso';
+        document.getElementById('patientStatusHeader').textContent = 'En estudios';
+      }
+
+      if (step === 4) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Diagnóstico preliminar</h3>
+              <p class="screen-caption">Salud Digna define el siguiente paso clínico con soporte diagnóstico previo.</p>
+            </div>
+            <div class="chip">Diagnóstico previo listo</div>
+          </div>
+
+          <div class="chief-complaint">
+            <div class="mini-field-label">Resultado clínico</div>
+            <div class="mini-field-value">Riesgo cardiovascular intermedio</div>
+            <p>
+              La paciente requiere continuidad diagnóstica hospitalaria. El expediente ya contiene estudios
+              y nota clínica para recepción más eficiente.
+            </p>
+          </div>
+        `;
+        document.getElementById('kpiDecision').textContent = 'Traslado sugerido';
+        document.getElementById('decisionTitle').textContent = 'Traslado a hospital con diagnóstico previo';
+        document.getElementById('decisionDescription').textContent =
+          'El caso requiere escalamiento con expediente clínico ya integrado, reduciendo fricción operativa en la recepción hospitalaria.';
+        document.getElementById('patientStatusHeader').textContent = 'Diagnóstico emitido';
+      }
+
+      if (step === 5) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Validación de cobertura</h3>
+              <p class="screen-caption">Se revisa póliza, deducible y regla financiera aplicable al caso.</p>
+            </div>
+            <div class="chip">Cobertura y deducible</div>
+          </div>
+
+          <div class="finance-rule">
+            <div class="finance-row">
+              <strong>${patientInsurance.value === 'Sí' ? 'Cobertura activa' : 'Sin cobertura'}</strong>
+              <span>${patientInsurance.value === 'Sí'
+                ? 'La póliza permite continuar el flujo con deducible y referencia hospitalaria.'
+                : 'El sistema debe mostrar ruta sin seguro y condiciones de pago directo.'}</span>
+            </div>
+            <div class="finance-row">
+              <strong>Regla ambulatoria</strong>
+              <span>Se paga un porcentaje del deducible si el caso no escala a hospital.</span>
+            </div>
+            <div class="finance-row">
+              <strong>Regla hospitalaria</strong>
+              <span>El deducible se liquida en hospital si el caso se traslada.</span>
+            </div>
+          </div>
+        `;
+        document.getElementById('kpiRuta').textContent = 'Validación financiera';
+        document.getElementById('patientStatusHeader').textContent = 'Cobertura en revisión';
+      }
+
+      if (step === 6) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Traslado del paciente</h3>
+              <p class="screen-caption">El paciente puede trasladarse en ambulancia o por sus propios medios al hospital indicado.</p>
+            </div>
+            <div class="chip">Expediente visible para hospital</div>
+          </div>
+
+          <div class="route-box">
+            <div class="route-head">Opciones de traslado</div>
+            <div class="route-flow">
+              <div class="route-node">
+                <div>
+                  <strong>Traslado coordinado</strong>
+                  <span>Activación operativa con hospital receptor y expediente compartido.</span>
                 </div>
-                <div class="mini-stat">
-                  <div class="label">Vigente</div>
-                  <div class="value">${state.cobertura.vigente === null ? "—" : (state.cobertura.vigente ? "Sí" : "No")}</div>
+                <div>Disponible</div>
+              </div>
+              <div class="route-node">
+                <div>
+                  <strong>Traslado por medios propios</strong>
+                  <span>Paciente acude al hospital indicado con estudios y diagnóstico visibles en plataforma.</span>
                 </div>
-                <div class="mini-stat">
-                  <div class="label">Elegible</div>
-                  <div class="value">${state.cobertura.elegible === null ? "—" : (state.cobertura.elegible ? "Sí" : "No")}</div>
-                </div>
+                <div>Disponible</div>
               </div>
             </div>
           </div>
+        `;
+        document.getElementById('kpiRuta').textContent = 'Traslado a hospital';
+        document.getElementById('tipoResolucion').textContent = 'Hospitalaria';
+        document.getElementById('patientStatusHeader').textContent = 'En traslado';
+      }
 
-          <div class="col-4 field">
-            <label>¿Cuenta con seguro?</label>
-            <select id="seguroPaciente">
-              <option value="si" ${state.cobertura.tieneSeguro ? "selected" : ""}>Sí</option>
-              <option value="no" ${!state.cobertura.tieneSeguro ? "selected" : ""}>No</option>
-            </select>
-          </div>
-
-          <div class="col-4 field">
-            <label>Número de póliza</label>
-            <input value="${state.paciente.poliza}" disabled>
-          </div>
-
-          <div class="col-4 field">
-            <label>Deducible de póliza</label>
-            <input value="$${state.cobertura.deducible.toLocaleString('es-MX')}" disabled>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn btn-light decision-btn" onclick="validarCobertura()">Revalidar cobertura</button>
-            <button class="btn btn-dark decision-btn" onclick="goToStep(3)">Continuar a clasificación</button>
-          </div>
-
-          <div class="col-12">
-            ${activa === true ? `<div class="alert success">Cobertura activa. Póliza vigente y caso elegible para continuar el flujo.</div>` : ""}
-            ${activa === false ? `<div class="alert danger">Paciente sin seguro o sin vigencia. El flujo continúa para mostrar la lógica operativa, pero queda marcado como no cubierto.</div>` : ""}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderClasificacion(){
-      const grave = state.clasificacion.grave;
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12 card-soft">
-            <div class="upload-head">
-              <div class="study-title">Pregunta crítica de entrada</div>
-              <div class="badge ${grave === true ? "danger" : grave === false ? "success" : "neutral"}">
-                ${grave === true ? "Grave" : grave === false ? "No grave" : "Pendiente"}
-              </div>
+      if (step === 7) {
+        mainScreen.innerHTML = `
+          <div class="screen-header">
+            <div>
+              <h3 class="screen-title">Cierre y seguimiento</h3>
+              <p class="screen-caption">Se documenta el cierre clínico y la liquidación financiera correspondiente.</p>
             </div>
-            <div class="muted">¿El paciente es grave? Si la respuesta es sí, la ruta hospitalaria se activa de inmediato.</div>
+            <div class="chip">Caso listo para auditoría</div>
           </div>
 
-          <div class="col-12 decision-row">
-            <button class="btn decision-btn bad" onclick="setClasificacion(true)">Sí, es grave → traslado inmediato a hospital</button>
-            <button class="btn decision-btn good" onclick="setClasificacion(false)">No, puede continuar a clínica</button>
-          </div>
-
-          <div class="col-12">
-            ${grave === true ? `<div class="alert danger">Paciente clasificado como grave. Se activa referencia hospitalaria inmediata con ambulancia, estudios y diagnóstico adjuntos en cuanto estén disponibles.</div>` : ""}
-            ${grave === false ? `<div class="alert success">Paciente no grave. Continúa a triage, estudios y decisión clínica dentro de la clínica.</div>` : ""}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderTriage(){
-      const nivel = state.triage.nivel;
-      let badgeClass = "neutral";
-      if(nivel === "Bajo") badgeClass = "success";
-      if(nivel === "Medio") badgeClass = "warning";
-      if(nivel === "Alto") badgeClass = "danger";
-
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12 card-soft">
-            <div class="upload-head">
-              <div class="study-title">Definición de triage</div>
-              <div class="badge ${badgeClass}">${nivel || "Pendiente"}</div>
+          <div class="metrics-grid">
+            <div class="mini-kpi">
+              <div class="label">Estado clínico</div>
+              <div class="value">Cerrado</div>
+              <div class="desc">Paciente referido con expediente completo.</div>
             </div>
-            <div class="muted">
-              <strong>Bajo:</strong> estable, probable resolución en clínica.<br>
-              <strong>Medio:</strong> requiere estudios y observación; puede resolverse en clínica o referirse.<br>
-              <strong>Alto:</strong> prioridad alta, alto riesgo o probable hospitalización inmediata.
+            <div class="mini-kpi">
+              <div class="label">Estado financiero</div>
+              <div class="value">Pendiente de liquidación</div>
+              <div class="desc">Deducible aplicable según ruta final.</div>
             </div>
           </div>
-
-          <div class="col-12">
-            <div class="vitals-grid">
-              <div class="vital"><div class="vital-label">FC</div><div class="vital-value">${state.triage.vitals.fc}</div></div>
-              <div class="vital"><div class="vital-label">TA</div><div class="vital-value">${state.triage.vitals.ta}</div></div>
-              <div class="vital"><div class="vital-label">SpO2</div><div class="vital-value">${state.triage.vitals.spo2}</div></div>
-              <div class="vital"><div class="vital-label">Temp</div><div class="vital-value">${state.triage.vitals.temp}</div></div>
-            </div>
-          </div>
-
-          <div class="col-6 field">
-            <label>Síntoma principal</label>
-            <input id="sintomaPrincipal" value="${state.triage.sintomaPrincipal}">
-          </div>
-
-          <div class="col-6 field">
-            <label>Nivel de triage</label>
-            <select id="triageNivel">
-              <option value="">Seleccionar</option>
-              <option value="Bajo" ${nivel==="Bajo"?"selected":""}>Bajo</option>
-              <option value="Medio" ${nivel==="Medio"?"selected":""}>Medio</option>
-              <option value="Alto" ${nivel==="Alto"?"selected":""}>Alto</option>
-            </select>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn btn-light decision-btn" onclick="aplicarTriage()">Actualizar triage</button>
-            <button class="btn btn-dark decision-btn" onclick="goToStep(5)">Continuar a diagnóstico</button>
-          </div>
-
-          <div class="col-12">
-            ${nivel ? `<div class="alert ${nivel === "Alto" ? "danger" : nivel === "Medio" ? "warning" : "success"}">
-              ${nivel === "Alto" ? "Triage alto: el caso queda con probabilidad alta de hospitalización o traslado acelerado." : ""}
-              ${nivel === "Medio" ? "Triage medio: continuar estudios y decisión clínica con control estricto de tiempo." : ""}
-              ${nivel === "Bajo" ? "Triage bajo: caso clínicamente estable, con probable resolución en clínica." : ""}
-            </div>` : ""}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderDiagnostico(){
-      const archivosHtml = state.diagnostico.archivos.length
-        ? state.diagnostico.archivos.map(file => `
-            <div class="upload-item">
-              <div class="upload-head">
-                <div class="upload-title">${file.nombre}</div>
-                <span class="badge success">Cargado</span>
-              </div>
-              <div class="muted">${file.tipo} · Visible para hospital receptor · ${file.fecha}</div>
-            </div>
-          `).join("")
-        : `<div class="upload-item"><div class="upload-title">Sin estudios cargados</div><div class="muted">Los estudios deben poder verse en plataforma para referencias hospitalarias.</div></div>`;
-
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-6 field">
-            <label>Motivo de consulta</label>
-            <textarea id="motivoConsulta">${state.diagnostico.motivoConsulta}</textarea>
-          </div>
-
-          <div class="col-6 field">
-            <label>Hallazgos rápidos</label>
-            <textarea id="hallazgosRapidos">${state.diagnostico.hallazgosRapidos}</textarea>
-          </div>
-
-          <div class="col-12 field">
-            <label>Estudios a solicitar</label>
-            <div class="option-group">
-              <label class="chip"><input type="checkbox" value="Radiografía" ${state.diagnostico.estudiosSeleccionados.includes("Radiografía") ? "checked" : ""}>Radiografía</label>
-              <label class="chip"><input type="checkbox" value="Laboratorio" ${state.diagnostico.estudiosSeleccionados.includes("Laboratorio") ? "checked" : ""}>Laboratorio</label>
-              <label class="chip"><input type="checkbox" value="ECG" ${state.diagnostico.estudiosSeleccionados.includes("ECG") ? "checked" : ""}>ECG</label>
-            </div>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn btn-light decision-btn" onclick="solicitarEstudios()">Solicitar estudios</button>
-            <button class="btn btn-dark decision-btn" onclick="cargarResultados()">Subir resultados a plataforma</button>
-          </div>
-
-          <div class="col-6">
-            <div class="card-soft">
-              <div class="upload-head">
-                <div class="study-title">Resultado de estudios</div>
-                <div class="badge ${state.diagnostico.estudiosSolicitados ? "success" : "neutral"}">${state.diagnostico.estudiosSolicitados ? "Generado" : "Pendiente"}</div>
-              </div>
-              <div class="muted"><strong>Estudios:</strong> ${state.diagnostico.estudiosSeleccionados.length ? state.diagnostico.estudiosSeleccionados.join(", ") : "Ninguno"}</div>
-              <div class="muted" style="margin-top:8px;"><strong>Resultado:</strong> ${state.diagnostico.resultado || "Sin resultado"}</div>
-              <div class="muted" style="margin-top:8px;"><strong>Diagnóstico clínico:</strong> ${state.diagnostico.diagnosticoClinico || "Pendiente"}</div>
-            </div>
-          </div>
-
-          <div class="col-6">
-            <div class="card-soft">
-              <div class="upload-head">
-                <div class="study-title">Expediente digital de estudios</div>
-                <div class="badge info">Visible en plataforma</div>
-              </div>
-              <div class="uploads-list">${archivosHtml}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderDecision(){
-      const decision = state.decision.resolverEnClinica;
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12 card-soft">
-            <div class="upload-head">
-              <div class="study-title">Pregunta de resolución</div>
-              <div class="badge ${decision === true ? "success" : decision === false ? "danger" : "neutral"}">
-                ${decision === true ? "Se resuelve en clínica" : decision === false ? "Referencia hospitalaria" : "Pendiente"}
-              </div>
-            </div>
-            <div class="muted">
-              El motor de decisión toma en cuenta gravedad, triage, estudios, diagnóstico y control de tiempo. Solo se envía al hospital lo necesario.
-            </div>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn decision-btn good" onclick="setDecisionClinica(true)">Sí, se puede resolver en clínica</button>
-            <button class="btn decision-btn bad" onclick="setDecisionClinica(false)">No, activar flujo hospitalario</button>
-          </div>
-
-          <div class="col-12">
-            ${decision === true ? `<div class="alert success">Caso orientado a alta ambulatoria. Se mantiene seguimiento con médico general y pago parcial del deducible si tiene seguro.</div>` : ""}
-            ${decision === false ? `<div class="alert danger">Caso orientado a referencia hospitalaria. El deducible se paga en hospital y el traslado viaja con estudios y diagnóstico.</div>` : ""}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderTiempo(){
-      const mins = state.tiempo.minutos;
-      const excedido = state.tiempo.excedido;
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12">
-            <div class="time-box">
-              <div class="badge ${excedido ? "danger" : "info"}">${excedido ? "Tiempo excedido" : "Tiempo en control"}</div>
-              <div class="time-big">${formatMinutes(mins)}</div>
-              <div class="time-rule">Máximo permitido: 02:00 horas</div>
-            </div>
-          </div>
-
-          <div class="col-4 field">
-            <label>Minutos simulados en clínica</label>
-            <input id="minutosClinica" type="number" min="0" max="300" value="${mins}">
-          </div>
-
-          <div class="col-8 card-soft">
-            <div class="study-title">Regla operativa crítica</div>
-            <div class="muted" style="margin-top:8px;">
-              El paciente no puede permanecer más de 2 horas en clínica. Si supera el tiempo, el traslado hospitalario es obligatorio.
-            </div>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn btn-light decision-btn" onclick="actualizarTiempo()">Actualizar tiempo</button>
-            <button class="btn btn-dark decision-btn" onclick="forzarTiempoRapido()">Simular 2h 15m</button>
-          </div>
-
-          <div class="col-12">
-            ${!excedido ? `<div class="alert info">Tiempo dentro de parámetro operativo. Puede continuar con resolución clínica si el caso lo permite.</div>` : ""}
-            ${excedido ? `<div class="alert danger">Se excedió el tiempo máximo. Traslado hospitalario obligatorio activado.</div>` : ""}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderResultado(){
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12 card-soft">
-            <div class="upload-head">
-              <div class="study-title">Resultado operativo</div>
-              <div class="badge ${state.traslado.requerido ? "danger" : state.resultado.operativo.includes("clínica") ? "success" : "neutral"}">
-                ${state.resultado.operativo}
-              </div>
-            </div>
-            <div class="muted" style="margin-top:8px;"><strong>Número de expediente:</strong> ${state.expediente}</div>
-            <div class="muted" style="margin-top:8px;"><strong>Seguimiento con médico general:</strong> ${
-              state.resultado.seguimientoMG === null ? "Pendiente" : (state.resultado.seguimientoMG ? "Sí" : "No")
-            }</div>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn decision-btn good" onclick="cerrarComoAmbulatorio()">Paciente resuelto en clínica</button>
-            <button class="btn decision-btn bad" onclick="activarHospitalario()">Requiere hospital</button>
-          </div>
-
-          <div class="col-12">
-            ${state.traslado.requerido
-              ? `<div class="alert danger">Caso referido a hospital. Debe continuarse con traslado, estudios visibles y diagnóstico disponible para el hospital receptor.</div>`
-              : `<div class="alert success">Caso resuelto en clínica. El seguimiento con médico general queda marcado y el caso se considera ambulatorio.</div>`
-            }
-          </div>
-        </div>
-      `;
-    }
-
-    function renderTraslado(){
-      const requerido = state.traslado.requerido;
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-12 card-soft">
-            <div class="upload-head">
-              <div class="study-title">Coordinación operativa de traslado</div>
-              <div class="badge ${requerido ? "danger" : "neutral"}">${requerido ? "Activo" : "No requerido"}</div>
-            </div>
-            <div class="muted">
-              El traslado puede ser por ambulancia o por sus propios medios. En todos los casos de referencia, el paciente llega con estudios y diagnóstico visibles en plataforma.
-            </div>
-          </div>
-
-          <div class="col-4 field">
-            <label>Modalidad de traslado</label>
-            <select id="modalidadTraslado" ${!requerido ? "disabled" : ""}>
-              <option ${state.traslado.modalidad==="Ambulancia"?"selected":""}>Ambulancia</option>
-              <option ${state.traslado.modalidad==="Propios medios"?"selected":""}>Propios medios</option>
-            </select>
-          </div>
-
-          <div class="col-4 field">
-            <label>Hospital receptor</label>
-            <input id="hospitalReceptor" value="${state.traslado.hospital}" ${!requerido ? "disabled" : ""}>
-          </div>
-
-          <div class="col-4 field">
-            <label>Folio de referencia</label>
-            <input value="${state.traslado.folio}" disabled>
-          </div>
-
-          <div class="col-12">
-            <table>
-              <thead>
-                <tr>
-                  <th>Campo</th>
-                  <th>Valor</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>Nº póliza</td><td>${state.paciente.poliza}</td></tr>
-                <tr><td>Vigente</td><td>${state.cobertura.vigente === null ? "—" : (state.cobertura.vigente ? "Sí" : "No")}</td></tr>
-                <tr><td>Autorización</td><td>${state.traslado.autorizacion === null ? "—" : (state.traslado.autorizacion ? "Sí" : "No")}</td></tr>
-                <tr><td>Se envía a hospital</td><td>${state.traslado.enviaHospital === null ? "—" : (state.traslado.enviaHospital ? "Sí" : "No")}</td></tr>
-                <tr><td>Cubierto por póliza</td><td>${state.traslado.cubiertoPoliza === null ? "—" : (state.traslado.cubiertoPoliza ? "Sí" : "No")}</td></tr>
-                <tr><td>Estudios adjuntos</td><td>${state.diagnostico.archivos.length ? "Sí" : "No"}</td></tr>
-                <tr><td>Diagnóstico adjunto</td><td>${state.diagnostico.diagnosticoClinico ? "Sí" : "No"}</td></tr>
-                <tr><td>Estado de ambulancia</td><td>${state.traslado.modalidad === "Ambulancia" ? state.traslado.ambulanciaEstado : "No aplica"}</td></tr>
-                <tr><td>Tiempo estimado</td><td>${state.traslado.modalidad === "Ambulancia" ? state.traslado.tiempoEstimado : "Llegada por cuenta propia autorizada"}</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="col-12 decision-row">
-            <button class="btn btn-light decision-btn" onclick="actualizarTraslado()">Actualizar traslado</button>
-            <button class="btn btn-dark decision-btn" onclick="marcarAmbulanciaEnCamino()" ${!requerido ? "disabled" : ""}>Ambulancia en camino</button>
-          </div>
-
-          <div class="col-12">
-            ${requerido
-              ? `<div class="alert ${state.traslado.modalidad === "Ambulancia" ? "danger" : "warning"}">
-                  ${state.traslado.modalidad === "Ambulancia"
-                    ? "Traslado hospitalario coordinado por ambulancia. El hospital receptor puede consultar estudios y diagnóstico desde la plataforma."
-                    : "Traslado hospitalario por propios medios autorizado. El hospital indicado queda cubierto por póliza y recibe estudios + diagnóstico del expediente digital."
-                  }
-                </div>`
-              : `<div class="alert success">No se requiere traslado para este caso. La resolución permanece en clínica.</div>`
-            }
-          </div>
-        </div>
-      `;
-    }
-
-    function renderLiquidacion(){
-      const conSeguro = state.cobertura.tieneSeguro && state.cobertura.activa;
-      const ambulatorio = !state.traslado.requerido;
-      const pagoTexto = ambulatorio
-        ? (conSeguro ? `${state.cobertura.porcentajeAmbulatorio}% del deducible en clínica` : "Pago directo por no contar con seguro")
-        : (conSeguro ? "Deducible pagadero en hospital" : "Pago hospitalario sin cobertura");
-
-      el.stageContent.innerHTML = `
-        <div class="grid">
-          <div class="col-6">
-            <div class="card-soft">
-              <div class="upload-head">
-                <div class="study-title">Liquidación financiera</div>
-                <div class="badge ${conSeguro ? "success" : "danger"}">${conSeguro ? "Con seguro" : "Sin seguro"}</div>
-              </div>
-
-              <div class="finance-list">
-                <div class="finance-item">
-                  <div class="finance-head"><div class="finance-title">Seguro</div><div>${conSeguro ? "Sí" : "No"}</div></div>
-                  <div class="muted">Estado resultante de la validación de cobertura.</div>
-                </div>
-
-                <div class="finance-item">
-                  <div class="finance-head"><div class="finance-title">Deducible de póliza</div><div>$${state.cobertura.deducible.toLocaleString('es-MX')}</div></div>
-                  <div class="muted">Valor de referencia de la póliza simulada.</div>
-                </div>
-
-                <div class="finance-item">
-                  <div class="finance-head"><div class="finance-title">Aplicación de pago</div><div>${pagoTexto}</div></div>
-                  <div class="muted">
-                    ${ambulatorio
-                      ? "Caso ambulatorio: se aplica un porcentaje del deducible en clínica."
-                      : "Caso hospitalario: el deducible se paga en el hospital receptor."
-                    }
-                  </div>
-                </div>
-
-                <div class="finance-item">
-                  <div class="finance-head"><div class="finance-title">Lugar de pago</div><div>${ambulatorio ? "Clínica" : "Hospital"}</div></div>
-                  <div class="muted">Determinación automática según ruta final del caso.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-6">
-            <div class="card-soft">
-              <div class="upload-head">
-                <div class="study-title">Dashboard ejecutivo</div>
-                <div class="badge info">KPIs del modelo</div>
-              </div>
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>Indicador</th>
-                    <th>Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td>Pacientes atendidos</td><td>${state.dashboard.pacientesAtendidos}</td></tr>
-                  <tr><td>% resueltos en clínica</td><td>${state.dashboard.pctClinica}%</td></tr>
-                  <tr><td>% enviados a hospital</td><td>${state.dashboard.pctHospital}%</td></tr>
-                  <tr><td>Tiempo promedio</td><td>${state.dashboard.tiempoPromedio}</td></tr>
-                  <tr><td>% con seguro</td><td>${state.dashboard.pctConSeguro}%</td></tr>
-                  <tr><td>% sin seguro</td><td>${state.dashboard.pctSinSeguro}%</td></tr>
-                  <tr><td>% deducible aplicado</td><td>${state.dashboard.pctDeducibleAplicado}%</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="alert ${state.traslado.requerido ? "danger" : "success"}">
-              ${state.traslado.requerido
-                ? "Caso cerrado como referencia hospitalaria. El sistema documenta póliza, autorización, diagnóstico, estudios y condición de pago del deducible."
-                : "Caso cerrado como ambulatorio. El sistema documenta alta clínica, seguimiento y aplicación parcial del deducible cuando existe seguro."
-              }
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function saveAdmision(){
-      const nombre = document.getElementById("nombrePaciente").value.trim();
-      const fecha = document.getElementById("fechaNacimiento").value;
-      const sexo = document.getElementById("sexoPaciente").value;
-      const edad = parseInt(document.getElementById("edadPaciente").value || "0", 10);
-      const poliza = document.getElementById("polizaPaciente").value.trim();
-      const motivo = document.getElementById("motivoAtencion").value.trim();
-
-      state.paciente.nombre = nombre || state.paciente.nombre;
-      state.paciente.fechaNacimiento = fecha || state.paciente.fechaNacimiento;
-      state.paciente.sexo = sexo;
-      state.paciente.edad = Number.isFinite(edad) && edad >= 0 ? edad : state.paciente.edad;
-      state.paciente.poliza = poliza || state.paciente.poliza;
-      state.paciente.motivoAtencion = motivo || state.paciente.motivoAtencion;
-
-      addLog(`Admisión actualizada para ${state.paciente.nombre}. Póliza ${state.paciente.poliza}.`);
-      renderStage();
-    }
-
-    function validarCobertura(){
-      if(document.getElementById("nombrePaciente")) saveAdmision();
-      const seguroSelect = document.getElementById("seguroPaciente");
-      const seguroVal = seguroSelect ? seguroSelect.value : (state.cobertura.tieneSeguro ? "si" : "no");
-      state.cobertura.tieneSeguro = seguroVal === "si";
-
-      if(state.cobertura.tieneSeguro){
-        state.cobertura.activa = true;
-        state.cobertura.elegible = true;
-        state.cobertura.vigente = true;
-        state.traslado.autorizacion = true;
-        state.traslado.cubiertoPoliza = true;
-        addLog("Cobertura validada: póliza vigente, cobertura activa y caso elegible.");
-      } else {
-        state.cobertura.activa = false;
-        state.cobertura.elegible = false;
-        state.cobertura.vigente = false;
-        state.traslado.autorizacion = false;
-        state.traslado.cubiertoPoliza = false;
-        addLog("Cobertura validada: paciente sin seguro o sin vigencia.");
-      }
-
-      updateLiquidacionState();
-      if(state.currentStep !== 2) state.currentStep = 2;
-      renderStage();
-    }
-
-    function setClasificacion(isGrave){
-      state.clasificacion.grave = isGrave;
-      if(isGrave){
-        state.routeColor = "red";
-        state.traslado.requerido = true;
-        state.traslado.enviaHospital = true;
-        state.traslado.modalidad = "Ambulancia";
-        state.traslado.ambulanciaEstado = "Asignada";
-        state.traslado.tiempoEstimado = "12 min";
-        state.resultado.operativo = "Requiere hospital";
-        state.resultado.seguimientoMG = false;
-        addLog("Clasificación inicial: paciente grave. Se activa ruta hospitalaria inmediata.");
-      } else {
-        addLog("Clasificación inicial: paciente no grave. Continúa flujo en clínica.");
-      }
-      renderStage();
-    }
-
-    function aplicarTriage(){
-      const sintoma = document.getElementById("sintomaPrincipal").value.trim();
-      const nivel = document.getElementById("triageNivel").value;
-
-      state.triage.sintomaPrincipal = sintoma || state.triage.sintomaPrincipal;
-      state.triage.nivel = nivel || "Medio";
-
-      if(state.triage.nivel === "Bajo"){
-        state.triage.definicion = "Paciente estable con alta probabilidad de resolución en clínica.";
-      } else if(state.triage.nivel === "Medio"){
-        state.triage.definicion = "Paciente que requiere estudios y observación con decisión clínica posterior.";
-      } else {
-        state.triage.definicion = "Paciente de prioridad alta con mayor probabilidad de referencia hospitalaria.";
-        state.routeColor = "red";
-      }
-
-      addLog(`Triage actualizado a nivel ${state.triage.nivel}. ${state.triage.definicion}`);
-      renderStage();
-    }
-
-    function solicitarEstudios(){
-      const motivo = document.getElementById("motivoConsulta").value.trim();
-      const hallazgos = document.getElementById("hallazgosRapidos").value.trim();
-      const checks = [...document.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
-
-      state.diagnostico.motivoConsulta = motivo || state.diagnostico.motivoConsulta;
-      state.diagnostico.hallazgosRapidos = hallazgos || state.diagnostico.hallazgosRapidos;
-      state.diagnostico.estudiosSeleccionados = checks.length ? checks : ["Radiografía"];
-      state.diagnostico.estudiosSolicitados = true;
-
-      if(state.diagnostico.estudiosSeleccionados.includes("Radiografía")){
-        state.diagnostico.resultado = "Fractura no complicada de tobillo, sin desplazamiento.";
-        state.diagnostico.diagnosticoClinico = "Trauma ortopédico estable, candidato a manejo inicial en clínica.";
-      } else if(state.diagnostico.estudiosSeleccionados.includes("ECG")){
-        state.diagnostico.resultado = "ECG sin cambios agudos.";
-        state.diagnostico.diagnosticoClinico = "Dolor sin evidencia inicial de evento agudo; requiere correlación clínica.";
-      } else {
-        state.diagnostico.resultado = "Laboratorio dentro de parámetros sin datos de alarma.";
-        state.diagnostico.diagnosticoClinico = "Caso sin hallazgos críticos, continuar manejo clínico.";
-      }
-
-      addLog(`Estudios solicitados: ${state.diagnostico.estudiosSeleccionados.join(", ")}. Resultado simulado generado.`);
-      renderStage();
-    }
-
-    function cargarResultados(){
-      if(!state.diagnostico.estudiosSolicitados){
-        solicitarEstudios();
-      }
-
-      state.diagnostico.archivos = state.diagnostico.estudiosSeleccionados.map((estudio, i) => ({
-        nombre: estudio === "Radiografía" ? "RX_Tobillo_AP_LAT.pdf" :
-                estudio === "Laboratorio" ? "Panel_Urgencias_Lab.pdf" :
-                "ECG_Urgencias.pdf",
-        tipo: estudio,
-        fecha: `2026-02-06 16:${String(10+i*7).padStart(2,"0")}`
-      }));
-
-      addLog("Resultados cargados a plataforma. Hospital receptor podrá visualizarlos en caso de traslado.");
-      renderStage();
-    }
-
-    function setDecisionClinica(canResolve){
-      state.decision.resolverEnClinica = canResolve;
-
-      if(state.tiempo.excedido){
-        canResolve = false;
-        state.decision.resolverEnClinica = false;
-      }
-
-      if(canResolve){
-        state.traslado.requerido = false;
-        state.traslado.enviaHospital = false;
-        state.routeColor = "blue";
-        state.resultado.operativo = "Paciente resuelto en clínica";
-        state.resultado.seguimientoMG = true;
-        addLog("Decisión clínica: caso resoluble en clínica.");
-      } else {
-        state.traslado.requerido = true;
-        state.traslado.enviaHospital = true;
-        state.traslado.autorizacion = state.cobertura.tieneSeguro ? true : false;
-        state.traslado.cubiertoPoliza = state.cobertura.tieneSeguro && state.cobertura.activa;
-        state.traslado.ambulanciaEstado = "Asignada";
-        state.traslado.tiempoEstimado = "14 min";
-        state.routeColor = "red";
-        state.resultado.operativo = "Requiere hospital";
-        state.resultado.seguimientoMG = false;
-        addLog("Decisión clínica: se activa referencia hospitalaria.");
-      }
-
-      updateLiquidacionState();
-      renderStage();
-    }
-
-    function actualizarTiempo(){
-      const value = parseInt(document.getElementById("minutosClinica").value || "0", 10);
-      state.tiempo.minutos = Math.max(0, value);
-      state.tiempo.excedido = state.tiempo.minutos > state.tiempo.maximo;
-
-      if(state.tiempo.excedido){
-        state.traslado.requerido = true;
-        state.traslado.enviaHospital = true;
-        state.traslado.modalidad = "Ambulancia";
-        state.traslado.ambulanciaEstado = "Asignada";
-        state.traslado.tiempoEstimado = "10 min";
-        state.decision.resolverEnClinica = false;
-        state.resultado.operativo = "Requiere hospital";
-        state.resultado.seguimientoMG = false;
-        state.routeColor = "red";
-        addLog("Tiempo excedido: traslado hospitalario obligatorio activado.");
-      } else {
-        addLog(`Tiempo clínico actualizado a ${formatMinutes(state.tiempo.minutos)}.`);
-      }
-
-      updateLiquidacionState();
-      renderStage();
-    }
-
-    function forzarTiempoRapido(){
-      state.tiempo.minutos = 135;
-      state.tiempo.excedido = true;
-      state.traslado.requerido = true;
-      state.traslado.enviaHospital = true;
-      state.traslado.modalidad = "Ambulancia";
-      state.traslado.ambulanciaEstado = "Asignada";
-      state.traslado.tiempoEstimado = "09 min";
-      state.decision.resolverEnClinica = false;
-      state.resultado.operativo = "Requiere hospital";
-      state.resultado.seguimientoMG = false;
-      state.routeColor = "red";
-      updateLiquidacionState();
-      addLog("Simulación rápida: 2h 15m en clínica. Traslado obligatorio.");
-      renderStage();
-    }
-
-    function cerrarComoAmbulatorio(){
-      state.traslado.requerido = false;
-      state.traslado.enviaHospital = false;
-      state.resultado.operativo = "Paciente resuelto en clínica";
-      state.resultado.seguimientoMG = true;
-      state.routeColor = "blue";
-      updateLiquidacionState();
-      addLog("Caso cerrado como ambulatorio con alta médica.");
-      renderStage();
-    }
-
-    function activarHospitalario(){
-      state.traslado.requerido = true;
-      state.traslado.enviaHospital = true;
-      state.resultado.operativo = "Requiere hospital";
-      state.resultado.seguimientoMG = false;
-      state.routeColor = "red";
-      if(!state.diagnostico.archivos.length){
-        if(!state.diagnostico.estudiosSolicitados) solicitarEstudios();
-        cargarResultados();
-        return;
-      }
-      updateLiquidacionState();
-      addLog("Caso marcado como hospitalario. Se prepara traslado con expediente clínico digital.");
-      renderStage();
-    }
-
-    function actualizarTraslado(){
-      if(!state.traslado.requerido){
-        addLog("Traslado no requerido para este caso.");
-        return;
-      }
-
-      state.traslado.modalidad = document.getElementById("modalidadTraslado").value;
-      state.traslado.hospital = document.getElementById("hospitalReceptor").value.trim() || state.traslado.hospital;
-      state.traslado.autorizacion = state.cobertura.tieneSeguro ? true : false;
-      state.traslado.cubiertoPoliza = state.cobertura.tieneSeguro && state.cobertura.activa;
-      state.traslado.enviaHospital = true;
-
-      if(state.traslado.modalidad === "Ambulancia"){
-        state.traslado.ambulanciaEstado = "En camino";
-        state.traslado.tiempoEstimado = "08 min";
-        addLog(`Traslado actualizado por ambulancia al hospital ${state.traslado.hospital}.`);
-      } else {
-        state.traslado.ambulanciaEstado = "No aplica";
-        state.traslado.tiempoEstimado = "Llegada por cuenta propia";
-        addLog(`Traslado por propios medios autorizado al hospital ${state.traslado.hospital}, cubierto según póliza cuando aplica.`);
-      }
-
-      renderStage();
-    }
-
-    function marcarAmbulanciaEnCamino(){
-      if(!state.traslado.requerido) return;
-      state.traslado.modalidad = "Ambulancia";
-      state.traslado.ambulanciaEstado = "En camino";
-      state.traslado.tiempoEstimado = "07 min";
-      addLog("Ambulancia en camino al punto de referencia.");
-      renderStage();
-    }
-
-    function updateLiquidacionState(){
-      const conSeguro = state.cobertura.tieneSeguro && state.cobertura.activa;
-      const ambulatorio = !state.traslado.requerido;
-
-      if(!conSeguro){
-        state.liquidacion.lugarPago = ambulatorio ? "Clínica" : "Hospital";
-        state.liquidacion.descripcionPago = ambulatorio ? "Pago directo sin seguro" : "Pago hospitalario sin cobertura";
-        state.liquidacion.porcentajeDeducible = 0;
-      } else if(ambulatorio){
-        state.liquidacion.lugarPago = "Clínica";
-        state.liquidacion.descripcionPago = `${state.cobertura.porcentajeAmbulatorio}% del deducible`;
-        state.liquidacion.porcentajeDeducible = state.cobertura.porcentajeAmbulatorio;
-      } else {
-        state.liquidacion.lugarPago = "Hospital";
-        state.liquidacion.descripcionPago = "Deducible en hospital";
-        state.liquidacion.porcentajeDeducible = 100;
+        `;
+        document.getElementById('kpiSeguimiento').textContent = 'Cierre en proceso';
+        document.getElementById('patientStatusHeader').textContent = 'En seguimiento';
       }
     }
 
-    function goToStep(step){
-      state.currentStep = Math.min(Math.max(step, 1), steps.length);
-      renderStage();
+    function startAutoDemo() {
+      stopAutoDemo();
+      interval = setInterval(() => {
+        currentStep = currentStep >= 7 ? 1 : currentStep + 1;
+        renderStep(currentStep);
+      }, 2200);
     }
 
-    function nextStep(){
-      if(state.currentStep < steps.length){
-        state.currentStep++;
-        renderStage();
+    function stopAutoDemo() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
       }
     }
 
-    function prevStep(){
-      if(state.currentStep > 1){
-        state.currentStep--;
-        renderStage();
-      }
+    function resetDemo() {
+      stopAutoDemo();
+
+      patientName.value = 'María Fernanda López';
+      patientAge.value = '38';
+      patientSex.value = 'Femenino';
+      patientInsurance.value = 'Sí';
+      patientReason.value = 'Dolor torácico, opresión en pecho y dificultad respiratoria leve de inicio reciente.';
+
+      document.getElementById('kpiExpediente').textContent = 'MFH-URG-2026-00127';
+      document.getElementById('patientExpBadge').textContent = 'Expediente: MFH-URG-2026-00127';
+      document.getElementById('kpiTriage').textContent = 'Medio';
+      document.getElementById('kpiDecision').textContent = 'Traslado sugerido';
+      document.getElementById('kpiRuta').textContent = 'Evaluación en clínica';
+      document.getElementById('kpiSeguimiento').textContent = 'Activo';
+
+      document.getElementById('decisionTitle').textContent = 'Traslado a hospital con diagnóstico previo';
+      document.getElementById('decisionDescription').textContent =
+        'Se sugiere traslado una vez concluidos estudios y valoración clínica. El expediente viaja con resultados, diagnóstico preliminar y evidencia visible para el hospital receptor.';
+      document.getElementById('diagnosticoActual').textContent = 'Riesgo cardiovascular intermedio';
+      document.getElementById('siguienteAccion').textContent = 'Validar traslado y hospital receptor';
+      document.getElementById('tipoResolucion').textContent = 'Hospitalaria';
+      document.getElementById('miniRutaFinal').textContent = 'Hospital';
+      document.getElementById('patientSeverityHeader').textContent = 'Media';
+
+      syncPatientHeader();
+      renderStep(1);
     }
 
-    function clearAutoTimer(){
-      if(state.autoTimer){
-        clearTimeout(state.autoTimer);
-        state.autoTimer = null;
-      }
-    }
+    patientName.addEventListener('input', syncPatientHeader);
+    patientAge.addEventListener('input', syncPatientHeader);
+    patientSex.addEventListener('change', syncPatientHeader);
+    patientInsurance.addEventListener('change', syncPatientHeader);
+    patientReason.addEventListener('input', syncPatientHeader);
 
-    function updateFlowButtons(){
-      el.btnAutoFlow.textContent = state.autoRunning ? "Flujo automático activo" : "Iniciar flujo automático";
-      el.btnPauseFlow.textContent = state.autoPaused ? "Reanudar flujo" : "Pausar flujo";
-    }
+    btnAutoDemo.addEventListener('click', startAutoDemo);
+    btnPauseDemo.addEventListener('click', stopAutoDemo);
+    btnResetDemo.addEventListener('click', resetDemo);
 
-    const autoFlowSteps = [
-      () => { saveAdmision(); validarCobertura(); },
-      () => { goToStep(3); setClasificacion(false); },
-      () => { goToStep(4); document && (state.triage.nivel = "Medio"); aplicarTriageAuto(); },
-      () => { goToStep(5); solicitarEstudiosAuto(); cargarResultados(); },
-      () => { goToStep(6); setDecisionClinica(true); },
-      () => { goToStep(7); state.tiempo.minutos = 80; state.tiempo.excedido = false; addLog("Control de tiempo: 1h 20m en clínica."); renderStage(); },
-      () => { goToStep(8); cerrarComoAmbulatorio(); },
-      () => { goToStep(9); renderStage(); },
-      () => { goToStep(10); addLog("Flujo automático finalizado."); stopAutoFlow(true); }
-    ];
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        stopAutoDemo();
+        renderStep(index + 1);
+      });
+    });
 
-    function aplicarTriageAuto(){
-      state.triage.sintomaPrincipal = state.triage.sintomaPrincipal || "Dolor e inflamación en tobillo";
-      state.triage.nivel = "Medio";
-      state.triage.definicion = "Paciente que requiere estudios y observación con decisión clínica posterior.";
-      addLog(`Triage actualizado a nivel ${state.triage.nivel}. ${state.triage.definicion}`);
-      renderStage();
-    }
-
-    function solicitarEstudiosAuto(){
-      state.diagnostico.estudiosSeleccionados = ["Radiografía"];
-      state.diagnostico.estudiosSolicitados = true;
-      state.diagnostico.resultado = "Fractura no complicada de tobillo, sin desplazamiento.";
-      state.diagnostico.diagnosticoClinico = "Trauma ortopédico estable, candidato a manejo inicial en clínica.";
-      addLog("Estudios solicitados: Radiografía. Resultado simulado generado.");
-      renderStage();
-    }
-
-    function runAutoFlowStep(){
-      clearAutoTimer();
-      if(!state.autoRunning || state.autoPaused) return;
-
-      if(state.autoIndex >= autoFlowSteps.length){
-        stopAutoFlow(true);
-        return;
-      }
-
-      autoFlowSteps[state.autoIndex]();
-      state.autoIndex += 1;
-
-      if(state.autoRunning && !state.autoPaused){
-        state.autoTimer = setTimeout(runAutoFlowStep, 1500);
-      }
-    }
-
-    function startAutoFlow(){
-      if(state.autoRunning && !state.autoPaused) return;
-      if(!state.autoRunning){
-        resetFlow(false);
-        state.autoIndex = 0;
-        state.autoRunning = true;
-        state.autoPaused = false;
-        addLog("Flujo automático iniciado.");
-      } else {
-        state.autoPaused = false;
-        addLog("Flujo automático reanudado.");
-      }
-      updateFlowButtons();
-      runAutoFlowStep();
-    }
-
-    function pauseAutoFlow(){
-      if(!state.autoRunning) return;
-      state.autoPaused = !state.autoPaused;
-      clearAutoTimer();
-      addLog(state.autoPaused ? "Flujo automático en pausa." : "Flujo automático reanudado.");
-      updateFlowButtons();
-      if(!state.autoPaused){
-        runAutoFlowStep();
-      }
-    }
-
-    function stopAutoFlow(resetIndex){
-      clearAutoTimer();
-      state.autoRunning = false;
-      state.autoPaused = false;
-      if(resetIndex) state.autoIndex = 0;
-      updateFlowButtons();
-    }
-
-    function resetFlow(addResetLog = true){
-      clearAutoTimer();
-      const fresh = getInitialState();
-      state = fresh;
-      state.logs = [{ time: nowString(), text: addResetLog ? "Flujo reiniciado." : "Caso listo para iniciar." }];
-      updateLiquidacionState();
-      updateFlowButtons();
-      renderStage();
-    }
-
-    el.btnPrev.addEventListener("click", prevStep);
-    el.btnNext.addEventListener("click", nextStep);
-    el.btnAutoFlow.addEventListener("click", startAutoFlow);
-    el.btnPauseFlow.addEventListener("click", pauseAutoFlow);
-    el.btnResetFlow.addEventListener("click", () => resetFlow(true));
-
-    updateLiquidacionState();
-    state.logs = [{ time: nowString(), text: "Caso listo para iniciar." }];
-    updateFlowButtons();
-    renderStage();
-
-    window.goToStep = goToStep;
-    window.saveAdmision = saveAdmision;
-    window.validarCobertura = validarCobertura;
-    window.setClasificacion = setClasificacion;
-    window.aplicarTriage = aplicarTriage;
-    window.solicitarEstudios = solicitarEstudios;
-    window.cargarResultados = cargarResultados;
-    window.setDecisionClinica = setDecisionClinica;
-    window.actualizarTiempo = actualizarTiempo;
-    window.forzarTiempoRapido = forzarTiempoRapido;
-    window.cerrarComoAmbulatorio = cerrarComoAmbulatorio;
-    window.activarHospitalario = activarHospitalario;
-    window.actualizarTraslado = actualizarTraslado;
-    window.marcarAmbulanciaEnCamino = marcarAmbulanciaEnCamino;
+    syncPatientHeader();
+    renderStep(1);
   </script>
 </body>
 </html>
