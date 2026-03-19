@@ -33,13 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
   bindNavigation();
   bindTriage();
   bindEstudios();
-  initDemo();
-});
-
-function initDemo() {
   resetCase(false);
   goToScreen("screen-registro", 1);
-}
+});
 
 function bindRealtimeInputs() {
   const mappings = [
@@ -59,28 +55,30 @@ function bindRealtimeInputs() {
     const el = document.getElementById(id);
     if (!el) return;
 
-    el.addEventListener("input", () => {
+    const eventType = el.tagName === "SELECT" ? "change" : "input";
+
+    el.addEventListener(eventType, () => {
       currentCase[key] = el.value.trim();
       updateSummary();
       updateTriageSuggestion();
     });
 
-    el.addEventListener("change", () => {
-      currentCase[key] = el.value.trim();
-      updateSummary();
-      updateTriageSuggestion();
-    });
+    if (eventType !== "change") {
+      el.addEventListener("change", () => {
+        currentCase[key] = el.value.trim();
+        updateSummary();
+        updateTriageSuggestion();
+      });
+    }
   });
 }
 
 function bindNavigation() {
-  const byId = (id) => document.getElementById(id);
-
   byId("go-to-triage-btn")?.addEventListener("click", () => {
-    syncFormToCase();
+    syncRegistroToCase();
 
     if (!currentCase.nombre || !currentCase.edad || !currentCase.sexo) {
-      alert("Captura al menos nombre, edad y sexo antes de continuar.");
+      alert("Captura nombre, edad y sexo antes de continuar.");
       return;
     }
 
@@ -132,7 +130,7 @@ function bindNavigation() {
 
   byId("finish-case-btn")?.addEventListener("click", () => {
     finalizeCase();
-    alert("Caso finalizado y contabilizado en KPIs.");
+    alert("Caso finalizado.");
   });
 
   byId("reset-demo-btn")?.addEventListener("click", () => {
@@ -146,54 +144,43 @@ function bindNavigation() {
 
 function bindTriage() {
   const triageButtons = document.querySelectorAll(".triage-btn");
-  const selectedLabel = document.getElementById("selected-triage-label");
-  const confirmBtn = document.getElementById("confirm-triage-btn");
 
   triageButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      const selected = btn.dataset.triage || "";
+      const selected = btn.dataset.triage;
       currentCase.triage = selected;
 
       triageButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
-      if (selectedLabel) {
-        selectedLabel.textContent = capitalize(selected);
-      }
-
+      setText("selected-triage-label", capitalize(selected));
       updateSummary();
     });
   });
 
-  confirmBtn?.addEventListener("click", () => {
+  byId("confirm-triage-btn")?.addEventListener("click", () => {
     if (!currentCase.triage) {
-      alert("Selecciona manualmente el triage.");
+      alert("Selecciona manualmente el triage antes de continuar.");
       return;
     }
 
-    syncEstudiosToCase();
     goToScreen("screen-estudios", 3);
   });
 }
 
 function bindEstudios() {
-  const uploadInput = document.getElementById("upload-estudios");
-
-  uploadInput?.addEventListener("change", (e) => {
+  byId("upload-estudios")?.addEventListener("change", (e) => {
     const files = Array.from(e.target.files || []);
     currentCase.uploadedFiles = files.map((f) => f.name);
     renderUploadedFiles();
   });
 
   ["estudio-rx", "estudio-lab", "estudio-usg", "estudio-otro"].forEach((id) => {
-    const el = document.getElementById(id);
-    el?.addEventListener("change", () => {
-      syncEstudiosToCase();
-    });
+    byId(id)?.addEventListener("change", syncEstudiosToCase);
   });
 }
 
-function syncFormToCase() {
+function syncRegistroToCase() {
   currentCase.expediente = getValue("expediente");
   currentCase.nombre = getValue("nombre");
   currentCase.edad = getValue("edad");
@@ -206,7 +193,6 @@ function syncFormToCase() {
 
 function syncEstudiosToCase() {
   const estudios = [];
-
   if (isChecked("estudio-rx")) estudios.push("Rayos X");
   if (isChecked("estudio-lab")) estudios.push("Laboratorio");
   if (isChecked("estudio-usg")) estudios.push("Ultrasonido");
@@ -231,15 +217,11 @@ function updateTriageSuggestion() {
   const highKeywords = [
     "dolor toracico",
     "dolor en pecho",
-    "infarto",
     "hemorragia",
     "inconsciente",
     "fractura expuesta",
-    "disnea severa",
     "convulsiones",
-    "trauma mayor",
-    "stroke",
-    "evento vascular"
+    "disnea severa"
   ];
 
   const mediumKeywords = [
@@ -249,10 +231,7 @@ function updateTriageSuggestion() {
     "vomito",
     "fractura",
     "lesion",
-    "disnea",
-    "taquicardia",
-    "hipertension",
-    "deshidratacion"
+    "disnea"
   ];
 
   if (highKeywords.some((k) => sintomas.includes(k))) {
@@ -262,11 +241,7 @@ function updateTriageSuggestion() {
   }
 
   currentCase.triageSugerido = sugerido;
-
-  const badge = document.getElementById("triage-sugerido-badge");
-  if (badge) {
-    badge.textContent = `Sugerido por sistema: ${sugerido}`;
-  }
+  setText("triage-sugerido-badge", `Sugerido por sistema: ${sugerido}`);
 }
 
 function applyDecisionFlow() {
@@ -275,38 +250,31 @@ function applyDecisionFlow() {
 
   if (triage === "bajo") {
     currentCase.destino = "Atención ambulatoria en Salud Digna";
-    currentCase.decisionFinal = "Resolución local con indicaciones, receta y seguimiento";
+    currentCase.decisionFinal = "Resolución local con indicaciones y seguimiento";
     currentCase.traslado = "No requiere traslado";
     currentCase.tipoAtencion = "Ambulatorio";
     currentCase.deduciblePct = hasSeguro ? 15 : 100;
     currentCase.cobro = hasSeguro
-      ? "Se paga un porcentaje del deducible en modalidad ambulatoria"
-      : "Pago directo del servicio ambulatorio";
+      ? "Se paga un porcentaje del deducible"
+      : "Pago directo del servicio";
   } else if (triage === "medio") {
-    currentCase.destino = "Evaluación con estudios y definición de referencia";
-    currentCase.decisionFinal = "Se revisan estudios y diagnóstico para decidir resolución local o traslado";
-    currentCase.traslado = "Puede trasladarse por sus propios medios o coordinar traslado según el caso";
+    currentCase.destino = "Evaluación con estudios y posible referencia";
+    currentCase.decisionFinal = "Se revisan estudios y diagnóstico antes de definir traslado";
+    currentCase.traslado = "Puede trasladarse por sus propios medios o coordinar traslado";
     currentCase.tipoAtencion = "Ambulatorio / Referencia";
     currentCase.deduciblePct = hasSeguro ? 25 : 100;
     currentCase.cobro = hasSeguro
-      ? "Se aplica un porcentaje del deducible si se resuelve ambulatoriamente"
+      ? "Se aplica porcentaje del deducible si se resuelve ambulatoriamente"
       : "Pago directo; si escala, se define en hospital";
   } else if (triage === "alto") {
     currentCase.destino = "Hospital inmediato";
     currentCase.decisionFinal = "Traslado hospitalario inmediato por nivel de riesgo";
-    currentCase.traslado = "Traslado inmediato al hospital indicado por la póliza o por sus propios medios con estudios y diagnóstico";
+    currentCase.traslado = "Traslado al hospital indicado con estudios y diagnóstico";
     currentCase.tipoAtencion = "Hospitalario";
-    currentCase.deduciblePct = hasSeguro ? 100 : 100;
+    currentCase.deduciblePct = 100;
     currentCase.cobro = hasSeguro
       ? "El deducible se paga en el hospital"
-      : "Paciente sin seguro; pago hospitalario conforme al hospital receptor";
-  } else {
-    currentCase.destino = "Pendiente";
-    currentCase.decisionFinal = "Pendiente";
-    currentCase.traslado = "Pendiente";
-    currentCase.tipoAtencion = "Pendiente";
-    currentCase.deduciblePct = 0;
-    currentCase.cobro = "Pendiente";
+      : "Pago hospitalario directo";
   }
 
   renderDecision();
@@ -325,7 +293,6 @@ function buildFinancialView() {
   setText("liquidacion-tipo", currentCase.tipoAtencion || "—");
   setText("liquidacion-deducible", `${currentCase.deduciblePct || 0}%`);
   setText("liquidacion-cobro", currentCase.cobro || "—");
-
   stats.deducible = currentCase.deduciblePct || 0;
   renderKpis();
 }
@@ -362,18 +329,15 @@ function updateSummary() {
 }
 
 function renderUploadedFiles() {
-  const target = document.getElementById("uploaded-files-list");
-  if (!target) return;
-
   const estudios = currentCase.estudios.length
-    ? `Estudios seleccionados: ${currentCase.estudios.join(", ")}`
-    : "Estudios seleccionados: ninguno";
+    ? currentCase.estudios.join(", ")
+    : "ninguno";
 
   const files = currentCase.uploadedFiles.length
-    ? `Archivos cargados: ${currentCase.uploadedFiles.join(", ")}`
-    : "Archivos cargados: ninguno";
+    ? currentCase.uploadedFiles.join(", ")
+    : "ninguno";
 
-  target.textContent = `${estudios}. ${files}.`;
+  setText("uploaded-files-list", `Estudios seleccionados: ${estudios}. Archivos cargados: ${files}.`);
 }
 
 function resetCase(goHome = true) {
@@ -404,7 +368,6 @@ function resetCase(goHome = true) {
   buildFinancialView();
   updateSummary();
   renderUploadedFiles();
-  updateTriageSuggestion();
 
   if (goHome) {
     goToScreen("screen-registro", 1);
@@ -424,7 +387,7 @@ function clearForm() {
     "diagnostico-clinico",
     "comentarios-medicos"
   ].forEach((id) => {
-    const el = document.getElementById(id);
+    const el = byId(id);
     if (!el) return;
     if (el.tagName === "SELECT") {
       el.selectedIndex = 0;
@@ -434,11 +397,11 @@ function clearForm() {
   });
 
   ["estudio-rx", "estudio-lab", "estudio-usg", "estudio-otro"].forEach((id) => {
-    const el = document.getElementById(id);
+    const el = byId(id);
     if (el) el.checked = false;
   });
 
-  const upload = document.getElementById("upload-estudios");
+  const upload = byId("upload-estudios");
   if (upload) upload.value = "";
 }
 
@@ -456,33 +419,29 @@ function goToScreen(screenId, stepNumber) {
     screen.classList.remove("active");
   });
 
-  const activeScreen = document.getElementById(screenId);
-  if (activeScreen) {
-    activeScreen.classList.add("active");
-  }
+  byId(screenId)?.classList.add("active");
 
   document.querySelectorAll(".timeline-step").forEach((step) => {
     step.classList.remove("active");
   });
 
-  const activeStep = document.getElementById(`step-${stepNumber}`);
-  if (activeStep) {
-    activeStep.classList.add("active");
-  }
+  byId(`step-${stepNumber}`)?.classList.add("active");
+}
+
+function byId(id) {
+  return document.getElementById(id);
 }
 
 function getValue(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : "";
+  return byId(id)?.value.trim() || "";
 }
 
 function isChecked(id) {
-  const el = document.getElementById(id);
-  return !!el?.checked;
+  return !!byId(id)?.checked;
 }
 
 function setText(id, value) {
-  const el = document.getElementById(id);
+  const el = byId(id);
   if (el) el.textContent = value;
 }
 
