@@ -30,42 +30,34 @@
             <span class="summary-label">Expediente</span>
             <span class="summary-value" id="summary-expediente">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Paciente</span>
             <span class="summary-value" id="summary-nombre">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Edad</span>
             <span class="summary-value" id="summary-edad">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Sexo</span>
             <span class="summary-value" id="summary-sexo">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Síntomas</span>
             <span class="summary-value" id="summary-sintomas">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Triage</span>
             <span class="summary-value" id="summary-triage">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Diagnóstico</span>
             <span class="summary-value" id="summary-diagnostico">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Seguro</span>
             <span class="summary-value" id="summary-seguro">—</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Destino</span>
             <span class="summary-value" id="summary-destino">—</span>
@@ -105,7 +97,6 @@
           <div class="timeline-step" id="step-6">6. Liquidación</div>
         </div>
 
-        <!-- PANTALLA 1 -->
         <section class="screen active" id="screen-registro">
           <div class="card">
             <div class="screen-header">
@@ -166,59 +157,39 @@
           </div>
         </section>
 
-        <!-- PANTALLA 2 -->
         <section class="screen" id="screen-triage">
           <div class="card">
             <div class="screen-header">
               <h2>Triage y Clasificación</h2>
-              <p>En esta pantalla el médico u operador debe seleccionar manualmente el triage. Esta selección cambia todo el flujo.</p>
+              <p>La selección manual del triage define el resto del flujo.</p>
             </div>
 
             <div class="triage-panel">
-              <div class="triage-intro">
-                <div class="badge-row">
-                  <span class="badge">Selección manual obligatoria</span>
-                  <span class="badge" id="triage-sugerido-badge">Sugerido por sistema: —</span>
-                </div>
+              <div class="badge-row">
+                <span class="badge">Selección manual obligatoria</span>
+                <span class="badge" id="triage-sugerido-badge">Sugerido por sistema: —</span>
+              </div>
 
-                <div class="selected-box">
-                  <span class="selected-label">Triage seleccionado</span>
-                  <strong id="selected-triage-label">Ninguno</strong>
-                </div>
+              <div class="selected-box">
+                <span class="selected-label">Triage seleccionado</span>
+                <strong id="selected-triage-label">Ninguno</strong>
               </div>
 
               <div class="triage-options">
-                <button type="button" class="triage-btn triage-bajo" data-triage="bajo">
+                <button type="button" class="triage-btn" data-triage="bajo">
                   <span class="triage-title">Bajo</span>
-                  <span class="triage-desc">Paciente estable, resolución ambulatoria en Salud Digna.</span>
+                  <span class="triage-desc">Paciente estable, resolución ambulatoria.</span>
                 </button>
 
-                <button type="button" class="triage-btn triage-medio" data-triage="medio">
+                <button type="button" class="triage-btn" data-triage="medio">
                   <span class="triage-title">Medio</span>
-                  <span class="triage-desc">Requiere estudios y diagnóstico antes de definir traslado.</span>
+                  <span class="triage-desc">Requiere estudios y definición diagnóstica.</span>
                 </button>
 
-                <button type="button" class="triage-btn triage-alto" data-triage="alto">
+                <button type="button" class="triage-btn" data-triage="alto">
                   <span class="triage-title">Alto</span>
-                  <span class="triage-desc">Urgencia mayor, traslado inmediato a hospital.</span>
+                  <span class="triage-desc">Urgencia mayor, traslado hospitalario.</span>
                 </button>
-              </div>
-
-              <div class="triage-definitions">
-                <div class="definition-card">
-                  <h4>Define triage bajo</h4>
-                  <p>Paciente estable, sin riesgo inmediato, con posibilidad de manejo ambulatorio.</p>
-                </div>
-
-                <div class="definition-card">
-                  <h4>Define triage medio</h4>
-                  <p>Paciente que necesita estudios, observación o validación diagnóstica antes de la decisión final.</p>
-                </div>
-
-                <div class="definition-card">
-                  <h4>Define triage alto</h4>
-                  <p>Paciente con riesgo alto o urgencia real. Debe ir a hospital de forma inmediata.</p>
-                </div>
               </div>
             </div>
 
@@ -229,41 +200,25 @@
           </div>
         </section>
 
-        <!-- PANTALLA 3 -->
         <section class="screen" id="screen-estudios">
           <div class="card">
             <div class="screen-header">
               <h2>Estudios y Documentación</h2>
-              <p>Los estudios deben poder subirse a la plataforma para que el hospital los vea en caso de traslado.</p>
+              <p>Los estudios pueden subirse para compartirlos con el hospital si aplica traslado.</p>
             </div>
 
             <div class="form-grid">
               <div class="field">
-                <label>
-                  <input type="checkbox" id="estudio-rx" />
-                  Rayos X
-                </label>
+                <label><input type="checkbox" id="estudio-rx" /> Rayos X</label>
               </div>
-
               <div class="field">
-                <label>
-                  <input type="checkbox" id="estudio-lab" />
-                  Laboratorio
-                </label>
+                <label><input type="checkbox" id="estudio-lab" /> Laboratorio</label>
               </div>
-
               <div class="field">
-                <label>
-                  <input type="checkbox" id="estudio-usg" />
-                  Ultrasonido
-                </label>
+                <label><input type="checkbox" id="estudio-usg" /> Ultrasonido</label>
               </div>
-
               <div class="field">
-                <label>
-                  <input type="checkbox" id="estudio-otro" />
-                  Otro estudio
-                </label>
+                <label><input type="checkbox" id="estudio-otro" /> Otro estudio</label>
               </div>
 
               <div class="field field-full">
@@ -273,7 +228,7 @@
 
               <div class="field field-full">
                 <label for="notas-estudios">Notas clínicas / hallazgos</label>
-                <textarea id="notas-estudios" rows="4" placeholder="Resumen de hallazgos clínicos y estudios"></textarea>
+                <textarea id="notas-estudios" rows="4" placeholder="Resumen de hallazgos"></textarea>
               </div>
             </div>
 
@@ -289,7 +244,6 @@
           </div>
         </section>
 
-        <!-- PANTALLA 4 -->
         <section class="screen" id="screen-diagnostico">
           <div class="card">
             <div class="screen-header">
@@ -316,12 +270,11 @@
           </div>
         </section>
 
-        <!-- PANTALLA 5 -->
         <section class="screen" id="screen-decision">
           <div class="card">
             <div class="screen-header">
               <h2>Decisión clínica y destino</h2>
-              <p>La decisión depende directamente del triage seleccionado y del diagnóstico.</p>
+              <p>La decisión final depende del triage elegido manualmente.</p>
             </div>
 
             <div class="decision-grid">
@@ -329,29 +282,18 @@
                 <span class="decision-label">Triage confirmado</span>
                 <strong id="decision-triage">—</strong>
               </div>
-
               <div class="decision-card">
                 <span class="decision-label">Destino</span>
                 <strong id="decision-destino">—</strong>
               </div>
-
               <div class="decision-card">
                 <span class="decision-label">Decisión final</span>
                 <strong id="decision-final">—</strong>
               </div>
-
               <div class="decision-card">
                 <span class="decision-label">Traslado</span>
                 <strong id="decision-traslado">—</strong>
               </div>
-            </div>
-
-            <div class="card-soft">
-              <h4>Regla de traslado</h4>
-              <p>
-                En caso de traslado, el paciente puede ser trasladado por la red coordinada o por sus propios medios
-                al hospital indicado y cubierto por su póliza, ya con los estudios y diagnóstico disponibles en plataforma.
-              </p>
             </div>
 
             <div class="actions">
@@ -361,12 +303,11 @@
           </div>
         </section>
 
-        <!-- PANTALLA 6 -->
         <section class="screen" id="screen-liquidacion">
           <div class="card">
             <div class="screen-header">
               <h2>Liquidación financiera</h2>
-              <p>Se muestra si cuenta o no con seguro, y cómo aplica el deducible según el tipo de atención.</p>
+              <p>Aplicación del deducible según el tipo de atención.</p>
             </div>
 
             <div class="financial-grid">
@@ -374,28 +315,18 @@
                 <span class="financial-label">Cuenta con seguro</span>
                 <strong id="liquidacion-seguro">—</strong>
               </div>
-
               <div class="financial-card">
                 <span class="financial-label">Tipo de atención</span>
                 <strong id="liquidacion-tipo">—</strong>
               </div>
-
               <div class="financial-card">
                 <span class="financial-label">% deducible</span>
                 <strong id="liquidacion-deducible">—</strong>
               </div>
-
               <div class="financial-card">
                 <span class="financial-label">Cobro</span>
                 <strong id="liquidacion-cobro">—</strong>
               </div>
-            </div>
-
-            <div class="card-soft">
-              <h4>Regla financiera</h4>
-              <p>
-                Si es ambulatorio, se paga un porcentaje del deducible. Si requiere hospital, el deducible se paga en el hospital.
-              </p>
             </div>
 
             <div class="actions">
