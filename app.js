@@ -18,9 +18,10 @@ const state = {
     triage: "Medio",
     decision: "Traslado sugerido",
     seguimiento: "Activo",
-    diagnostico: "Riesgo cardiovascular intermedio",
-    siguienteAccion: "Validar traslado y hospital receptor",
-    tipoResolucion: "Hospitalaria",
+    diagnostico: "Pendiente",
+    siguienteAccion: "Capturar información clínica inicial",
+    tipoResolucion: "Por definir",
+    tipoTraslado: "Coordinado",
     deduciblePct: "20%",
     rutaFinal: "Hospital",
     tiempoClinica: "32 min",
@@ -97,7 +98,9 @@ const stepConfig = {
 function init() {
   bindEvents();
   syncInputsToState();
+  applyStepState(false);
   renderAll();
+  syncInteractiveControls();
 }
 
 function bindEvents() {
@@ -122,13 +125,37 @@ function bindEvents() {
       };
       const target = tab.dataset.tab;
       if (tabMap[target]) {
-        pauseAutoDemo();
+        pauseAutoDemo(false);
         state.currentStep = tabMap[target];
-        applyStepState();
+        applyStepState(true);
         renderAll();
+        syncInteractiveControls();
         addLog(`Navegación manual a la etapa: ${stepConfig[state.currentStep].label}.`);
       }
     });
+  });
+
+  document.querySelectorAll(".step").forEach((stepEl) => {
+    stepEl.style.cursor = "pointer";
+    stepEl.addEventListener("click", () => {
+      pauseAutoDemo(false);
+      state.currentStep = Number(stepEl.dataset.step);
+      applyStepState(true);
+      renderAll();
+      syncInteractiveControls();
+      addLog(`Se movió manualmente el flujo narrativo a: ${stepConfig[state.currentStep].label}.`);
+    });
+  });
+
+  $("btnApplyInteractive")?.addEventListener("click", applyInteractiveChanges);
+
+  $("interactiveStep")?.addEventListener("change", (e) => {
+    pauseAutoDemo(false);
+    state.currentStep = Number(e.target.value);
+    applyStepState(true);
+    renderAll();
+    syncInteractiveControls();
+    addLog(`El médico cambió manualmente el flujo a: ${stepConfig[state.currentStep].label}.`);
   });
 
   $("btnViewRX")?.addEventListener("click", () => {
@@ -164,6 +191,113 @@ function syncInputsToState() {
   state.caso.cobertura = state.caso.seguro === "Sí" ? "Con seguro" : "Sin seguro";
 }
 
+function syncInteractiveControls() {
+  if ($("interactiveTriage")) $("interactiveTriage").value = normalizeTriageValue(state.caso.triage);
+  if ($("interactiveDecision")) $("interactiveDecision").value = normalizeDecisionValue(state.caso.decision);
+  if ($("interactiveTransport")) $("interactiveTransport").value = state.caso.tipoTraslado || "Coordinado";
+  if ($("interactiveResolution")) $("interactiveResolution").value = normalizeResolutionValue(state.caso.tipoResolucion);
+  if ($("interactiveStep")) $("interactiveStep").value = String(state.currentStep);
+}
+
+function normalizeTriageValue(value) {
+  if (value === "Pendiente") return "Medio";
+  return value || "Medio";
+}
+
+function normalizeDecisionValue(value) {
+  if (
+    value !== "Ambulatorio" &&
+    value !== "Traslado sugerido" &&
+    value !== "Hospital inmediato" &&
+    value !== "Traslado confirmado"
+  ) {
+    return "Traslado sugerido";
+  }
+  return value;
+}
+
+function normalizeResolutionValue(value) {
+  if (
+    value !== "Por definir" &&
+    value !== "Ambulatoria" &&
+    value !== "Hospitalaria"
+  ) {
+    return "Por definir";
+  }
+  return value;
+}
+
+function applyInteractiveChanges() {
+  pauseAutoDemo(false);
+  syncInputsToState();
+
+  const triage = $("interactiveTriage")?.value || "Medio";
+  const decision = $("interactiveDecision")?.value || "Traslado sugerido";
+  const transport = $("interactiveTransport")?.value || "Coordinado";
+  const resolution = $("interactiveResolution")?.value || "Por definir";
+  const step = Number($("interactiveStep")?.value || state.currentStep);
+
+  state.currentStep = step;
+  state.caso.triage = triage;
+  state.caso.severidad = triage;
+  state.caso.decision = decision;
+  state.caso.tipoTraslado = transport;
+  state.caso.tipoResolucion = resolution;
+
+  if (triage === "Bajo") {
+    state.caso.estadoActual = "Paciente estable";
+    state.caso.ruta = "Resolución ambulatoria";
+    state.caso.diagnostico = "Riesgo bajo";
+    state.caso.siguienteAccion = "Alta y seguimiento";
+    if (resolution === "Por definir") state.caso.tipoResolucion = "Ambulatoria";
+  }
+
+  if (triage === "Medio") {
+    state.caso.estadoActual = "En valoración clínica";
+    state.caso.ruta = step >= 6 ? "Traslado a hospital" : "Evaluación en clínica";
+    state.caso.diagnostico = step >= 4 ? "Riesgo cardiovascular intermedio" : "Pendiente";
+    state.caso.siguienteAccion = step >= 6 ? "Enviar al hospital indicado" : "Continuar estudios y valoración";
+    if (resolution === "Por definir" && step >= 6) state.caso.tipoResolucion = "Hospitalaria";
+  }
+
+  if (triage === "Alto") {
+    state.caso.estadoActual = "Urgencia alta";
+    state.caso.ruta = "Hospital inmediato";
+    state.caso.decision = "Hospital inmediato";
+    state.caso.diagnostico = "Riesgo alto";
+    state.caso.siguienteAccion = "Traslado urgente";
+    state.caso.tipoResolucion = "Hospitalaria";
+  }
+
+  if (decision === "Ambulatorio") {
+    state.caso.ruta = "Resolución ambulatoria";
+    state.caso.siguienteAccion = "Alta con seguimiento";
+    state.caso.tipoResolucion = "Ambulatoria";
+    state.caso.rutaFinal = "Ambulatorio";
+  }
+
+  if (decision === "Traslado sugerido" || decision === "Traslado confirmado") {
+    state.caso.ruta = step >= 6 ? "Traslado a hospital" : "Evaluación en clínica";
+    state.caso.siguienteAccion = step >= 6 ? "Traslado al hospital indicado" : "Validar traslado y hospital receptor";
+    state.caso.tipoResolucion = state.caso.tipoResolucion === "Por definir" ? "Hospitalaria" : state.caso.tipoResolucion;
+    state.caso.rutaFinal = "Hospital";
+  }
+
+  if (state.caso.seguro === "No") {
+    state.caso.cobertura = "Sin seguro";
+  } else {
+    state.caso.cobertura = "Con seguro";
+  }
+
+  applyStepState(false);
+  renderAll();
+  syncInteractiveControls();
+
+  addLog(
+    `Se aplican cambios manuales: triage ${triage}, decisión ${decision}, traslado ${transport}, resolución ${state.caso.tipoResolucion}.`
+  );
+}
+
 function startAutoDemo() {
   if (state.autoRunning) return;
 
@@ -178,20 +312,24 @@ function startAutoDemo() {
       state.interval = null;
       state.autoRunning = false;
       addLog("El flujo automático llegó al cierre del caso.");
+      return;
     }
 
-    applyStepState();
+    applyStepState(true);
     renderAll();
+    syncInteractiveControls();
   }, 2600);
 }
 
-function pauseAutoDemo() {
+function pauseAutoDemo(shouldLog = true) {
   if (state.interval) {
     clearInterval(state.interval);
     state.interval = null;
   }
   state.autoRunning = false;
-  addLog("El flujo automático fue pausado.");
+  if (shouldLog) {
+    addLog("El flujo automático fue pausado.");
+  }
 }
 
 function resetDemo() {
@@ -217,9 +355,10 @@ function resetDemo() {
     triage: "Medio",
     decision: "Traslado sugerido",
     seguimiento: "Activo",
-    diagnostico: "Riesgo cardiovascular intermedio",
-    siguienteAccion: "Validar traslado y hospital receptor",
-    tipoResolucion: "Hospitalaria",
+    diagnostico: "Pendiente",
+    siguienteAccion: "Capturar información clínica inicial",
+    tipoResolucion: "Por definir",
+    tipoTraslado: "Coordinado",
     deduciblePct: "20%",
     rutaFinal: "Hospital",
     tiempoClinica: "32 min",
@@ -233,73 +372,74 @@ function resetDemo() {
   if ($("patientReason")) $("patientReason").value = state.caso.motivo;
 
   resetLog();
-  addLog(`Se reinicia el demo y se restaura el expediente ${state.expediente}.`);
-
-  applyStepState();
+  applyStepState(false);
   renderAll();
+  syncInteractiveControls();
+  addLog(`Se reinicia el demo y se restaura el expediente ${state.expediente}.`);
 }
 
-function applyStepState() {
+function applyStepState(overrideClinicalState = true) {
   const current = stepConfig[state.currentStep];
-
   state.caso.estadoActual = current.status;
-  state.caso.ruta = current.ruta;
-  state.caso.triage = current.triage;
-  state.caso.decision = current.decision;
   state.caso.seguimiento = current.seguimiento;
-  state.caso.severidad = current.severity;
 
-  if (state.currentStep === 1) {
-    state.caso.siguienteAccion = "Capturar información clínica inicial";
-    state.caso.diagnostico = "Pendiente";
-    state.caso.tipoResolucion = "Por definir";
+  if (overrideClinicalState) {
+    state.caso.ruta = current.ruta;
+    state.caso.triage = current.triage;
+    state.caso.decision = current.decision;
+    state.caso.severidad = current.severity;
+    state.caso.tipoResolucion = state.currentStep >= 6 ? "Hospitalaria" : "Por definir";
+
+    if (state.currentStep === 1) {
+      state.caso.siguienteAccion = "Capturar información clínica inicial";
+      state.caso.diagnostico = "Pendiente";
+    }
+
+    if (state.currentStep === 2) {
+      state.caso.siguienteAccion = "Definir prioridad clínica";
+      state.caso.diagnostico = "Pendiente de estudios";
+      addLog("Se realiza triage y el caso se clasifica con severidad media.");
+    }
+
+    if (state.currentStep === 3) {
+      state.caso.siguienteAccion = "Generar estudios diagnósticos";
+      state.caso.diagnostico = "En evaluación";
+      addLog("Se solicitan RX y laboratorio para soporte diagnóstico.");
+    }
+
+    if (state.currentStep === 4) {
+      state.caso.siguienteAccion = "Validar hospital receptor";
+      state.caso.diagnostico = "Riesgo cardiovascular intermedio";
+      addLog("Salud Digna emite diagnóstico preliminar con sugerencia de traslado.");
+    }
+
+    if (state.currentStep === 5) {
+      state.caso.siguienteAccion = state.caso.seguro === "Sí"
+        ? "Validar deducible y cobertura"
+        : "Activar ruta sin seguro";
+      addLog(
+        state.caso.seguro === "Sí"
+          ? "Se valida cobertura y regla de deducible conforme a la póliza."
+          : "El caso se marca como paciente sin seguro para ruta alternativa."
+      );
+    }
+
+    if (state.currentStep === 6) {
+      state.caso.siguienteAccion = "Enviar al hospital indicado";
+      state.caso.diagnostico = "Riesgo cardiovascular intermedio";
+      state.caso.tipoResolucion = "Hospitalaria";
+      state.caso.rutaFinal = "Hospital";
+      addLog("Se confirma traslado. El paciente puede acudir por traslado coordinado o por sus propios medios.");
+    }
+
+    if (state.currentStep === 7) {
+      state.caso.siguienteAccion = "Cerrar expediente y seguimiento";
+      state.caso.tiempoClinica = "47 min";
+      addLog("Se documenta cierre clínico y estado financiero del caso.");
+    }
   }
 
-  if (state.currentStep === 2) {
-    state.caso.siguienteAccion = "Definir prioridad clínica";
-    state.caso.diagnostico = "Pendiente de estudios";
-    state.caso.tipoResolucion = "Por definir";
-    addLog("Se realiza triage y el caso se clasifica con severidad media.");
-  }
-
-  if (state.currentStep === 3) {
-    state.caso.siguienteAccion = "Generar estudios diagnósticos";
-    state.caso.diagnostico = "En evaluación";
-    state.caso.tipoResolucion = "Por definir";
-    addLog("Se solicitan RX y laboratorio para soporte diagnóstico.");
-  }
-
-  if (state.currentStep === 4) {
-    state.caso.siguienteAccion = "Validar hospital receptor";
-    state.caso.diagnostico = "Riesgo cardiovascular intermedio";
-    state.caso.tipoResolucion = "Hospitalaria";
-    addLog("Salud Digna emite diagnóstico preliminar con sugerencia de traslado.");
-  }
-
-  if (state.currentStep === 5) {
-    state.caso.siguienteAccion = state.caso.seguro === "Sí"
-      ? "Validar deducible y cobertura"
-      : "Activar ruta sin seguro";
-    addLog(
-      state.caso.seguro === "Sí"
-        ? "Se valida cobertura y regla de deducible conforme a la póliza."
-        : "El caso se marca como paciente sin seguro para ruta alternativa."
-    );
-  }
-
-  if (state.currentStep === 6) {
-    state.caso.siguienteAccion = "Enviar al hospital indicado";
-    state.caso.diagnostico = "Riesgo cardiovascular intermedio";
-    state.caso.tipoResolucion = "Hospitalaria";
-    state.caso.rutaFinal = "Hospital";
-    addLog("Se confirma traslado. El paciente puede acudir por traslado coordinado o por sus propios medios.");
-  }
-
-  if (state.currentStep === 7) {
-    state.caso.siguienteAccion = "Cerrar expediente y seguimiento";
-    state.caso.tiempoClinica = "47 min";
-    addLog("Se documenta cierre clínico y estado financiero del caso.");
-  }
+  state.caso.cobertura = state.caso.seguro === "Sí" ? "Con seguro" : "Sin seguro";
 }
 
 function renderAll() {
@@ -338,21 +478,36 @@ function renderPatientSummary() {
 
 function renderDecision() {
   if ($("decisionTitle")) {
-    $("decisionTitle").textContent =
-      state.currentStep >= 6
-        ? "Traslado confirmado con expediente clínico"
-        : state.currentStep >= 4
-        ? "Traslado a hospital con diagnóstico previo"
-        : "Caso en evaluación clínica";
+    if (state.caso.decision === "Ambulatorio") {
+      $("decisionTitle").textContent = "Resolución ambulatoria";
+    } else if (state.caso.decision === "Hospital inmediato") {
+      $("decisionTitle").textContent = "Hospital inmediato";
+    } else if (state.caso.decision === "Traslado confirmado") {
+      $("decisionTitle").textContent = "Traslado confirmado con expediente clínico";
+    } else if (state.currentStep >= 4) {
+      $("decisionTitle").textContent = "Traslado a hospital con diagnóstico previo";
+    } else {
+      $("decisionTitle").textContent = "Caso en evaluación clínica";
+    }
   }
 
   if ($("decisionDescription")) {
-    $("decisionDescription").textContent =
-      state.currentStep >= 6
-        ? "El expediente ya contiene estudios, diagnóstico preliminar y ruta clínica definida para recepción hospitalaria."
-        : state.currentStep >= 4
-        ? "La decisión médica ya sugiere escalamiento, pero aún deben validarse cobertura y logística operativa."
-        : "Todavía se están integrando elementos clínicos para definir si el caso será ambulatorio o hospitalario.";
+    if (state.caso.decision === "Ambulatorio") {
+      $("decisionDescription").textContent =
+        "El caso puede resolverse fuera del hospital con seguimiento y aplicación de la regla ambulatoria.";
+    } else if (state.caso.decision === "Hospital inmediato") {
+      $("decisionDescription").textContent =
+        "La condición clínica obliga a escalamiento hospitalario inmediato.";
+    } else if (state.caso.decision === "Traslado confirmado") {
+      $("decisionDescription").textContent =
+        "El expediente ya contiene estudios, diagnóstico preliminar y ruta clínica definida para recepción hospitalaria.";
+    } else if (state.currentStep >= 4) {
+      $("decisionDescription").textContent =
+        "La decisión médica ya sugiere escalamiento, pero aún deben validarse cobertura y logística operativa.";
+    } else {
+      $("decisionDescription").textContent =
+        "Todavía se están integrando elementos clínicos para definir si el caso será ambulatorio o hospitalario.";
+    }
   }
 
   if ($("diagnosticoActual")) $("diagnosticoActual").textContent = state.caso.diagnostico;
@@ -560,7 +715,7 @@ function renderMainScreen() {
           <h3 class="screen-title">Traslado del paciente</h3>
           <p class="screen-caption">El sistema muestra que el paciente puede trasladarse al hospital indicado incluso por sus propios medios.</p>
         </div>
-        <div class="chip">Traslado confirmado</div>
+        <div class="chip">Traslado: ${escapeHtml(state.caso.tipoTraslado)}</div>
       </div>
 
       <div class="route-box">
@@ -571,14 +726,14 @@ function renderMainScreen() {
               <strong>Traslado coordinado</strong>
               <span>Activación con hospital receptor y expediente compartido.</span>
             </div>
-            <div>Listo</div>
+            <div>${state.caso.tipoTraslado === "Coordinado" ? "Seleccionado" : "Disponible"}</div>
           </div>
           <div class="route-node">
             <div>
               <strong>Traslado por sus propios medios</strong>
               <span>Paciente acude al hospital indicado con estudios y diagnóstico visibles en la plataforma.</span>
             </div>
-            <div>Listo</div>
+            <div>${state.caso.tipoTraslado === "Propios medios" ? "Seleccionado" : "Disponible"}</div>
           </div>
         </div>
       </div>
