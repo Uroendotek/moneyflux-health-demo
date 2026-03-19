@@ -43,6 +43,10 @@ const btnSiguiente = document.getElementById("btnSiguiente");
 const btnAuto = document.getElementById("btnAuto");
 const btnReset = document.getElementById("btnReset");
 
+const btnCasoLeve = document.getElementById("btnCasoLeve");
+const btnCasoIntermedio = document.getElementById("btnCasoIntermedio");
+const btnCasoGrave = document.getElementById("btnCasoGrave");
+
 const viewNombre = document.getElementById("viewNombre");
 const viewEdad = document.getElementById("viewEdad");
 const viewSexo = document.getElementById("viewSexo");
@@ -65,6 +69,11 @@ const kpiStatus = document.getElementById("kpiStatus");
 function getTriage() {
   const selected = document.querySelector('input[name="triage"]:checked');
   return selected ? selected.value : "Medio";
+}
+
+function setTriage(value) {
+  const radio = document.querySelector(`input[name="triage"][value="${value}"]`);
+  if (radio) radio.checked = true;
 }
 
 function getCaseData() {
@@ -212,6 +221,47 @@ function stopAuto() {
   }
 }
 
+function loadPresetCase(caseType) {
+  stopAuto();
+  currentStep = 0;
+  modo.value = "interactivo";
+
+  if (caseType === "leve") {
+    expediente.value = "SD-URG-2026-002";
+    nombre.value = "Laura Martínez";
+    edad.value = "29";
+    sexo.value = "Femenino";
+    motivo.value = "Esguince de tobillo";
+    estudios.value = "Radiografía simple";
+    diagnostico.value = "Esguince leve sin fractura";
+    setTriage("Bajo");
+  }
+
+  if (caseType === "intermedio") {
+    expediente.value = "SD-URG-2026-003";
+    nombre.value = "José Ramírez";
+    edad.value = "58";
+    sexo.value = "Masculino";
+    motivo.value = "Dolor abdominal moderado";
+    estudios.value = "Laboratorio + Ultrasonido";
+    diagnostico.value = "Colecistitis en estudio";
+    setTriage("Medio");
+  }
+
+  if (caseType === "grave") {
+    expediente.value = "SD-URG-2026-004";
+    nombre.value = "Juan Pérez";
+    edad.value = "67";
+    sexo.value = "Masculino";
+    motivo.value = "Dolor torácico agudo";
+    estudios.value = "ECG + Laboratorio";
+    diagnostico.value = "Síndrome coronario agudo sospechado";
+    setTriage("Alto");
+  }
+
+  render();
+}
+
 function resetDemo() {
   stopAuto();
 
@@ -222,7 +272,7 @@ function resetDemo() {
   motivo.value = "Dolor abdominal agudo";
   estudios.value = "Laboratorio + Ultrasonido";
   diagnostico.value = "Apendicitis probable";
-  document.querySelector('input[name="triage"][value="Medio"]').checked = true;
+  setTriage("Medio");
   modo.value = "interactivo";
 
   currentStep = 0;
@@ -246,6 +296,24 @@ btnAuto.addEventListener("click", () => {
 btnReset.addEventListener("click", () => {
   resetDemo();
 });
+
+if (btnCasoLeve) {
+  btnCasoLeve.addEventListener("click", () => {
+    loadPresetCase("leve");
+  });
+}
+
+if (btnCasoIntermedio) {
+  btnCasoIntermedio.addEventListener("click", () => {
+    loadPresetCase("intermedio");
+  });
+}
+
+if (btnCasoGrave) {
+  btnCasoGrave.addEventListener("click", () => {
+    loadPresetCase("grave");
+  });
+}
 
 [nombre, edad, sexo, motivo, estudios, diagnostico, expediente].forEach((el) => {
   el.addEventListener("input", () => {
