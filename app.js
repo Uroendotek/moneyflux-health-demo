@@ -1,825 +1,492 @@
-const $ = (id) => document.getElementById(id);
-
-const state = {
-  currentStep: 1,
-  interval: null,
-  autoRunning: false,
-  expediente: "MFH-URG-2026-00127",
-  caso: {
-    nombre: "María Fernanda López",
-    edad: 38,
-    sexo: "Femenino",
-    seguro: "Sí",
-    motivo: "Dolor torácico, opresión en pecho y dificultad respiratoria leve de inicio reciente.",
-    severidad: "Media",
-    estadoActual: "En admisión",
-    cobertura: "Con seguro",
-    ruta: "Evaluación en clínica",
-    triage: "Medio",
-    decision: "Traslado sugerido",
-    seguimiento: "Activo",
-    diagnostico: "Pendiente",
-    siguienteAccion: "Capturar información clínica inicial",
-    tipoResolucion: "Por definir",
-    tipoTraslado: "Coordinado",
-    deduciblePct: "20%",
-    rutaFinal: "Hospital",
-    tiempoClinica: "32 min",
-    casosMes: "148"
-  }
+const currentCase = {
+  expediente: "",
+  nombre: "",
+  edad: "",
+  sexo: "",
+  sintomas: "",
+  seguro: "",
+  poliza: "",
+  triage: "",
+  triageSugerido: "",
+  estudios: [],
+  uploadedFiles: [],
+  notasEstudios: "",
+  diagnostico: "",
+  comentariosMedicos: "",
+  destino: "",
+  decisionFinal: "",
+  traslado: "",
+  tipoAtencion: "",
+  deduciblePct: 0,
+  cobro: ""
 };
 
-const stepConfig = {
-  1: {
-    label: "Admisión",
-    status: "En admisión",
-    ruta: "Evaluación en clínica",
-    triage: "Pendiente",
-    decision: "En valoración",
-    seguimiento: "Activo",
-    severity: "Pendiente"
-  },
-  2: {
-    label: "Triage",
-    status: "En triage",
-    ruta: "Clasificación clínica",
-    triage: "Medio",
-    decision: "En valoración",
-    seguimiento: "Activo",
-    severity: "Media"
-  },
-  3: {
-    label: "Estudios",
-    status: "En estudios",
-    ruta: "Estudios en proceso",
-    triage: "Medio",
-    decision: "Pendiente de diagnóstico",
-    seguimiento: "Activo",
-    severity: "Media"
-  },
-  4: {
-    label: "Diagnóstico",
-    status: "Diagnóstico emitido",
-    ruta: "Definición clínica",
-    triage: "Medio",
-    decision: "Traslado sugerido",
-    seguimiento: "Activo",
-    severity: "Media"
-  },
-  5: {
-    label: "Cobertura",
-    status: "Cobertura en revisión",
-    ruta: "Validación financiera",
-    triage: "Medio",
-    decision: "Traslado sugerido",
-    seguimiento: "Activo",
-    severity: "Media"
-  },
-  6: {
-    label: "Traslado / Alta",
-    status: "En traslado",
-    ruta: "Traslado a hospital",
-    triage: "Medio",
-    decision: "Traslado confirmado",
-    seguimiento: "Activo",
-    severity: "Media"
-  },
-  7: {
-    label: "Cierre",
-    status: "En seguimiento",
-    ruta: "Caso cerrado",
-    triage: "Medio",
-    decision: "Caso documentado",
-    seguimiento: "Cierre en proceso",
-    severity: "Media"
-  }
+const stats = {
+  casos: 0,
+  ambulatorios: 0,
+  hospitalarios: 0,
+  deducible: 0
 };
 
-function init() {
-  bindEvents();
-  syncInputsToState();
-  applyStepState(false);
-  renderAll();
-  syncInteractiveControls();
+document.addEventListener("DOMContentLoaded", () => {
+  bindRealtimeInputs();
+  bindNavigation();
+  bindTriage();
+  bindEstudios();
+  initDemo();
+});
+
+function initDemo() {
+  resetCase(false);
+  goToScreen("screen-registro", 1);
 }
 
-function bindEvents() {
-  $("btnAutoDemo")?.addEventListener("click", startAutoDemo);
-  $("btnPauseDemo")?.addEventListener("click", pauseAutoDemo);
-  $("btnResetDemo")?.addEventListener("click", resetDemo);
+function bindRealtimeInputs() {
+  const mappings = [
+    { id: "expediente", key: "expediente" },
+    { id: "nombre", key: "nombre" },
+    { id: "edad", key: "edad" },
+    { id: "sexo", key: "sexo" },
+    { id: "sintomas", key: "sintomas" },
+    { id: "seguro", key: "seguro" },
+    { id: "poliza", key: "poliza" },
+    { id: "notas-estudios", key: "notasEstudios" },
+    { id: "diagnostico-clinico", key: "diagnostico" },
+    { id: "comentarios-medicos", key: "comentariosMedicos" }
+  ];
 
-  $("patientName")?.addEventListener("input", handleInputSync);
-  $("patientAge")?.addEventListener("input", handleInputSync);
-  $("patientSex")?.addEventListener("change", handleInputSync);
-  $("patientInsurance")?.addEventListener("change", handleInputSync);
-  $("patientReason")?.addEventListener("input", handleInputSync);
+  mappings.forEach(({ id, key }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-  document.querySelectorAll(".tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const tabMap = {
-        admision: 1,
-        triage: 2,
-        diagnostico: 4,
-        traslado: 6,
-        cierre: 7
-      };
-      const target = tab.dataset.tab;
-      if (tabMap[target]) {
-        pauseAutoDemo(false);
-        state.currentStep = tabMap[target];
-        applyStepState(true);
-        renderAll();
-        syncInteractiveControls();
-        addLog(`Navegación manual a la etapa: ${stepConfig[state.currentStep].label}.`);
-      }
+    el.addEventListener("input", () => {
+      currentCase[key] = el.value.trim();
+      updateSummary();
+      updateTriageSuggestion();
+    });
+
+    el.addEventListener("change", () => {
+      currentCase[key] = el.value.trim();
+      updateSummary();
+      updateTriageSuggestion();
     });
   });
-
-  document.querySelectorAll(".step").forEach((stepEl) => {
-    stepEl.style.cursor = "pointer";
-    stepEl.addEventListener("click", () => {
-      pauseAutoDemo(false);
-      state.currentStep = Number(stepEl.dataset.step);
-      applyStepState(true);
-      renderAll();
-      syncInteractiveControls();
-      addLog(`Se movió manualmente el flujo narrativo a: ${stepConfig[state.currentStep].label}.`);
-    });
-  });
-
-  $("btnApplyInteractive")?.addEventListener("click", applyInteractiveChanges);
-
-  $("interactiveStep")?.addEventListener("change", (e) => {
-    pauseAutoDemo(false);
-    state.currentStep = Number(e.target.value);
-    applyStepState(true);
-    renderAll();
-    syncInteractiveControls();
-    addLog(`El médico cambió manualmente el flujo a: ${stepConfig[state.currentStep].label}.`);
-  });
-
-  $("btnViewRX")?.addEventListener("click", () => {
-    addLog("Se abre el estudio RX Tórax AP para revisión clínica.");
-    alert("RX Tórax AP\n\nEstado: disponible\nVisible para hospital receptor.");
-  });
-
-  $("btnViewLab")?.addEventListener("click", () => {
-    addLog("Se consultan los resultados preliminares de laboratorio.");
-    alert("Laboratorio inicial\n\nTroponina: preliminar\nBH: disponible\nQuímica básica: disponible");
-  });
-
-  $("btnViewDx")?.addEventListener("click", () => {
-    addLog("Se abre la nota clínica con diagnóstico preliminar.");
-    alert("Diagnóstico preliminar:\n\nRiesgo cardiovascular intermedio.\nSe recomienda continuidad diagnóstica hospitalaria.");
-  });
 }
 
-function handleInputSync() {
-  syncInputsToState();
-  renderPatientSummary();
-  renderFinance();
-  renderKpis();
-}
+function bindNavigation() {
+  const byId = (id) => document.getElementById(id);
 
-function syncInputsToState() {
-  if ($("patientName")) state.caso.nombre = $("patientName").value.trim() || "Paciente sin nombre";
-  if ($("patientAge")) state.caso.edad = $("patientAge").value.trim() || "—";
-  if ($("patientSex")) state.caso.sexo = $("patientSex").value;
-  if ($("patientInsurance")) state.caso.seguro = $("patientInsurance").value;
-  if ($("patientReason")) state.caso.motivo = $("patientReason").value.trim() || "Sin motivo de atención";
+  byId("go-to-triage-btn")?.addEventListener("click", () => {
+    syncFormToCase();
 
-  state.caso.cobertura = state.caso.seguro === "Sí" ? "Con seguro" : "Sin seguro";
-}
-
-function syncInteractiveControls() {
-  if ($("interactiveTriage")) $("interactiveTriage").value = normalizeTriageValue(state.caso.triage);
-  if ($("interactiveDecision")) $("interactiveDecision").value = normalizeDecisionValue(state.caso.decision);
-  if ($("interactiveTransport")) $("interactiveTransport").value = state.caso.tipoTraslado || "Coordinado";
-  if ($("interactiveResolution")) $("interactiveResolution").value = normalizeResolutionValue(state.caso.tipoResolucion);
-  if ($("interactiveStep")) $("interactiveStep").value = String(state.currentStep);
-}
-
-function normalizeTriageValue(value) {
-  if (value === "Pendiente") return "Medio";
-  return value || "Medio";
-}
-
-function normalizeDecisionValue(value) {
-  if (
-    value !== "Ambulatorio" &&
-    value !== "Traslado sugerido" &&
-    value !== "Hospital inmediato" &&
-    value !== "Traslado confirmado"
-  ) {
-    return "Traslado sugerido";
-  }
-  return value;
-}
-
-function normalizeResolutionValue(value) {
-  if (
-    value !== "Por definir" &&
-    value !== "Ambulatoria" &&
-    value !== "Hospitalaria"
-  ) {
-    return "Por definir";
-  }
-  return value;
-}
-
-function applyInteractiveChanges() {
-  pauseAutoDemo(false);
-  syncInputsToState();
-
-  const triage = $("interactiveTriage")?.value || "Medio";
-  const decision = $("interactiveDecision")?.value || "Traslado sugerido";
-  const transport = $("interactiveTransport")?.value || "Coordinado";
-  const resolution = $("interactiveResolution")?.value || "Por definir";
-  const step = Number($("interactiveStep")?.value || state.currentStep);
-
-  state.currentStep = step;
-  state.caso.triage = triage;
-  state.caso.severidad = triage;
-  state.caso.decision = decision;
-  state.caso.tipoTraslado = transport;
-  state.caso.tipoResolucion = resolution;
-
-  if (triage === "Bajo") {
-    state.caso.estadoActual = "Paciente estable";
-    state.caso.ruta = "Resolución ambulatoria";
-    state.caso.diagnostico = "Riesgo bajo";
-    state.caso.siguienteAccion = "Alta y seguimiento";
-    if (resolution === "Por definir") state.caso.tipoResolucion = "Ambulatoria";
-  }
-
-  if (triage === "Medio") {
-    state.caso.estadoActual = "En valoración clínica";
-    state.caso.ruta = step >= 6 ? "Traslado a hospital" : "Evaluación en clínica";
-    state.caso.diagnostico = step >= 4 ? "Riesgo cardiovascular intermedio" : "Pendiente";
-    state.caso.siguienteAccion = step >= 6 ? "Enviar al hospital indicado" : "Continuar estudios y valoración";
-    if (resolution === "Por definir" && step >= 6) state.caso.tipoResolucion = "Hospitalaria";
-  }
-
-  if (triage === "Alto") {
-    state.caso.estadoActual = "Urgencia alta";
-    state.caso.ruta = "Hospital inmediato";
-    state.caso.decision = "Hospital inmediato";
-    state.caso.diagnostico = "Riesgo alto";
-    state.caso.siguienteAccion = "Traslado urgente";
-    state.caso.tipoResolucion = "Hospitalaria";
-  }
-
-  if (decision === "Ambulatorio") {
-    state.caso.ruta = "Resolución ambulatoria";
-    state.caso.siguienteAccion = "Alta con seguimiento";
-    state.caso.tipoResolucion = "Ambulatoria";
-    state.caso.rutaFinal = "Ambulatorio";
-  }
-
-  if (decision === "Traslado sugerido" || decision === "Traslado confirmado") {
-    state.caso.ruta = step >= 6 ? "Traslado a hospital" : "Evaluación en clínica";
-    state.caso.siguienteAccion = step >= 6 ? "Traslado al hospital indicado" : "Validar traslado y hospital receptor";
-    state.caso.tipoResolucion = state.caso.tipoResolucion === "Por definir" ? "Hospitalaria" : state.caso.tipoResolucion;
-    state.caso.rutaFinal = "Hospital";
-  }
-
-  if (state.caso.seguro === "No") {
-    state.caso.cobertura = "Sin seguro";
-  } else {
-    state.caso.cobertura = "Con seguro";
-  }
-
-  applyStepState(false);
-  renderAll();
-  syncInteractiveControls();
-
-  addLog(
-    `Se aplican cambios manuales: triage ${triage}, decisión ${decision}, traslado ${transport}, resolución ${state.caso.tipoResolucion}.`
-  );
-}
-
-function startAutoDemo() {
-  if (state.autoRunning) return;
-
-  state.autoRunning = true;
-  addLog("Se inicia el flujo automático del demo.");
-
-  state.interval = setInterval(() => {
-    if (state.currentStep < 7) {
-      state.currentStep += 1;
-    } else {
-      clearInterval(state.interval);
-      state.interval = null;
-      state.autoRunning = false;
-      addLog("El flujo automático llegó al cierre del caso.");
+    if (!currentCase.nombre || !currentCase.edad || !currentCase.sexo) {
+      alert("Captura al menos nombre, edad y sexo antes de continuar.");
       return;
     }
 
-    applyStepState(true);
-    renderAll();
-    syncInteractiveControls();
-  }, 2600);
+    updateTriageSuggestion();
+    goToScreen("screen-triage", 2);
+  });
+
+  byId("back-to-registro-btn")?.addEventListener("click", () => {
+    goToScreen("screen-registro", 1);
+  });
+
+  byId("back-to-triage-btn")?.addEventListener("click", () => {
+    goToScreen("screen-triage", 2);
+  });
+
+  byId("go-to-diagnostico-btn")?.addEventListener("click", () => {
+    syncEstudiosToCase();
+    goToScreen("screen-diagnostico", 4);
+  });
+
+  byId("back-to-estudios-btn")?.addEventListener("click", () => {
+    goToScreen("screen-estudios", 3);
+  });
+
+  byId("go-to-decision-btn")?.addEventListener("click", () => {
+    syncDiagnosticoToCase();
+
+    if (!currentCase.diagnostico) {
+      alert("Escribe el diagnóstico clínico antes de continuar.");
+      return;
+    }
+
+    applyDecisionFlow();
+    goToScreen("screen-decision", 5);
+  });
+
+  byId("back-to-diagnostico-btn")?.addEventListener("click", () => {
+    goToScreen("screen-diagnostico", 4);
+  });
+
+  byId("go-to-liquidacion-btn")?.addEventListener("click", () => {
+    buildFinancialView();
+    goToScreen("screen-liquidacion", 6);
+  });
+
+  byId("back-to-decision-btn")?.addEventListener("click", () => {
+    goToScreen("screen-decision", 5);
+  });
+
+  byId("finish-case-btn")?.addEventListener("click", () => {
+    finalizeCase();
+    alert("Caso finalizado y contabilizado en KPIs.");
+  });
+
+  byId("reset-demo-btn")?.addEventListener("click", () => {
+    resetCase(true);
+  });
+
+  byId("restart-case-btn")?.addEventListener("click", () => {
+    resetCase(true);
+  });
 }
 
-function pauseAutoDemo(shouldLog = true) {
-  if (state.interval) {
-    clearInterval(state.interval);
-    state.interval = null;
+function bindTriage() {
+  const triageButtons = document.querySelectorAll(".triage-btn");
+  const selectedLabel = document.getElementById("selected-triage-label");
+  const confirmBtn = document.getElementById("confirm-triage-btn");
+
+  triageButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const selected = btn.dataset.triage || "";
+      currentCase.triage = selected;
+
+      triageButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (selectedLabel) {
+        selectedLabel.textContent = capitalize(selected);
+      }
+
+      updateSummary();
+    });
+  });
+
+  confirmBtn?.addEventListener("click", () => {
+    if (!currentCase.triage) {
+      alert("Selecciona manualmente el triage.");
+      return;
+    }
+
+    syncEstudiosToCase();
+    goToScreen("screen-estudios", 3);
+  });
+}
+
+function bindEstudios() {
+  const uploadInput = document.getElementById("upload-estudios");
+
+  uploadInput?.addEventListener("change", (e) => {
+    const files = Array.from(e.target.files || []);
+    currentCase.uploadedFiles = files.map((f) => f.name);
+    renderUploadedFiles();
+  });
+
+  ["estudio-rx", "estudio-lab", "estudio-usg", "estudio-otro"].forEach((id) => {
+    const el = document.getElementById(id);
+    el?.addEventListener("change", () => {
+      syncEstudiosToCase();
+    });
+  });
+}
+
+function syncFormToCase() {
+  currentCase.expediente = getValue("expediente");
+  currentCase.nombre = getValue("nombre");
+  currentCase.edad = getValue("edad");
+  currentCase.sexo = getValue("sexo");
+  currentCase.sintomas = getValue("sintomas");
+  currentCase.seguro = getValue("seguro");
+  currentCase.poliza = getValue("poliza");
+  updateSummary();
+}
+
+function syncEstudiosToCase() {
+  const estudios = [];
+
+  if (isChecked("estudio-rx")) estudios.push("Rayos X");
+  if (isChecked("estudio-lab")) estudios.push("Laboratorio");
+  if (isChecked("estudio-usg")) estudios.push("Ultrasonido");
+  if (isChecked("estudio-otro")) estudios.push("Otro estudio");
+
+  currentCase.estudios = estudios;
+  currentCase.notasEstudios = getValue("notas-estudios");
+  updateSummary();
+  renderUploadedFiles();
+}
+
+function syncDiagnosticoToCase() {
+  currentCase.diagnostico = getValue("diagnostico-clinico");
+  currentCase.comentariosMedicos = getValue("comentarios-medicos");
+  updateSummary();
+}
+
+function updateTriageSuggestion() {
+  const sintomas = (currentCase.sintomas || "").toLowerCase();
+  let sugerido = "Bajo";
+
+  const highKeywords = [
+    "dolor toracico",
+    "dolor en pecho",
+    "infarto",
+    "hemorragia",
+    "inconsciente",
+    "fractura expuesta",
+    "disnea severa",
+    "convulsiones",
+    "trauma mayor",
+    "stroke",
+    "evento vascular"
+  ];
+
+  const mediumKeywords = [
+    "fiebre",
+    "dolor abdominal",
+    "mareo",
+    "vomito",
+    "fractura",
+    "lesion",
+    "disnea",
+    "taquicardia",
+    "hipertension",
+    "deshidratacion"
+  ];
+
+  if (highKeywords.some((k) => sintomas.includes(k))) {
+    sugerido = "Alto";
+  } else if (mediumKeywords.some((k) => sintomas.includes(k))) {
+    sugerido = "Medio";
   }
-  state.autoRunning = false;
-  if (shouldLog) {
-    addLog("El flujo automático fue pausado.");
+
+  currentCase.triageSugerido = sugerido;
+
+  const badge = document.getElementById("triage-sugerido-badge");
+  if (badge) {
+    badge.textContent = `Sugerido por sistema: ${sugerido}`;
   }
 }
 
-function resetDemo() {
-  if (state.interval) {
-    clearInterval(state.interval);
-    state.interval = null;
+function applyDecisionFlow() {
+  const triage = (currentCase.triage || "").toLowerCase();
+  const hasSeguro = currentCase.seguro === "Sí";
+
+  if (triage === "bajo") {
+    currentCase.destino = "Atención ambulatoria en Salud Digna";
+    currentCase.decisionFinal = "Resolución local con indicaciones, receta y seguimiento";
+    currentCase.traslado = "No requiere traslado";
+    currentCase.tipoAtencion = "Ambulatorio";
+    currentCase.deduciblePct = hasSeguro ? 15 : 100;
+    currentCase.cobro = hasSeguro
+      ? "Se paga un porcentaje del deducible en modalidad ambulatoria"
+      : "Pago directo del servicio ambulatorio";
+  } else if (triage === "medio") {
+    currentCase.destino = "Evaluación con estudios y definición de referencia";
+    currentCase.decisionFinal = "Se revisan estudios y diagnóstico para decidir resolución local o traslado";
+    currentCase.traslado = "Puede trasladarse por sus propios medios o coordinar traslado según el caso";
+    currentCase.tipoAtencion = "Ambulatorio / Referencia";
+    currentCase.deduciblePct = hasSeguro ? 25 : 100;
+    currentCase.cobro = hasSeguro
+      ? "Se aplica un porcentaje del deducible si se resuelve ambulatoriamente"
+      : "Pago directo; si escala, se define en hospital";
+  } else if (triage === "alto") {
+    currentCase.destino = "Hospital inmediato";
+    currentCase.decisionFinal = "Traslado hospitalario inmediato por nivel de riesgo";
+    currentCase.traslado = "Traslado inmediato al hospital indicado por la póliza o por sus propios medios con estudios y diagnóstico";
+    currentCase.tipoAtencion = "Hospitalario";
+    currentCase.deduciblePct = hasSeguro ? 100 : 100;
+    currentCase.cobro = hasSeguro
+      ? "El deducible se paga en el hospital"
+      : "Paciente sin seguro; pago hospitalario conforme al hospital receptor";
+  } else {
+    currentCase.destino = "Pendiente";
+    currentCase.decisionFinal = "Pendiente";
+    currentCase.traslado = "Pendiente";
+    currentCase.tipoAtencion = "Pendiente";
+    currentCase.deduciblePct = 0;
+    currentCase.cobro = "Pendiente";
   }
 
-  state.autoRunning = false;
-  state.currentStep = 1;
-  state.expediente = "MFH-URG-2026-00127";
-
-  state.caso = {
-    nombre: "María Fernanda López",
-    edad: 38,
-    sexo: "Femenino",
-    seguro: "Sí",
-    motivo: "Dolor torácico, opresión en pecho y dificultad respiratoria leve de inicio reciente.",
-    severidad: "Media",
-    estadoActual: "En admisión",
-    cobertura: "Con seguro",
-    ruta: "Evaluación en clínica",
-    triage: "Medio",
-    decision: "Traslado sugerido",
-    seguimiento: "Activo",
-    diagnostico: "Pendiente",
-    siguienteAccion: "Capturar información clínica inicial",
-    tipoResolucion: "Por definir",
-    tipoTraslado: "Coordinado",
-    deduciblePct: "20%",
-    rutaFinal: "Hospital",
-    tiempoClinica: "32 min",
-    casosMes: "148"
-  };
-
-  if ($("patientName")) $("patientName").value = state.caso.nombre;
-  if ($("patientAge")) $("patientAge").value = state.caso.edad;
-  if ($("patientSex")) $("patientSex").value = state.caso.sexo;
-  if ($("patientInsurance")) $("patientInsurance").value = state.caso.seguro;
-  if ($("patientReason")) $("patientReason").value = state.caso.motivo;
-
-  resetLog();
-  applyStepState(false);
-  renderAll();
-  syncInteractiveControls();
-  addLog(`Se reinicia el demo y se restaura el expediente ${state.expediente}.`);
-}
-
-function applyStepState(overrideClinicalState = true) {
-  const current = stepConfig[state.currentStep];
-  state.caso.estadoActual = current.status;
-  state.caso.seguimiento = current.seguimiento;
-
-  if (overrideClinicalState) {
-    state.caso.ruta = current.ruta;
-    state.caso.triage = current.triage;
-    state.caso.decision = current.decision;
-    state.caso.severidad = current.severity;
-    state.caso.tipoResolucion = state.currentStep >= 6 ? "Hospitalaria" : "Por definir";
-
-    if (state.currentStep === 1) {
-      state.caso.siguienteAccion = "Capturar información clínica inicial";
-      state.caso.diagnostico = "Pendiente";
-    }
-
-    if (state.currentStep === 2) {
-      state.caso.siguienteAccion = "Definir prioridad clínica";
-      state.caso.diagnostico = "Pendiente de estudios";
-      addLog("Se realiza triage y el caso se clasifica con severidad media.");
-    }
-
-    if (state.currentStep === 3) {
-      state.caso.siguienteAccion = "Generar estudios diagnósticos";
-      state.caso.diagnostico = "En evaluación";
-      addLog("Se solicitan RX y laboratorio para soporte diagnóstico.");
-    }
-
-    if (state.currentStep === 4) {
-      state.caso.siguienteAccion = "Validar hospital receptor";
-      state.caso.diagnostico = "Riesgo cardiovascular intermedio";
-      addLog("Salud Digna emite diagnóstico preliminar con sugerencia de traslado.");
-    }
-
-    if (state.currentStep === 5) {
-      state.caso.siguienteAccion = state.caso.seguro === "Sí"
-        ? "Validar deducible y cobertura"
-        : "Activar ruta sin seguro";
-      addLog(
-        state.caso.seguro === "Sí"
-          ? "Se valida cobertura y regla de deducible conforme a la póliza."
-          : "El caso se marca como paciente sin seguro para ruta alternativa."
-      );
-    }
-
-    if (state.currentStep === 6) {
-      state.caso.siguienteAccion = "Enviar al hospital indicado";
-      state.caso.diagnostico = "Riesgo cardiovascular intermedio";
-      state.caso.tipoResolucion = "Hospitalaria";
-      state.caso.rutaFinal = "Hospital";
-      addLog("Se confirma traslado. El paciente puede acudir por traslado coordinado o por sus propios medios.");
-    }
-
-    if (state.currentStep === 7) {
-      state.caso.siguienteAccion = "Cerrar expediente y seguimiento";
-      state.caso.tiempoClinica = "47 min";
-      addLog("Se documenta cierre clínico y estado financiero del caso.");
-    }
-  }
-
-  state.caso.cobertura = state.caso.seguro === "Sí" ? "Con seguro" : "Sin seguro";
-}
-
-function renderAll() {
-  renderKpis();
-  renderPatientSummary();
   renderDecision();
-  renderFinance();
-  renderTimeline();
-  renderTabs();
-  renderMainScreen();
-  renderDashboard();
-}
-
-function renderKpis() {
-  if ($("kpiExpediente")) $("kpiExpediente").textContent = state.expediente;
-  if ($("kpiCobertura")) $("kpiCobertura").textContent = state.caso.cobertura;
-  if ($("kpiRuta")) $("kpiRuta").textContent = state.caso.ruta;
-  if ($("kpiTriage")) $("kpiTriage").textContent = state.caso.triage;
-  if ($("kpiDecision")) $("kpiDecision").textContent = state.caso.decision;
-  if ($("kpiSeguimiento")) $("kpiSeguimiento").textContent = state.caso.seguimiento;
-}
-
-function renderPatientSummary() {
-  if ($("patientNameHeader")) $("patientNameHeader").textContent = state.caso.nombre;
-  if ($("patientExpBadge")) $("patientExpBadge").textContent = `Expediente: ${state.expediente}`;
-  if ($("patientAgeHeader")) $("patientAgeHeader").textContent = `${state.caso.edad} años`;
-  if ($("patientSexHeader")) $("patientSexHeader").textContent = state.caso.sexo;
-  if ($("patientSeverityHeader")) $("patientSeverityHeader").textContent = state.caso.severidad;
-  if ($("patientStatusHeader")) $("patientStatusHeader").textContent = state.caso.estadoActual;
-  if ($("chiefComplaintTitle")) $("chiefComplaintTitle").textContent = state.caso.motivo;
-  if ($("chiefComplaintText")) {
-    $("chiefComplaintText").textContent =
-      "El paciente entra por Salud Digna, se evalúa clínicamente y el sistema define si puede resolverse de forma ambulatoria o si debe escalarse a hospital con diagnóstico previo.";
-  }
+  updateSummary();
 }
 
 function renderDecision() {
-  if ($("decisionTitle")) {
-    if (state.caso.decision === "Ambulatorio") {
-      $("decisionTitle").textContent = "Resolución ambulatoria";
-    } else if (state.caso.decision === "Hospital inmediato") {
-      $("decisionTitle").textContent = "Hospital inmediato";
-    } else if (state.caso.decision === "Traslado confirmado") {
-      $("decisionTitle").textContent = "Traslado confirmado con expediente clínico";
-    } else if (state.currentStep >= 4) {
-      $("decisionTitle").textContent = "Traslado a hospital con diagnóstico previo";
+  setText("decision-triage", capitalize(currentCase.triage) || "—");
+  setText("decision-destino", currentCase.destino || "—");
+  setText("decision-final", currentCase.decisionFinal || "—");
+  setText("decision-traslado", currentCase.traslado || "—");
+}
+
+function buildFinancialView() {
+  setText("liquidacion-seguro", currentCase.seguro || "—");
+  setText("liquidacion-tipo", currentCase.tipoAtencion || "—");
+  setText("liquidacion-deducible", `${currentCase.deduciblePct || 0}%`);
+  setText("liquidacion-cobro", currentCase.cobro || "—");
+
+  stats.deducible = currentCase.deduciblePct || 0;
+  renderKpis();
+}
+
+function finalizeCase() {
+  stats.casos += 1;
+
+  if ((currentCase.tipoAtencion || "").toLowerCase().includes("hospital")) {
+    stats.hospitalarios += 1;
+  } else {
+    stats.ambulatorios += 1;
+  }
+
+  renderKpis();
+}
+
+function renderKpis() {
+  setText("kpi-casos", String(stats.casos));
+  setText("kpi-ambulatorios", String(stats.ambulatorios));
+  setText("kpi-hospitalarios", String(stats.hospitalarios));
+  setText("kpi-deducible", `${stats.deducible || 0}%`);
+}
+
+function updateSummary() {
+  setText("summary-expediente", currentCase.expediente || "—");
+  setText("summary-nombre", currentCase.nombre || "—");
+  setText("summary-edad", currentCase.edad || "—");
+  setText("summary-sexo", currentCase.sexo || "—");
+  setText("summary-sintomas", currentCase.sintomas || "—");
+  setText("summary-triage", currentCase.triage ? capitalize(currentCase.triage) : "—");
+  setText("summary-diagnostico", currentCase.diagnostico || "—");
+  setText("summary-seguro", currentCase.seguro || "—");
+  setText("summary-destino", currentCase.destino || "—");
+}
+
+function renderUploadedFiles() {
+  const target = document.getElementById("uploaded-files-list");
+  if (!target) return;
+
+  const estudios = currentCase.estudios.length
+    ? `Estudios seleccionados: ${currentCase.estudios.join(", ")}`
+    : "Estudios seleccionados: ninguno";
+
+  const files = currentCase.uploadedFiles.length
+    ? `Archivos cargados: ${currentCase.uploadedFiles.join(", ")}`
+    : "Archivos cargados: ninguno";
+
+  target.textContent = `${estudios}. ${files}.`;
+}
+
+function resetCase(goHome = true) {
+  currentCase.expediente = "";
+  currentCase.nombre = "";
+  currentCase.edad = "";
+  currentCase.sexo = "";
+  currentCase.sintomas = "";
+  currentCase.seguro = "";
+  currentCase.poliza = "";
+  currentCase.triage = "";
+  currentCase.triageSugerido = "";
+  currentCase.estudios = [];
+  currentCase.uploadedFiles = [];
+  currentCase.notasEstudios = "";
+  currentCase.diagnostico = "";
+  currentCase.comentariosMedicos = "";
+  currentCase.destino = "";
+  currentCase.decisionFinal = "";
+  currentCase.traslado = "";
+  currentCase.tipoAtencion = "";
+  currentCase.deduciblePct = 0;
+  currentCase.cobro = "";
+
+  clearForm();
+  clearTriageUI();
+  renderDecision();
+  buildFinancialView();
+  updateSummary();
+  renderUploadedFiles();
+  updateTriageSuggestion();
+
+  if (goHome) {
+    goToScreen("screen-registro", 1);
+  }
+}
+
+function clearForm() {
+  [
+    "expediente",
+    "nombre",
+    "edad",
+    "sexo",
+    "sintomas",
+    "seguro",
+    "poliza",
+    "notas-estudios",
+    "diagnostico-clinico",
+    "comentarios-medicos"
+  ].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.tagName === "SELECT") {
+      el.selectedIndex = 0;
     } else {
-      $("decisionTitle").textContent = "Caso en evaluación clínica";
+      el.value = "";
     }
-  }
-
-  if ($("decisionDescription")) {
-    if (state.caso.decision === "Ambulatorio") {
-      $("decisionDescription").textContent =
-        "El caso puede resolverse fuera del hospital con seguimiento y aplicación de la regla ambulatoria.";
-    } else if (state.caso.decision === "Hospital inmediato") {
-      $("decisionDescription").textContent =
-        "La condición clínica obliga a escalamiento hospitalario inmediato.";
-    } else if (state.caso.decision === "Traslado confirmado") {
-      $("decisionDescription").textContent =
-        "El expediente ya contiene estudios, diagnóstico preliminar y ruta clínica definida para recepción hospitalaria.";
-    } else if (state.currentStep >= 4) {
-      $("decisionDescription").textContent =
-        "La decisión médica ya sugiere escalamiento, pero aún deben validarse cobertura y logística operativa.";
-    } else {
-      $("decisionDescription").textContent =
-        "Todavía se están integrando elementos clínicos para definir si el caso será ambulatorio o hospitalario.";
-    }
-  }
-
-  if ($("diagnosticoActual")) $("diagnosticoActual").textContent = state.caso.diagnostico;
-  if ($("siguienteAccion")) $("siguienteAccion").textContent = state.caso.siguienteAccion;
-  if ($("tipoResolucion")) $("tipoResolucion").textContent = state.caso.tipoResolucion;
-}
-
-function renderFinance() {
-  const hasInsurance = state.caso.seguro === "Sí";
-
-  if ($("financeCoveragePill")) {
-    $("financeCoveragePill").textContent = hasInsurance ? "Cobertura confirmada" : "Paciente sin seguro";
-    $("financeCoveragePill").className = hasInsurance ? "status-pill success" : "status-pill warning";
-  }
-
-  if ($("financeSeguro")) $("financeSeguro").textContent = hasInsurance ? "Paciente con seguro" : "Paciente sin seguro";
-  if ($("financeAmbulatorio")) $("financeAmbulatorio").textContent = "Si es ambulatorio";
-  if ($("financeHospitalario")) $("financeHospitalario").textContent = "Si se traslada a hospital";
-  if ($("financeSinSeguro")) $("financeSinSeguro").textContent = "Si no tiene seguro";
-}
-
-function renderTimeline() {
-  if ($("currentStepChip")) {
-    $("currentStepChip").textContent = `Paso actual: ${stepConfig[state.currentStep].label}`;
-  }
-
-  document.querySelectorAll(".step").forEach((stepEl) => {
-    const stepNumber = Number(stepEl.dataset.step);
-    stepEl.classList.remove("active", "done");
-
-    if (stepNumber < state.currentStep) stepEl.classList.add("done");
-    if (stepNumber === state.currentStep) stepEl.classList.add("active");
   });
-}
 
-function renderTabs() {
-  const stepToTab = {
-    1: "admision",
-    2: "triage",
-    3: "triage",
-    4: "diagnostico",
-    5: "diagnostico",
-    6: "traslado",
-    7: "cierre"
-  };
-
-  document.querySelectorAll(".tab").forEach((tab) => {
-    tab.classList.toggle("active", tab.dataset.tab === stepToTab[state.currentStep]);
+  ["estudio-rx", "estudio-lab", "estudio-usg", "estudio-otro"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
   });
+
+  const upload = document.getElementById("upload-estudios");
+  if (upload) upload.value = "";
 }
 
-function renderMainScreen() {
-  const mainScreen = $("mainScreen");
-  if (!mainScreen) return;
+function clearTriageUI() {
+  document.querySelectorAll(".triage-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
 
-  if (state.currentStep === 1) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Admisión del paciente</h3>
-          <p class="screen-caption">Captura inicial del caso dentro de Salud Digna.</p>
-        </div>
-        <div class="chip">Ingreso clínico inicial</div>
-      </div>
+  setText("selected-triage-label", "Ninguno");
+  setText("triage-sugerido-badge", "Sugerido por sistema: —");
+}
 
-      <div class="form-grid">
-        <div class="field">
-          <label>Nombre del paciente</label>
-          <input type="text" value="${escapeHtml(state.caso.nombre)}" disabled />
-        </div>
-        <div class="field">
-          <label>Edad</label>
-          <input type="text" value="${escapeHtml(String(state.caso.edad))}" disabled />
-        </div>
-        <div class="field">
-          <label>Sexo</label>
-          <input type="text" value="${escapeHtml(state.caso.sexo)}" disabled />
-        </div>
-        <div class="field">
-          <label>¿Cuenta con seguro?</label>
-          <input type="text" value="${escapeHtml(state.caso.seguro)}" disabled />
-        </div>
-        <div class="field" style="grid-column:1 / -1;">
-          <label>Motivo de atención</label>
-          <textarea disabled>${escapeHtml(state.caso.motivo)}</textarea>
-        </div>
-      </div>
-    `;
+function goToScreen(screenId, stepNumber) {
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.remove("active");
+  });
+
+  const activeScreen = document.getElementById(screenId);
+  if (activeScreen) {
+    activeScreen.classList.add("active");
   }
 
-  if (state.currentStep === 2) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Triage y clasificación clínica</h3>
-          <p class="screen-caption">Definición de severidad para orientar la ruta operativa.</p>
-        </div>
-        <div class="chip">Severidad: ${escapeHtml(state.caso.severidad)}</div>
-      </div>
+  document.querySelectorAll(".timeline-step").forEach((step) => {
+    step.classList.remove("active");
+  });
 
-      <div class="triage-row">
-        <div class="triage-card triage-low">
-          <h4>Bajo</h4>
-          <p>Resolución ambulatoria con seguimiento y salida controlada.</p>
-        </div>
-        <div class="triage-card triage-mid">
-          <h4>Medio</h4>
-          <p>Requiere estudios y soporte diagnóstico antes de decidir traslado.</p>
-        </div>
-        <div class="triage-card triage-high">
-          <h4>Alto</h4>
-          <p>Hospital inmediato por riesgo clínico elevado.</p>
-        </div>
-      </div>
-    `;
-  }
-
-  if (state.currentStep === 3) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Estudios diagnósticos</h3>
-          <p class="screen-caption">Los resultados quedan integrados al expediente clínico.</p>
-        </div>
-        <div class="chip">Expediente con evidencia</div>
-      </div>
-
-      <div class="study-list">
-        <div class="study-item">
-          <div>
-            <div class="study-item-title">RX Tórax AP</div>
-            <div class="study-item-meta">Estado: disponible · Visible para hospital receptor</div>
-          </div>
-          <div class="study-view"><button class="btn btn-secondary" disabled>Disponible</button></div>
-        </div>
-
-        <div class="study-item">
-          <div>
-            <div class="study-item-title">Laboratorio inicial</div>
-            <div class="study-item-meta">Troponina, BH y química básica · Estado: preliminar</div>
-          </div>
-          <div class="study-view"><button class="btn btn-secondary" disabled>Preliminar</button></div>
-        </div>
-      </div>
-    `;
-  }
-
-  if (state.currentStep === 4) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Diagnóstico preliminar</h3>
-          <p class="screen-caption">Salud Digna define la decisión médica inicial.</p>
-        </div>
-        <div class="chip">Diagnóstico previo listo</div>
-      </div>
-
-      <div class="chief-complaint">
-        <div class="mini-field-label">Diagnóstico clínico</div>
-        <div class="mini-field-value">${escapeHtml(state.caso.diagnostico)}</div>
-        <p>
-          La evaluación clínica y los estudios sugieren escalamiento hospitalario con expediente ya integrado.
-        </p>
-      </div>
-    `;
-  }
-
-  if (state.currentStep === 5) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Validación de cobertura</h3>
-          <p class="screen-caption">La lógica financiera cambia según seguro y tipo de atención.</p>
-        </div>
-        <div class="chip">${escapeHtml(state.caso.cobertura)}</div>
-      </div>
-
-      <div class="finance-rule">
-        <div class="finance-row">
-          <strong>${state.caso.seguro === "Sí" ? "Cobertura activa" : "Sin cobertura activa"}</strong>
-          <span>
-            ${
-              state.caso.seguro === "Sí"
-                ? "La póliza permite seguimiento de deducible y referencia hospitalaria."
-                : "Se activa ruta de pago directo o ruta alternativa."
-            }
-          </span>
-        </div>
-        <div class="finance-row">
-          <strong>Regla ambulatoria</strong>
-          <span>Se paga un porcentaje del deducible conforme a la póliza.</span>
-        </div>
-        <div class="finance-row">
-          <strong>Regla hospitalaria</strong>
-          <span>El deducible se liquida en hospital si el caso se traslada.</span>
-        </div>
-      </div>
-    `;
-  }
-
-  if (state.currentStep === 6) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Traslado del paciente</h3>
-          <p class="screen-caption">El sistema muestra que el paciente puede trasladarse al hospital indicado incluso por sus propios medios.</p>
-        </div>
-        <div class="chip">Traslado: ${escapeHtml(state.caso.tipoTraslado)}</div>
-      </div>
-
-      <div class="route-box">
-        <div class="route-head">Opciones de traslado</div>
-        <div class="route-flow">
-          <div class="route-node">
-            <div>
-              <strong>Traslado coordinado</strong>
-              <span>Activación con hospital receptor y expediente compartido.</span>
-            </div>
-            <div>${state.caso.tipoTraslado === "Coordinado" ? "Seleccionado" : "Disponible"}</div>
-          </div>
-          <div class="route-node">
-            <div>
-              <strong>Traslado por sus propios medios</strong>
-              <span>Paciente acude al hospital indicado con estudios y diagnóstico visibles en la plataforma.</span>
-            </div>
-            <div>${state.caso.tipoTraslado === "Propios medios" ? "Seleccionado" : "Disponible"}</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  if (state.currentStep === 7) {
-    mainScreen.innerHTML = `
-      <div class="screen-header">
-        <div>
-          <h3 class="screen-title">Cierre y seguimiento</h3>
-          <p class="screen-caption">El caso queda documentado para trazabilidad y análisis mensual.</p>
-        </div>
-        <div class="chip">Expediente cerrado</div>
-      </div>
-
-      <div class="metrics-grid">
-        <div class="mini-kpi">
-          <div class="label">Estado clínico</div>
-          <div class="value">Documentado</div>
-          <div class="desc">Paciente referido con expediente completo.</div>
-        </div>
-        <div class="mini-kpi">
-          <div class="label">Estado financiero</div>
-          <div class="value">${state.caso.seguro === "Sí" ? "Deducible aplicable" : "Pago directo"}</div>
-          <div class="desc">Ruta financiera final registrada.</div>
-        </div>
-      </div>
-    `;
+  const activeStep = document.getElementById(`step-${stepNumber}`);
+  if (activeStep) {
+    activeStep.classList.add("active");
   }
 }
 
-function renderDashboard() {
-  if ($("miniDeducible")) {
-    $("miniDeducible").textContent = state.caso.seguro === "Sí" ? state.caso.deduciblePct : "N/A";
-  }
-  if ($("miniRutaFinal")) $("miniRutaFinal").textContent = state.caso.rutaFinal;
-  if ($("miniTiempoClinica")) $("miniTiempoClinica").textContent = state.caso.tiempoClinica;
-  if ($("miniCasosMes")) $("miniCasosMes").textContent = state.caso.casosMes;
+function getValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
 }
 
-function addLog(message) {
-  const container = $("caseLog");
-  if (!container) return;
-
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
-
-  const item = document.createElement("div");
-  item.className = "log-item";
-  item.innerHTML = `
-    <div class="log-time">${hh}:${mm}</div>
-    <div class="log-text">${escapeHtml(message)}</div>
-  `;
-
-  container.prepend(item);
+function isChecked(id) {
+  const el = document.getElementById(id);
+  return !!el?.checked;
 }
 
-function resetLog() {
-  const container = $("caseLog");
-  if (!container) return;
-
-  container.innerHTML = `
-    <div class="log-item">
-      <div class="log-time">08:14</div>
-      <div class="log-text">Se crea expediente MFH-URG-2026-00127 al ingreso del paciente en Salud Digna.</div>
-    </div>
-    <div class="log-item">
-      <div class="log-time">08:18</div>
-      <div class="log-text">Se inicia triage y el caso se clasifica inicialmente como severidad media.</div>
-    </div>
-    <div class="log-item">
-      <div class="log-time">08:24</div>
-      <div class="log-text">Se solicitan RX y laboratorio para soporte diagnóstico previo a decisión clínica.</div>
-    </div>
-  `;
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function capitalize(value) {
+  if (!value) return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
-
-document.addEventListener("DOMContentLoaded", init);
