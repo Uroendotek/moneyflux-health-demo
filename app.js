@@ -85,22 +85,25 @@ function getDecision(triageValue) {
     return {
       css: "high",
       text: "Decisión actual: Caso grave. Ruta sugerida: traslado hospitalario inmediato.",
-      ruta: "Hospital"
+      ruta: "Hospital",
+      tipo: "critico"
     };
   }
 
   if (triageValue === "Medio") {
     return {
       css: "mid",
-      text: "Decisión actual: Caso de prioridad media. Requiere evaluación clínica y definición ambulatoria vs hospital.",
-      ruta: "En evaluación"
+      text: "Decisión actual: Caso de prioridad media. Requiere evaluación clínica para definir manejo ambulatorio o traslado hospitalario.",
+      ruta: "Evaluación",
+      tipo: "intermedio"
     };
   }
 
   return {
     css: "low",
     text: "Decisión actual: Caso de baja prioridad. Ruta sugerida: manejo ambulatorio en Salud Digna.",
-    ruta: "Ambulatorio"
+    ruta: "Ambulatorio",
+    tipo: "leve"
   };
 }
 
@@ -142,30 +145,30 @@ function render() {
   let narrativeText = step.text;
 
   if (currentStep === 1) {
-    narrativeText = `Se asigna triage ${data.triage}. Esto modifica la prioridad del caso y el resto del flujo clínico.`;
+    narrativeText = `Se asigna triage ${data.triage}. Esto modifica la prioridad del caso y orienta la ruta clínica inicial.`;
   }
 
   if (currentStep === 2) {
-    narrativeText = `Se consideran los estudios (${data.estudios}) y el diagnóstico (${data.diagnostico}) para valorar la resolución del caso.`;
+    narrativeText = `Se revisan los estudios disponibles (${data.estudios}) y el diagnóstico clínico preliminar (${data.diagnostico}) para valorar la resolución del caso.`;
   }
 
   if (currentStep === 3) {
-    if (data.triage === "Alto") {
-      narrativeText = "El caso se clasifica como grave y la ruta recomendada es hospitalaria inmediata.";
-    } else if (data.triage === "Medio") {
-      narrativeText = "El caso permanece en evaluación médica para definir si continúa ambulatorio o se escala a hospital.";
+    if (decision.tipo === "critico") {
+      narrativeText = "El sistema determina que el paciente requiere traslado hospitalario inmediato para resolución.";
+    } else if (decision.tipo === "intermedio") {
+      narrativeText = "El caso requiere validación médica para definir si escala a hospital o si puede resolverse de forma ambulatoria.";
     } else {
-      narrativeText = "El caso puede resolverse de forma ambulatoria dentro del modelo operativo.";
+      narrativeText = "El paciente puede ser tratado completamente en Salud Digna sin necesidad de traslado hospitalario.";
     }
   }
 
   if (currentStep === 4) {
-    if (data.triage === "Alto") {
+    if (decision.tipo === "critico") {
       narrativeText = "El expediente se cierra con ruta hospitalaria documentada para seguimiento operativo.";
-    } else if (data.triage === "Medio") {
-      narrativeText = "El expediente se cierra como caso evaluado con definición clínica documentada.";
+    } else if (decision.tipo === "intermedio") {
+      narrativeText = "El expediente se cierra como caso evaluado con definición clínica documentada y ruta final registrada.";
     } else {
-      narrativeText = "El expediente se cierra como atención ambulatoria resuelta.";
+      narrativeText = "El expediente se cierra como atención ambulatoria resuelta dentro del modelo operativo.";
     }
   }
 
@@ -176,7 +179,7 @@ function render() {
 
   kpiExp.textContent = data.expediente.split("-").pop() || data.expediente;
   kpiTriage.textContent = data.triage;
-  kpiRuta.textContent = currentStep >= 3 ? decision.ruta : "En evaluación";
+  kpiRuta.textContent = decision.ruta;
   kpiStatus.textContent = currentStep === steps.length - 1 ? "Cerrado" : "Activo";
 
   renderTimeline();
