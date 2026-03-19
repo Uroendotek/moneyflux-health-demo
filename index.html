@@ -20,6 +20,7 @@
     }
 
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family:Arial, Helvetica, sans-serif;
@@ -53,8 +54,17 @@
       background:#fff;
     }
 
-    .logo-sd{height:44px; width:auto; max-width:180px;}
-    .logo-mfh{height:40px; width:auto; max-width:180px;}
+    .logo-sd{
+      height:44px;
+      width:auto;
+      max-width:180px;
+    }
+
+    .logo-mfh{
+      height:40px;
+      width:auto;
+      max-width:180px;
+    }
 
     .topbar-title{
       font-size:18px;
@@ -71,7 +81,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 360px 1fr 320px;
+      grid-template-columns:360px 1fr 320px;
       gap:18px;
       align-items:start;
     }
@@ -137,6 +147,11 @@
       font-size:14px;
       font-weight:700;
       cursor:pointer;
+      transition:all .2s ease;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
     }
 
     .btn-primary{
@@ -192,9 +207,23 @@
       font-size:15px;
     }
 
-    .decision.low{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0;}
-    .decision.mid{background:#fff7ed;color:#9a3412;border:1px solid #fdba74;}
-    .decision.high{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;}
+    .decision.low{
+      background:#ecfdf3;
+      color:#166534;
+      border:1px solid #bbf7d0;
+    }
+
+    .decision.mid{
+      background:#fff7ed;
+      color:#9a3412;
+      border:1px solid #fdba74;
+    }
+
+    .decision.high{
+      background:#fef2f2;
+      color:#991b1b;
+      border:1px solid #fecaca;
+    }
 
     .timeline{
       display:flex;
@@ -390,10 +419,16 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-primary" id="btnActualizar">Actualizar decisión</button>
-          <button class="btn-secondary" id="btnSiguiente">Siguiente paso</button>
-          <button class="btn-secondary" id="btnAuto">Iniciar flujo automático</button>
-          <button class="btn-danger" id="btnReset">Reiniciar demo</button>
+          <button class="btn-primary" id="btnActualizar" type="button">Actualizar decisión</button>
+          <button class="btn-secondary" id="btnSiguiente" type="button">Siguiente paso</button>
+          <button class="btn-secondary" id="btnAuto" type="button">Iniciar flujo automático</button>
+          <button class="btn-danger" id="btnReset" type="button">Reiniciar demo</button>
+        </div>
+
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn-secondary" id="btnCasoLeve" type="button">Caso leve</button>
+          <button class="btn-secondary" id="btnCasoIntermedio" type="button">Caso intermedio</button>
+          <button class="btn-secondary" id="btnCasoGrave" type="button">Caso grave</button>
         </div>
       </section>
 
@@ -415,7 +450,7 @@
         </div>
 
         <div id="decisionBox" class="decision mid">
-          Decisión actual: Caso de prioridad media. Requiere evaluación clínica y definición ambulatoria vs hospital.
+          Decisión actual: Caso de prioridad media. Requiere evaluación clínica para definir manejo ambulatorio o traslado hospitalario.
         </div>
 
         <div class="notes" id="narrative">
@@ -440,7 +475,7 @@
           </div>
           <div class="kpi">
             <div class="label">Ruta clínica</div>
-            <div class="value" id="kpiRuta">En evaluación</div>
+            <div class="value" id="kpiRuta">Evaluación</div>
           </div>
           <div class="kpi">
             <div class="label">Estatus</div>
