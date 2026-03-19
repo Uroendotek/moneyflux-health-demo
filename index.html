@@ -1123,6 +1123,69 @@
           </div>
 
           <div class="screen-body" id="mainScreen">
+            <div class="card" style="margin-top:16px; padding:16px; border-radius:16px; border:1px solid var(--line); background:#fcfdff;">
+  <h3 class="section-title" style="margin-bottom:12px;">Panel interactivo médico</h3>
+  <p class="section-subtitle" style="margin-bottom:16px;">
+    Este panel permite controlar manualmente el caso sin depender solo del flujo automático.
+  </p>
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="interactiveTriage">Triage</label>
+      <select id="interactiveTriage">
+        <option value="Bajo">Bajo</option>
+        <option value="Medio" selected>Medio</option>
+        <option value="Alto">Alto</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="interactiveDecision">Decisión clínica</label>
+      <select id="interactiveDecision">
+        <option value="Ambulatorio">Ambulatorio</option>
+        <option value="Traslado sugerido" selected>Traslado sugerido</option>
+        <option value="Hospital inmediato">Hospital inmediato</option>
+        <option value="Traslado confirmado">Traslado confirmado</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="interactiveTransport">Tipo de traslado</label>
+      <select id="interactiveTransport">
+        <option value="Coordinado" selected>Coordinado</option>
+        <option value="Propios medios">Propios medios</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="interactiveResolution">Resolución final</label>
+      <select id="interactiveResolution">
+        <option value="Por definir" selected>Por definir</option>
+        <option value="Ambulatoria">Ambulatoria</option>
+        <option value="Hospitalaria">Hospitalaria</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="interactiveStep">Mover flujo narrativo</label>
+      <select id="interactiveStep">
+        <option value="1">1. Ingreso</option>
+        <option value="2">2. Triage</option>
+        <option value="3">3. Estudios</option>
+        <option value="4">4. Diagnóstico</option>
+        <option value="5">5. Cobertura</option>
+        <option value="6">6. Traslado / Alta</option>
+        <option value="7">7. Cierre</option>
+      </select>
+    </div>
+
+    <div class="field" style="display:flex; align-items:flex-end;">
+      <button class="btn btn-primary" id="btnApplyInteractive" type="button" style="width:100%;">
+        Aplicar cambios manuales
+      </button>
+    </div>
+  </div>
+</div>
             <div class="screen-header">
               <div>
                 <h3 class="screen-title">Admisión del paciente</h3>
