@@ -3,1786 +3,412 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoneyFlux Health Platform | Modelo de Urgencias con Diagnóstico Previo</title>
-
-  <style>
-    :root{
-      --bg:#f4f7fb;
-      --card:#ffffff;
-      --line:#d8e1ee;
-      --line-strong:#c5d4e6;
-      --text:#16324f;
-      --muted:#6b7b8f;
-
-      --primary:#0d5cab;
-      --primary-2:#2d7dd2;
-      --primary-soft:#eaf3ff;
-
-      --success:#1f8f5f;
-      --success-soft:#e8f7ef;
-
-      --warning:#b7791f;
-      --warning-soft:#fff6e5;
-
-      --danger:#c0392b;
-      --danger-soft:#fdeceb;
-
-      --blue-route:#1d4ed8;
-      --red-route:#dc2626;
-
-      --shadow:0 10px 30px rgba(16, 39, 68, 0.08);
-      --shadow-soft:0 6px 18px rgba(16, 39, 68, 0.06);
-      --radius:18px;
-      --radius-sm:12px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:Arial,Helvetica,sans-serif;
-    }
-
-    button,input,select,textarea{font:inherit}
-
-    .app{
-      max-width:1520px;
-      margin:0 auto;
-      padding:20px;
-    }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow-soft);
-    }
-
-    .section-title{
-      margin:0 0 10px;
-      font-size:1.1rem;
-      font-weight:700;
-      color:var(--text);
-    }
-
-    .section-subtitle{
-      margin:0;
-      font-size:0.92rem;
-      color:var(--muted);
-      line-height:1.45;
-    }
-
-    /* HEADER */
-    .topbar{
-      display:grid;
-      grid-template-columns:auto 1fr auto;
-      gap:18px;
-      align-items:center;
-      padding:18px 20px;
-      margin-bottom:18px;
-      background:linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
-      border:1px solid var(--line);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-    }
-
-    .brand-logos{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      min-width:280px;
-    }
-
-    .brand-logos img{
-      display:block;
-      object-fit:contain;
-      height:46px;
-      max-width:180px;
-      width:auto;
-    }
-
-    .brand-divider{
-      width:1px;
-      height:42px;
-      background:var(--line);
-    }
-
-    .hero-copy{
-      min-width:0;
-    }
-
-    .hero-eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:var(--primary-soft);
-      color:var(--primary);
-      font-size:0.78rem;
-      font-weight:700;
-      margin-bottom:10px;
-    }
-
-    .hero-title{
-      margin:0;
-      font-size:1.55rem;
-      line-height:1.15;
-      letter-spacing:-0.02em;
-    }
-
-    .hero-desc{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:0.95rem;
-      line-height:1.45;
-      max-width:780px;
-    }
-
-    .hero-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:flex-end;
-      align-items:center;
-    }
-
-    .btn{
-      appearance:none;
-      border:none;
-      border-radius:12px;
-      padding:12px 16px;
-      font-weight:700;
-      cursor:pointer;
-      transition:0.2s ease;
-      box-shadow:none;
-    }
-
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:translateY(0)}
-
-    .btn-primary{
-      background:var(--primary);
-      color:#fff;
-    }
-
-    .btn-secondary{
-      background:#fff;
-      color:var(--text);
-      border:1px solid var(--line-strong);
-    }
-
-    .btn-success{
-      background:var(--success);
-      color:#fff;
-    }
-
-    .btn-danger{
-      background:var(--danger);
-      color:#fff;
-    }
-
-    /* TOP KPI ROW */
-    .kpi-grid{
-      display:grid;
-      grid-template-columns:repeat(6, minmax(0,1fr));
-      gap:14px;
-      margin-bottom:18px;
-    }
-
-    .kpi{
-      padding:16px;
-      min-height:112px;
-    }
-
-    .kpi-label{
-      font-size:0.82rem;
-      color:var(--muted);
-      margin-bottom:10px;
-      font-weight:700;
-      text-transform:uppercase;
-      letter-spacing:0.04em;
-    }
-
-    .kpi-value{
-      font-size:1.45rem;
-      font-weight:800;
-      line-height:1.1;
-      margin-bottom:8px;
-    }
-
-    .kpi-note{
-      color:var(--muted);
-      font-size:0.86rem;
-      line-height:1.35;
-    }
-
-    /* MAIN EXEC SUMMARY */
-    .summary-grid{
-      display:grid;
-      grid-template-columns:2.1fr 1.2fr 1.2fr;
-      gap:18px;
-      margin-bottom:18px;
-    }
-
-    .summary-card{
-      padding:18px;
-    }
-
-    .patient-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:14px;
-      margin-bottom:14px;
-    }
-
-    .patient-name{
-      margin:0;
-      font-size:1.35rem;
-      font-weight:800;
-      line-height:1.1;
-    }
-
-    .patient-exp{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      background:#f8fbff;
-      border:1px solid var(--line);
-      color:var(--primary);
-      font-size:0.85rem;
-      font-weight:700;
-      white-space:nowrap;
-    }
-
-    .patient-grid{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:12px;
-      margin-bottom:14px;
-    }
-
-    .mini-field{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px;
-      background:#fcfdff;
-    }
-
-    .mini-field-label{
-      font-size:0.75rem;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:0.05em;
-      margin-bottom:6px;
-      font-weight:700;
-    }
-
-    .mini-field-value{
-      font-size:1rem;
-      font-weight:700;
-      line-height:1.25;
-    }
-
-    .chief-complaint{
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px;
-      background:#fbfdff;
-    }
-
-    .chief-complaint p{
-      margin:6px 0 0;
-      color:var(--muted);
-      line-height:1.45;
-      font-size:0.95rem;
-    }
-
-    .decision-card{
-      padding:18px;
-      background:linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-    }
-
-    .decision-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:0.82rem;
-      font-weight:800;
-      margin-bottom:12px;
-    }
-
-    .decision-badge.medium{
-      background:var(--warning-soft);
-      color:var(--warning);
-    }
-
-    .decision-title{
-      margin:0 0 8px;
-      font-size:1.45rem;
-      line-height:1.15;
-      font-weight:800;
-    }
-
-    .decision-desc{
-      color:var(--muted);
-      font-size:0.94rem;
-      line-height:1.5;
-      margin-bottom:16px;
-    }
-
-    .decision-list{
-      display:grid;
-      gap:10px;
-    }
-
-    .decision-item{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      padding:10px 12px;
-      border-radius:12px;
-      background:#fff;
-      border:1px solid var(--line);
-      font-size:0.92rem;
-    }
-
-    .finance-card{
-      padding:18px;
-      background:linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-    }
-
-    .status-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:0.82rem;
-      font-weight:800;
-      margin-bottom:12px;
-    }
-
-    .status-pill.success{
-      background:var(--success-soft);
-      color:var(--success);
-    }
-
-    .status-pill.warning{
-      background:var(--warning-soft);
-      color:var(--warning);
-    }
-
-    .finance-rule{
-      display:grid;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .finance-row{
-      padding:10px 12px;
-      border-radius:12px;
-      background:#fff;
-      border:1px solid var(--line);
-    }
-
-    .finance-row strong{
-      display:block;
-      font-size:0.92rem;
-      margin-bottom:4px;
-    }
-
-    .finance-row span{
-      color:var(--muted);
-      font-size:0.9rem;
-      line-height:1.4;
-    }
-
-    /* TIMELINE */
-    .timeline-card{
-      padding:18px;
-      margin-bottom:18px;
-    }
-
-    .timeline-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:18px;
-      margin-bottom:16px;
-    }
-
-    .timeline{
-      display:grid;
-      grid-template-columns:repeat(7, minmax(0,1fr));
-      gap:12px;
-    }
-
-    .step{
-      position:relative;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px 12px;
-      min-height:110px;
-      background:#fff;
-    }
-
-    .step.active{
-      border-color:var(--primary-2);
-      box-shadow:0 0 0 3px rgba(45,125,210,0.10);
-      background:#f8fbff;
-    }
-
-    .step.done{
-      background:#f7fcf9;
-      border-color:#cfe9dc;
-    }
-
-    .step-num{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:28px;
-      height:28px;
-      border-radius:999px;
-      background:#eef4fb;
-      color:var(--primary);
-      font-size:0.82rem;
-      font-weight:800;
-      margin-bottom:10px;
-    }
-
-    .step.active .step-num{
-      background:var(--primary);
-      color:#fff;
-    }
-
-    .step.done .step-num{
-      background:var(--success);
-      color:#fff;
-    }
-
-    .step-title{
-      font-size:0.95rem;
-      font-weight:800;
-      margin-bottom:6px;
-      line-height:1.25;
-    }
-
-    .step-desc{
-      color:var(--muted);
-      font-size:0.84rem;
-      line-height:1.35;
-    }
-
-    /* CONTENT GRID */
-    .content-grid{
-      display:grid;
-      grid-template-columns:1.5fr 1fr;
-      gap:18px;
-      align-items:start;
-    }
-
-    .left-stack,
-    .right-stack{
-      display:grid;
-      gap:18px;
-    }
-
-    .screen-card,
-    .studies-card,
-    .log-card,
-    .metrics-card{
-      padding:18px;
-    }
-
-    .screen-toolbar{
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      margin-bottom:16px;
-    }
-
-    .tabs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .tab{
-      padding:10px 12px;
-      border-radius:12px;
-      background:#fff;
-      border:1px solid var(--line);
-      color:var(--text);
-      font-weight:700;
-      cursor:pointer;
-    }
-
-    .tab.active{
-      background:var(--primary);
-      color:#fff;
-      border-color:var(--primary);
-    }
-
-    .screen-body{
-      border:1px solid var(--line);
-      border-radius:18px;
-      background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-      padding:18px;
-      min-height:420px;
-    }
-
-    .screen-header{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      align-items:flex-start;
-      margin-bottom:16px;
-    }
-
-    .screen-title{
-      margin:0;
-      font-size:1.18rem;
-      font-weight:800;
-    }
-
-    .screen-caption{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:0.92rem;
-      line-height:1.45;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      background:#f7faff;
-      border:1px solid var(--line);
-      color:var(--primary);
-      font-size:0.8rem;
-      font-weight:800;
-      white-space:nowrap;
-    }
-
-    .form-grid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
-      gap:14px;
-      margin-bottom:14px;
-    }
-
-    .field{
-      display:grid;
-      gap:8px;
-    }
-
-    .field label{
-      font-size:0.85rem;
-      font-weight:700;
-      color:var(--text);
-    }
-
-    .field input,
-    .field select,
-    .field textarea{
-      width:100%;
-      border:1px solid var(--line-strong);
-      border-radius:12px;
-      background:#fff;
-      padding:12px 14px;
-      outline:none;
-      color:var(--text);
-    }
-
-    .field textarea{
-      min-height:90px;
-      resize:vertical;
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus{
-      border-color:var(--primary-2);
-      box-shadow:0 0 0 3px rgba(45,125,210,0.10);
-    }
-
-    .triage-row{
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0,1fr));
-      gap:12px;
-      margin-top:14px;
-    }
-
-    .triage-card{
-      border-radius:14px;
-      padding:14px;
-      border:1px solid var(--line);
-      background:#fff;
-    }
-
-    .triage-card h4{
-      margin:0 0 8px;
-      font-size:0.95rem;
-    }
-
-    .triage-card p{
-      margin:0;
-      color:var(--muted);
-      font-size:0.86rem;
-      line-height:1.4;
-    }
-
-    .triage-low{border-left:5px solid var(--success)}
-    .triage-mid{border-left:5px solid var(--warning)}
-    .triage-high{border-left:5px solid var(--danger)}
-
-    /* STUDIES */
-    .study-upload{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-bottom:14px;
-    }
-
-    .upload-box{
-      flex:1 1 220px;
-      border:1.5px dashed var(--line-strong);
-      border-radius:16px;
-      padding:14px;
-      background:#fcfdff;
-    }
-
-    .upload-box h4{
-      margin:0 0 8px;
-      font-size:0.95rem;
-    }
-
-    .upload-box p{
-      margin:0;
-      color:var(--muted);
-      font-size:0.85rem;
-      line-height:1.4;
-    }
-
-    .study-list{
-      display:grid;
-      gap:12px;
-    }
-
-    .study-item{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      padding:14px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#fff;
-    }
-
-    .study-item-title{
-      font-size:0.95rem;
-      font-weight:800;
-      margin-bottom:6px;
-    }
-
-    .study-item-meta{
-      color:var(--muted);
-      font-size:0.85rem;
-      line-height:1.4;
-    }
-
-    .study-view{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      align-self:center;
-    }
-
-    /* METRICS / SIDE */
-    .metrics-grid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
-      gap:12px;
-      margin-top:14px;
-    }
-
-    .mini-kpi{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px;
-      background:#fff;
-      min-height:100px;
-    }
-
-    .mini-kpi .label{
-      font-size:0.76rem;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:0.04em;
-      margin-bottom:8px;
-      font-weight:700;
-    }
-
-    .mini-kpi .value{
-      font-size:1.18rem;
-      font-weight:800;
-      margin-bottom:6px;
-    }
-
-    .mini-kpi .desc{
-      color:var(--muted);
-      font-size:0.84rem;
-      line-height:1.35;
-    }
-
-    .route-box{
-      margin-top:14px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      overflow:hidden;
-      background:#fff;
-    }
-
-    .route-head{
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      font-weight:800;
-      background:#fbfdff;
-    }
-
-    .route-flow{
-      display:grid;
-      gap:0;
-    }
-
-    .route-flow .route-node{
-      padding:14px;
-      border-top:1px solid var(--line);
-      font-size:0.92rem;
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-    }
-
-    .route-flow .route-node:first-child{
-      border-top:none;
-    }
-
-    .route-node strong{
-      display:block;
-      margin-bottom:4px;
-    }
-
-    .route-node span{
-      color:var(--muted);
-      font-size:0.86rem;
-      line-height:1.35;
-    }
-
-    /* LOG */
-    .log-list{
-      display:grid;
-      gap:10px;
-      margin-top:14px;
-      max-height:520px;
-      overflow:auto;
-      padding-right:4px;
-    }
-
-    .log-item{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px 14px;
-      background:#fff;
-    }
-
-    .log-time{
-      font-size:0.78rem;
-      color:var(--muted);
-      font-weight:700;
-      margin-bottom:6px;
-    }
-
-    .log-text{
-      font-size:0.92rem;
-      line-height:1.45;
-      color:var(--text);
-    }
-
-    /* FOOTER NOTE */
-    .footer-note{
-      margin-top:18px;
-      padding:16px 18px;
-      border-radius:16px;
-      background:#f8fbff;
-      border:1px solid var(--line);
-      color:var(--muted);
-      line-height:1.5;
-      font-size:0.9rem;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 1280px){
-      .kpi-grid{grid-template-columns:repeat(3, minmax(0,1fr))}
-      .summary-grid{grid-template-columns:1fr}
-      .content-grid{grid-template-columns:1fr}
-      .timeline{grid-template-columns:repeat(4, minmax(0,1fr))}
-    }
-
-    @media (max-width: 920px){
-      .topbar{
-        grid-template-columns:1fr;
-        align-items:flex-start;
-      }
-
-      .hero-actions{
-        justify-content:flex-start;
-      }
-
-      .patient-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
-      .form-grid{grid-template-columns:1fr}
-      .triage-row{grid-template-columns:1fr}
-      .timeline{grid-template-columns:repeat(2, minmax(0,1fr))}
-    }
-
-    @media (max-width: 640px){
-      .app{padding:14px}
-      .kpi-grid{grid-template-columns:1fr}
-      .patient-grid{grid-template-columns:1fr}
-      .metrics-grid{grid-template-columns:1fr}
-      .timeline{grid-template-columns:1fr}
-      .brand-logos{
-        flex-wrap:wrap;
-        min-width:auto;
-      }
-      .brand-divider{display:none}
-      .brand-logos img{
-        height:38px;
-        max-width:150px;
-      }
-    }
-  </style>
+  <title>Salud Digna + MoneyFlux Health</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
-
-    <!-- HEADER -->
+  <div class="app-shell">
     <header class="topbar">
-      <div class="brand-logos">
-        <img src="mfh.png" alt="MoneyFlux Health Platform" />
-        <div class="brand-divider"></div>
-        <img src="sd.png" alt="Salud Digna" />
-      </div>
-
-      <div class="hero-copy">
-        <div class="hero-eyebrow">Modelo operativo clínico + financiero</div>
-        <h1 class="hero-title">Modelo de Urgencias con Diagnóstico Previo</h1>
-        <p class="hero-desc">
-          Salud Digna recibe, clasifica y diagnostica. MoneyFlux coordina el flujo operativo y financiero.
-          El paciente puede resolverse de forma ambulatoria o escalarse a hospital con estudios y diagnóstico
-          ya visibles dentro del expediente.
-        </p>
-      </div>
-
-      <div class="hero-actions">
-        <button class="btn btn-success" id="btnAutoDemo">Iniciar flujo automático</button>
-        <button class="btn btn-secondary" id="btnPauseDemo">Pausar</button>
-        <button class="btn btn-danger" id="btnResetDemo">Reiniciar</button>
+      <div class="brand-row">
+        <div class="brand-logos">
+          <img src="sd.png" alt="Salud Digna" class="logo logo-sd" />
+          <img src="mfh.png" alt="MoneyFlux Health" class="logo logo-mfh" />
+        </div>
+        <div class="brand-copy">
+          <h1>Modelo de Urgencias con Diagnóstico Previo</h1>
+          <p>Flujo clínico y financiero coordinado entre Salud Digna, aseguradora y hospital.</p>
+        </div>
       </div>
     </header>
 
-    <!-- KPIs -->
-    <section class="kpi-grid">
-      <div class="card kpi">
-        <div class="kpi-label">Expediente</div>
-        <div class="kpi-value" id="kpiExpediente">MFH-URG-2026-00127</div>
-        <div class="kpi-note">Caso trazable para control operativo, auditoría y seguimiento mensual.</div>
-      </div>
+    <main class="main-layout">
+      <aside class="sidebar card">
+        <h3>Resumen del caso</h3>
 
-      <div class="card kpi">
-        <div class="kpi-label">Cobertura</div>
-        <div class="kpi-value" id="kpiCobertura">Con seguro</div>
-        <div class="kpi-note">La póliza define cobertura, deducible y la lógica financiera del caso.</div>
-      </div>
-
-      <div class="card kpi">
-        <div class="kpi-label">Ruta actual</div>
-        <div class="kpi-value" id="kpiRuta">Evaluación en clínica</div>
-        <div class="kpi-note">La ruta cambia según triage, estudios, diagnóstico y decisión médica.</div>
-      </div>
-
-      <div class="card kpi">
-        <div class="kpi-label">Triage</div>
-        <div class="kpi-value" id="kpiTriage">Medio</div>
-        <div class="kpi-note">Clasificación operativa visible para el equipo clínico y el seguimiento.</div>
-      </div>
-
-      <div class="card kpi">
-        <div class="kpi-label">Decisión</div>
-        <div class="kpi-value" id="kpiDecision">Traslado sugerido</div>
-        <div class="kpi-note">La decisión central del modelo: ambulatorio, traslado u hospital inmediato.</div>
-      </div>
-
-      <div class="card kpi">
-        <div class="kpi-label">Seguimiento</div>
-        <div class="kpi-value" id="kpiSeguimiento">Activo</div>
-        <div class="kpi-note">El caso permanece visible hasta cierre clínico y liquidación financiera.</div>
-      </div>
-    </section>
-
-    <!-- EXEC SUMMARY -->
-    <section class="summary-grid">
-      <div class="card summary-card">
-        <div class="patient-header">
-          <div>
-            <h2 class="patient-name" id="patientNameHeader">María Fernanda López</h2>
-            <p class="section-subtitle">
-              Resumen del caso visible en todo momento para que el flujo se entienda en segundos.
-            </p>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">Expediente</span>
+            <span class="summary-value" id="summary-expediente">—</span>
           </div>
-          <div class="patient-exp" id="patientExpBadge">Expediente: MFH-URG-2026-00127</div>
-        </div>
 
-        <div class="patient-grid">
-          <div class="mini-field">
-            <div class="mini-field-label">Edad</div>
-            <div class="mini-field-value" id="patientAgeHeader">38 años</div>
+          <div class="summary-item">
+            <span class="summary-label">Paciente</span>
+            <span class="summary-value" id="summary-nombre">—</span>
           </div>
-          <div class="mini-field">
-            <div class="mini-field-label">Sexo</div>
-            <div class="mini-field-value" id="patientSexHeader">Femenino</div>
+
+          <div class="summary-item">
+            <span class="summary-label">Edad</span>
+            <span class="summary-value" id="summary-edad">—</span>
           </div>
-          <div class="mini-field">
-            <div class="mini-field-label">Severidad</div>
-            <div class="mini-field-value" id="patientSeverityHeader">Media</div>
+
+          <div class="summary-item">
+            <span class="summary-label">Sexo</span>
+            <span class="summary-value" id="summary-sexo">—</span>
           </div>
-          <div class="mini-field">
-            <div class="mini-field-label">Estado actual</div>
-            <div class="mini-field-value" id="patientStatusHeader">En valoración clínica</div>
+
+          <div class="summary-item">
+            <span class="summary-label">Síntomas</span>
+            <span class="summary-value" id="summary-sintomas">—</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Triage</span>
+            <span class="summary-value" id="summary-triage">—</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Diagnóstico</span>
+            <span class="summary-value" id="summary-diagnostico">—</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Seguro</span>
+            <span class="summary-value" id="summary-seguro">—</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Destino</span>
+            <span class="summary-value" id="summary-destino">—</span>
           </div>
         </div>
 
-        <div class="chief-complaint">
-          <div class="mini-field-label">Motivo de consulta</div>
-          <div class="mini-field-value" id="chiefComplaintTitle">Dolor torácico y dificultad respiratoria leve</div>
-          <p id="chiefComplaintText">
-            La paciente ingresa a Salud Digna con síntomas que requieren triage, estudios iniciales y decisión
-            clínica para definir si continúa ambulatoriamente o debe trasladarse al hospital.
-          </p>
-        </div>
-      </div>
+        <hr />
 
-      <div class="card decision-card">
-        <div class="decision-badge medium" id="decisionBadge">Decisión clínica actual</div>
-        <h2 class="decision-title" id="decisionTitle">Traslado a hospital con diagnóstico previo</h2>
-        <div class="decision-desc" id="decisionDescription">
-          Se sugiere traslado una vez concluidos estudios y valoración clínica. El expediente viaja con resultados,
-          diagnóstico preliminar y evidencia visible para el hospital receptor.
-        </div>
-
-        <div class="decision-list">
-          <div class="decision-item">
-            <span>Diagnóstico preliminar</span>
-            <strong id="diagnosticoActual">Riesgo cardiovascular intermedio</strong>
+        <h3>KPIs</h3>
+        <div class="kpi-list">
+          <div class="kpi">
+            <span class="kpi-label">Casos atendidos</span>
+            <strong id="kpi-casos">0</strong>
           </div>
-          <div class="decision-item">
-            <span>Siguiente acción</span>
-            <strong id="siguienteAccion">Validar traslado y hospital receptor</strong>
+          <div class="kpi">
+            <span class="kpi-label">Ambulatorios</span>
+            <strong id="kpi-ambulatorios">0</strong>
           </div>
-          <div class="decision-item">
-            <span>Tipo de resolución</span>
-            <strong id="tipoResolucion">Hospitalaria</strong>
+          <div class="kpi">
+            <span class="kpi-label">Hospitalizados</span>
+            <strong id="kpi-hospitalarios">0</strong>
+          </div>
+          <div class="kpi">
+            <span class="kpi-label">% deducible aplicado</span>
+            <strong id="kpi-deducible">0%</strong>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <div class="card finance-card">
-        <div class="status-pill success" id="financeCoveragePill">Cobertura confirmada</div>
-        <h2 class="section-title">Reglas financieras del caso</h2>
-        <p class="section-subtitle">
-          El flujo financiero depende de si el paciente tiene seguro y de si el caso termina como ambulatorio
-          o hospitalario.
-        </p>
-
-        <div class="finance-rule">
-          <div class="finance-row">
-            <strong id="financeSeguro">Paciente con seguro</strong>
-            <span>La póliza permite activar el flujo de cobertura y validación del deducible.</span>
-          </div>
-
-          <div class="finance-row">
-            <strong id="financeAmbulatorio">Si es ambulatorio</strong>
-            <span>El paciente paga un porcentaje del deducible conforme a la póliza.</span>
-          </div>
-
-          <div class="finance-row">
-            <strong id="financeHospitalario">Si se traslada a hospital</strong>
-            <span>El deducible se liquida en hospital y el expediente llega con estudios y diagnóstico.</span>
-          </div>
-
-          <div class="finance-row">
-            <strong id="financeSinSeguro">Si no tiene seguro</strong>
-            <span>La plataforma puede marcar el caso para pago directo o ruta alternativa.</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TIMELINE -->
-    <section class="card timeline-card">
-      <div class="timeline-head">
-        <div>
-          <h2 class="section-title">Flujo narrativo del caso</h2>
-          <p class="section-subtitle">
-            El modelo debe mostrar claramente cómo entra el paciente, qué decide Salud Digna y cómo
-            se coordina el traslado o la resolución ambulatoria.
-          </p>
-        </div>
-        <div class="chip" id="currentStepChip">Paso actual: Admisión</div>
-      </div>
-
-      <div class="timeline" id="timeline">
-        <div class="step active" data-step="1">
-          <div class="step-num">1</div>
-          <div class="step-title">Ingreso</div>
-          <div class="step-desc">Paciente entra por Salud Digna y se crea expediente.</div>
+      <section class="content">
+        <div class="timeline card">
+          <div class="timeline-step active" id="step-1">1. Registro</div>
+          <div class="timeline-step" id="step-2">2. Triage</div>
+          <div class="timeline-step" id="step-3">3. Estudios</div>
+          <div class="timeline-step" id="step-4">4. Diagnóstico</div>
+          <div class="timeline-step" id="step-5">5. Decisión</div>
+          <div class="timeline-step" id="step-6">6. Liquidación</div>
         </div>
 
-        <div class="step" data-step="2">
-          <div class="step-num">2</div>
-          <div class="step-title">Triage</div>
-          <div class="step-desc">Se define gravedad: baja, media o alta.</div>
-        </div>
-
-        <div class="step" data-step="3">
-          <div class="step-num">3</div>
-          <div class="step-title">Estudios</div>
-          <div class="step-desc">Se realizan RX, laboratorio y carga documental.</div>
-        </div>
-
-        <div class="step" data-step="4">
-          <div class="step-num">4</div>
-          <div class="step-title">Diagnóstico</div>
-          <div class="step-desc">Salud Digna emite diagnóstico preliminar.</div>
-        </div>
-
-        <div class="step" data-step="5">
-          <div class="step-num">5</div>
-          <div class="step-title">Cobertura</div>
-          <div class="step-desc">Se valida póliza, deducible y ruta financiera.</div>
-        </div>
-
-        <div class="step" data-step="6">
-          <div class="step-num">6</div>
-          <div class="step-title">Traslado / Alta</div>
-          <div class="step-desc">Paciente se resuelve ambulatoriamente o va a hospital.</div>
-        </div>
-
-        <div class="step" data-step="7">
-          <div class="step-num">7</div>
-          <div class="step-title">Cierre</div>
-          <div class="step-desc">Seguimiento, cierre clínico y liquidación financiera.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTENT -->
-    <section class="content-grid">
-      <div class="left-stack">
-
-        <!-- SCREEN -->
-        <div class="card screen-card">
-          <div class="screen-toolbar">
-            <div>
-              <h2 class="section-title">Pantalla operativa del caso</h2>
-              <p class="section-subtitle">
-                Este bloque debe ser el centro visual del demo. Aquí vive el caso clínico real.
-              </p>
-            </div>
-
-            <div class="tabs">
-              <button class="tab active" data-tab="admision">Admisión</button>
-              <button class="tab" data-tab="triage">Triage</button>
-              <button class="tab" data-tab="diagnostico">Diagnóstico</button>
-              <button class="tab" data-tab="traslado">Traslado</button>
-              <button class="tab" data-tab="cierre">Cierre</button>
-            </div>
-          </div>
-
-          <div class="screen-body" id="mainScreen">
-            <div class="card" style="margin-top:16px; padding:16px; border-radius:16px; border:1px solid var(--line); background:#fcfdff;">
-  <h3 class="section-title" style="margin-bottom:12px;">Panel interactivo médico</h3>
-  <p class="section-subtitle" style="margin-bottom:16px;">
-    Este panel permite controlar manualmente el caso sin depender solo del flujo automático.
-  </p>
-
-  <div class="form-grid">
-    <div class="field">
-      <label for="interactiveTriage">Triage</label>
-      <select id="interactiveTriage">
-        <option value="Bajo">Bajo</option>
-        <option value="Medio" selected>Medio</option>
-        <option value="Alto">Alto</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="interactiveDecision">Decisión clínica</label>
-      <select id="interactiveDecision">
-        <option value="Ambulatorio">Ambulatorio</option>
-        <option value="Traslado sugerido" selected>Traslado sugerido</option>
-        <option value="Hospital inmediato">Hospital inmediato</option>
-        <option value="Traslado confirmado">Traslado confirmado</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="interactiveTransport">Tipo de traslado</label>
-      <select id="interactiveTransport">
-        <option value="Coordinado" selected>Coordinado</option>
-        <option value="Propios medios">Propios medios</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="interactiveResolution">Resolución final</label>
-      <select id="interactiveResolution">
-        <option value="Por definir" selected>Por definir</option>
-        <option value="Ambulatoria">Ambulatoria</option>
-        <option value="Hospitalaria">Hospitalaria</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="interactiveStep">Mover flujo narrativo</label>
-      <select id="interactiveStep">
-        <option value="1">1. Ingreso</option>
-        <option value="2">2. Triage</option>
-        <option value="3">3. Estudios</option>
-        <option value="4">4. Diagnóstico</option>
-        <option value="5">5. Cobertura</option>
-        <option value="6">6. Traslado / Alta</option>
-        <option value="7">7. Cierre</option>
-      </select>
-    </div>
-
-    <div class="field" style="display:flex; align-items:flex-end;">
-      <button class="btn btn-primary" id="btnApplyInteractive" type="button" style="width:100%;">
-        Aplicar cambios manuales
-      </button>
-    </div>
-  </div>
-</div>
+        <!-- PANTALLA 1 -->
+        <section class="screen active" id="screen-registro">
+          <div class="card">
             <div class="screen-header">
-              <div>
-                <h3 class="screen-title">Admisión del paciente</h3>
-                <p class="screen-caption">
-                  Captura de información inicial del caso dentro de Salud Digna.
-                </p>
-              </div>
-              <div class="chip">Salud Digna decide clínicamente</div>
+              <h2>Registro del paciente</h2>
+              <p>Todo paciente entra por Salud Digna.</p>
             </div>
 
             <div class="form-grid">
               <div class="field">
-                <label for="patientName">Nombre del paciente</label>
-                <input id="patientName" type="text" value="María Fernanda López" />
+                <label for="expediente">No. de expediente</label>
+                <input type="text" id="expediente" placeholder="Ej. SD-URG-0001" />
               </div>
 
               <div class="field">
-                <label for="patientAge">Edad</label>
-                <input id="patientAge" type="number" value="38" />
+                <label for="nombre">Nombre del paciente</label>
+                <input type="text" id="nombre" placeholder="Nombre completo" />
               </div>
 
               <div class="field">
-                <label for="patientSex">Sexo</label>
-                <select id="patientSex">
-                  <option selected>Femenino</option>
-                  <option>Masculino</option>
-                  <option>Otro</option>
+                <label for="edad">Edad</label>
+                <input type="number" id="edad" min="0" max="120" placeholder="Edad" />
+              </div>
+
+              <div class="field">
+                <label for="sexo">Sexo</label>
+                <select id="sexo">
+                  <option value="">Seleccionar</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+
+              <div class="field field-full">
+                <label for="sintomas">Motivo de consulta / síntomas</label>
+                <textarea id="sintomas" rows="4" placeholder="Describa síntomas principales"></textarea>
+              </div>
+
+              <div class="field">
+                <label for="seguro">¿Cuenta con seguro?</label>
+                <select id="seguro">
+                  <option value="">Seleccionar</option>
+                  <option value="Sí">Sí</option>
+                  <option value="No">No</option>
                 </select>
               </div>
 
               <div class="field">
-                <label for="patientInsurance">¿Cuenta con seguro?</label>
-                <select id="patientInsurance">
-                  <option selected>Sí</option>
-                  <option>No</option>
-                </select>
-              </div>
-
-              <div class="field" style="grid-column:1 / -1;">
-                <label for="patientReason">Motivo de atención</label>
-                <textarea id="patientReason">Dolor torácico, opresión en pecho y dificultad respiratoria leve de inicio reciente.</textarea>
+                <label for="poliza">Póliza / referencia</label>
+                <input type="text" id="poliza" placeholder="Número de póliza o referencia" />
               </div>
             </div>
 
-            <div class="triage-row">
-              <div class="triage-card triage-low">
-                <h4>Bajo</h4>
-                <p>Paciente estable. Puede resolverse de forma ambulatoria con seguimiento.</p>
-              </div>
-
-              <div class="triage-card triage-mid">
-                <h4>Medio</h4>
-                <p>Requiere estudios, observación y evaluación clínica para definir ruta.</p>
-              </div>
-
-              <div class="triage-card triage-high">
-                <h4>Alto</h4>
-                <p>Necesita hospital inmediato o traslado urgente por riesgo clínico elevado.</p>
-              </div>
+            <div class="actions">
+              <button type="button" class="btn btn-primary" id="go-to-triage-btn">Continuar a triage</button>
+              <button type="button" class="btn btn-secondary" id="reset-demo-btn">Reiniciar demo</button>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- STUDIES -->
-        <div class="card studies-card">
-          <h2 class="section-title">Estudios y diagnóstico visibles para traslado</h2>
-          <p class="section-subtitle">
-            El hospital debe poder recibir al paciente con resultados cargados en la plataforma.
-          </p>
-
-          <div class="study-upload">
-            <div class="upload-box">
-              <h4>Subir RX</h4>
-              <p>Espacio preparado para adjuntar imagen o reporte radiológico del caso.</p>
-            </div>
-            <div class="upload-box">
-              <h4>Subir laboratorio</h4>
-              <p>Espacio preparado para biometría, química sanguínea y otros resultados.</p>
-            </div>
-            <div class="upload-box">
-              <h4>Subir diagnóstico / nota médica</h4>
-              <p>Resumen clínico visible para el hospital receptor y para el seguimiento.</p>
-            </div>
-          </div>
-
-          <div class="study-list">
-            <div class="study-item">
-              <div>
-                <div class="study-item-title">RX Tórax AP</div>
-                <div class="study-item-meta">Cargado al expediente · Visible para hospital receptor · Estado: disponible</div>
-              </div>
-              <div class="study-view">
-                <button class="btn btn-secondary" id="btnViewRX">Ver estudio</button>
-              </div>
+        <!-- PANTALLA 2 -->
+        <section class="screen" id="screen-triage">
+          <div class="card">
+            <div class="screen-header">
+              <h2>Triage y Clasificación</h2>
+              <p>En esta pantalla el médico u operador debe seleccionar manualmente el triage. Esta selección cambia todo el flujo.</p>
             </div>
 
-            <div class="study-item">
-              <div>
-                <div class="study-item-title">Laboratorio inicial</div>
-                <div class="study-item-meta">Troponina, BH y química básica · Estado: preliminar</div>
-              </div>
-              <div class="study-view">
-                <button class="btn btn-secondary" id="btnViewLab">Ver resultados</button>
-              </div>
-            </div>
-
-            <div class="study-item">
-              <div>
-                <div class="study-item-title">Diagnóstico preliminar</div>
-                <div class="study-item-meta">Riesgo cardiovascular intermedio · Requiere correlación hospitalaria</div>
-              </div>
-              <div class="study-view">
-                <button class="btn btn-secondary" id="btnViewDx">Ver nota clínica</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="right-stack">
-
-        <!-- METRICS -->
-        <div class="card metrics-card">
-          <h2 class="section-title">Dashboard ejecutivo del caso</h2>
-          <p class="section-subtitle">
-            Solo los indicadores que ayudan a entender el modelo y a tomar decisiones.
-          </p>
-
-          <div class="metrics-grid">
-            <div class="mini-kpi">
-              <div class="label">% deducible</div>
-              <div class="value" id="miniDeducible">20%</div>
-              <div class="desc">Aplica en resolución ambulatoria según póliza.</div>
-            </div>
-
-            <div class="mini-kpi">
-              <div class="label">Ruta final estimada</div>
-              <div class="value" id="miniRutaFinal">Hospital</div>
-              <div class="desc">Se actualiza conforme cambie la decisión clínica.</div>
-            </div>
-
-            <div class="mini-kpi">
-              <div class="label">Tiempo en clínica</div>
-              <div class="value" id="miniTiempoClinica">32 min</div>
-              <div class="desc">Valor demostrativo para visualizar eficiencia operativa.</div>
-            </div>
-
-            <div class="mini-kpi">
-              <div class="label">Casos del mes</div>
-              <div class="value" id="miniCasosMes">148</div>
-              <div class="desc">Muestra que el modelo puede escalarse y medirse.</div>
-            </div>
-          </div>
-
-          <div class="route-box">
-            <div class="route-head">Ruta del paciente</div>
-            <div class="route-flow">
-              <div class="route-node">
-                <div>
-                  <strong>Ingreso en Salud Digna</strong>
-                  <span>Recepción, expediente, triage y estudios iniciales.</span>
+            <div class="triage-panel">
+              <div class="triage-intro">
+                <div class="badge-row">
+                  <span class="badge">Selección manual obligatoria</span>
+                  <span class="badge" id="triage-sugerido-badge">Sugerido por sistema: —</span>
                 </div>
-                <div>OK</div>
+
+                <div class="selected-box">
+                  <span class="selected-label">Triage seleccionado</span>
+                  <strong id="selected-triage-label">Ninguno</strong>
+                </div>
               </div>
 
-              <div class="route-node">
-                <div>
-                  <strong>Diagnóstico preliminar</strong>
-                  <span>Salud Digna clasifica y decide el siguiente paso.</span>
-                </div>
-                <div>Activo</div>
+              <div class="triage-options">
+                <button type="button" class="triage-btn triage-bajo" data-triage="bajo">
+                  <span class="triage-title">Bajo</span>
+                  <span class="triage-desc">Paciente estable, resolución ambulatoria en Salud Digna.</span>
+                </button>
+
+                <button type="button" class="triage-btn triage-medio" data-triage="medio">
+                  <span class="triage-title">Medio</span>
+                  <span class="triage-desc">Requiere estudios y diagnóstico antes de definir traslado.</span>
+                </button>
+
+                <button type="button" class="triage-btn triage-alto" data-triage="alto">
+                  <span class="triage-title">Alto</span>
+                  <span class="triage-desc">Urgencia mayor, traslado inmediato a hospital.</span>
+                </button>
               </div>
 
-              <div class="route-node">
-                <div>
-                  <strong>Traslado o resolución ambulatoria</strong>
-                  <span>Paciente puede ir al hospital indicado o trasladarse por sus propios medios.</span>
+              <div class="triage-definitions">
+                <div class="definition-card">
+                  <h4>Define triage bajo</h4>
+                  <p>Paciente estable, sin riesgo inmediato, con posibilidad de manejo ambulatorio.</p>
                 </div>
-                <div>Pendiente</div>
-              </div>
 
-              <div class="route-node">
-                <div>
-                  <strong>Liquidación financiera</strong>
-                  <span>Con seguro o sin seguro, según deducible y tipo de atención.</span>
+                <div class="definition-card">
+                  <h4>Define triage medio</h4>
+                  <p>Paciente que necesita estudios, observación o validación diagnóstica antes de la decisión final.</p>
                 </div>
-                <div>Pendiente</div>
+
+                <div class="definition-card">
+                  <h4>Define triage alto</h4>
+                  <p>Paciente con riesgo alto o urgencia real. Debe ir a hospital de forma inmediata.</p>
+                </div>
               </div>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn btn-secondary" id="back-to-registro-btn">Regresar</button>
+              <button type="button" class="btn btn-primary" id="confirm-triage-btn">Confirmar triage</button>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- LOG -->
-        <div class="card log-card">
-          <h2 class="section-title">Bitácora del caso</h2>
-          <p class="section-subtitle">
-            Registro cronológico para que la demo se sienta como plataforma real.
-          </p>
-
-          <div class="log-list" id="caseLog">
-            <div class="log-item">
-              <div class="log-time">08:14</div>
-              <div class="log-text">Se crea expediente MFH-URG-2026-00127 al ingreso del paciente en Salud Digna.</div>
+        <!-- PANTALLA 3 -->
+        <section class="screen" id="screen-estudios">
+          <div class="card">
+            <div class="screen-header">
+              <h2>Estudios y Documentación</h2>
+              <p>Los estudios deben poder subirse a la plataforma para que el hospital los vea en caso de traslado.</p>
             </div>
 
-            <div class="log-item">
-              <div class="log-time">08:18</div>
-              <div class="log-text">Se inicia triage y el caso se clasifica inicialmente como severidad media.</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>
+                  <input type="checkbox" id="estudio-rx" />
+                  Rayos X
+                </label>
+              </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" id="estudio-lab" />
+                  Laboratorio
+                </label>
+              </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" id="estudio-usg" />
+                  Ultrasonido
+                </label>
+              </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" id="estudio-otro" />
+                  Otro estudio
+                </label>
+              </div>
+
+              <div class="field field-full">
+                <label for="upload-estudios">Subir estudios / diagnóstico previo</label>
+                <input type="file" id="upload-estudios" multiple />
+              </div>
+
+              <div class="field field-full">
+                <label for="notas-estudios">Notas clínicas / hallazgos</label>
+                <textarea id="notas-estudios" rows="4" placeholder="Resumen de hallazgos clínicos y estudios"></textarea>
+              </div>
             </div>
 
-            <div class="log-item">
-              <div class="log-time">08:24</div>
-              <div class="log-text">Se solicitan RX y laboratorio para soporte diagnóstico previo a decisión clínica.</div>
+            <div class="upload-preview card-soft">
+              <h4>Documentos visibles para traslado</h4>
+              <p id="uploaded-files-list">Aún no hay archivos cargados.</p>
             </div>
 
-            <div class="log-item">
-              <div class="log-time">08:31</div>
-              <div class="log-text">Se valida que el paciente cuenta con seguro y se revisa regla de deducible.</div>
-            </div>
-
-            <div class="log-item">
-              <div class="log-time">08:36</div>
-              <div class="log-text">El sistema deja listo el expediente para resolución ambulatoria o traslado hospitalario.</div>
+            <div class="actions">
+              <button type="button" class="btn btn-secondary" id="back-to-triage-btn">Regresar</button>
+              <button type="button" class="btn btn-primary" id="go-to-diagnostico-btn">Continuar a diagnóstico</button>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <div class="footer-note">
-      <strong>Nota de diseño del demo:</strong> este layout ya integra las 10 mejoras prioritarias:
-      header más profesional, resumen del paciente siempre visible, bloque dominante de decisión clínica,
-      timeline narrativo, módulo financiero explícito, carga de estudios, dashboard simplificado,
-      expediente trazable, bitácora operativa y estructura apta para modo presentación.
-    </div>
+        <!-- PANTALLA 4 -->
+        <section class="screen" id="screen-diagnostico">
+          <div class="card">
+            <div class="screen-header">
+              <h2>Diagnóstico clínico</h2>
+              <p>Definición médica posterior a valoración y estudios.</p>
+            </div>
+
+            <div class="form-grid">
+              <div class="field field-full">
+                <label for="diagnostico-clinico">Diagnóstico</label>
+                <textarea id="diagnostico-clinico" rows="5" placeholder="Escriba el diagnóstico clínico"></textarea>
+              </div>
+
+              <div class="field field-full">
+                <label for="comentarios-medicos">Comentarios médicos</label>
+                <textarea id="comentarios-medicos" rows="4" placeholder="Observaciones adicionales"></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn btn-secondary" id="back-to-estudios-btn">Regresar</button>
+              <button type="button" class="btn btn-primary" id="go-to-decision-btn">Continuar a decisión</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 5 -->
+        <section class="screen" id="screen-decision">
+          <div class="card">
+            <div class="screen-header">
+              <h2>Decisión clínica y destino</h2>
+              <p>La decisión depende directamente del triage seleccionado y del diagnóstico.</p>
+            </div>
+
+            <div class="decision-grid">
+              <div class="decision-card">
+                <span class="decision-label">Triage confirmado</span>
+                <strong id="decision-triage">—</strong>
+              </div>
+
+              <div class="decision-card">
+                <span class="decision-label">Destino</span>
+                <strong id="decision-destino">—</strong>
+              </div>
+
+              <div class="decision-card">
+                <span class="decision-label">Decisión final</span>
+                <strong id="decision-final">—</strong>
+              </div>
+
+              <div class="decision-card">
+                <span class="decision-label">Traslado</span>
+                <strong id="decision-traslado">—</strong>
+              </div>
+            </div>
+
+            <div class="card-soft">
+              <h4>Regla de traslado</h4>
+              <p>
+                En caso de traslado, el paciente puede ser trasladado por la red coordinada o por sus propios medios
+                al hospital indicado y cubierto por su póliza, ya con los estudios y diagnóstico disponibles en plataforma.
+              </p>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn btn-secondary" id="back-to-diagnostico-btn">Regresar</button>
+              <button type="button" class="btn btn-primary" id="go-to-liquidacion-btn">Continuar a liquidación</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 6 -->
+        <section class="screen" id="screen-liquidacion">
+          <div class="card">
+            <div class="screen-header">
+              <h2>Liquidación financiera</h2>
+              <p>Se muestra si cuenta o no con seguro, y cómo aplica el deducible según el tipo de atención.</p>
+            </div>
+
+            <div class="financial-grid">
+              <div class="financial-card">
+                <span class="financial-label">Cuenta con seguro</span>
+                <strong id="liquidacion-seguro">—</strong>
+              </div>
+
+              <div class="financial-card">
+                <span class="financial-label">Tipo de atención</span>
+                <strong id="liquidacion-tipo">—</strong>
+              </div>
+
+              <div class="financial-card">
+                <span class="financial-label">% deducible</span>
+                <strong id="liquidacion-deducible">—</strong>
+              </div>
+
+              <div class="financial-card">
+                <span class="financial-label">Cobro</span>
+                <strong id="liquidacion-cobro">—</strong>
+              </div>
+            </div>
+
+            <div class="card-soft">
+              <h4>Regla financiera</h4>
+              <p>
+                Si es ambulatorio, se paga un porcentaje del deducible. Si requiere hospital, el deducible se paga en el hospital.
+              </p>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn btn-secondary" id="back-to-decision-btn">Regresar</button>
+              <button type="button" class="btn btn-primary" id="finish-case-btn">Finalizar caso</button>
+              <button type="button" class="btn btn-secondary" id="restart-case-btn">Reiniciar demo</button>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
   </div>
 
-  <script>
-    /*
-      Este script es mínimo y solo ayuda a que el HTML no se vea "muerto"
-      mientras ajustas tu app.js final.
-
-      Si ya tienes lógica en app.js, puedes:
-      1) dejar este bloque y complementar,
-      2) o borrarlo y conectar tus propios handlers.
-    */
-
-    const btnAutoDemo = document.getElementById('btnAutoDemo');
-    const btnPauseDemo = document.getElementById('btnPauseDemo');
-    const btnResetDemo = document.getElementById('btnResetDemo');
-
-    const patientName = document.getElementById('patientName');
-    const patientAge = document.getElementById('patientAge');
-    const patientSex = document.getElementById('patientSex');
-    const patientInsurance = document.getElementById('patientInsurance');
-    const patientReason = document.getElementById('patientReason');
-
-    const patientNameHeader = document.getElementById('patientNameHeader');
-    const patientAgeHeader = document.getElementById('patientAgeHeader');
-    const patientSexHeader = document.getElementById('patientSexHeader');
-    const chiefComplaintTitle = document.getElementById('chiefComplaintTitle');
-
-    const tabs = document.querySelectorAll('.tab');
-    const steps = document.querySelectorAll('.step');
-    const currentStepChip = document.getElementById('currentStepChip');
-    const mainScreen = document.getElementById('mainScreen');
-
-    let currentStep = 1;
-    let interval = null;
-
-    function syncPatientHeader() {
-      patientNameHeader.textContent = patientName.value || 'Paciente sin nombre';
-      patientAgeHeader.textContent = patientAge.value ? `${patientAge.value} años` : '—';
-      patientSexHeader.textContent = patientSex.value || '—';
-      chiefComplaintTitle.textContent = patientReason.value || 'Sin motivo de consulta';
-      document.getElementById('kpiCobertura').textContent =
-        patientInsurance.value === 'Sí' ? 'Con seguro' : 'Sin seguro';
-
-      const financeCoveragePill = document.getElementById('financeCoveragePill');
-      const financeSeguro = document.getElementById('financeSeguro');
-
-      if (patientInsurance.value === 'Sí') {
-        financeCoveragePill.textContent = 'Cobertura confirmada';
-        financeCoveragePill.className = 'status-pill success';
-        financeSeguro.textContent = 'Paciente con seguro';
-      } else {
-        financeCoveragePill.textContent = 'Paciente sin seguro';
-        financeCoveragePill.className = 'status-pill warning';
-        financeSeguro.textContent = 'Paciente sin seguro';
-      }
-    }
-
-    function renderStep(step) {
-      currentStep = step;
-
-      steps.forEach((el, idx) => {
-        el.classList.remove('active', 'done');
-        const s = idx + 1;
-        if (s < step) el.classList.add('done');
-        if (s === step) el.classList.add('active');
-      });
-
-      const labels = {
-        1: 'Admisión',
-        2: 'Triage',
-        3: 'Estudios',
-        4: 'Diagnóstico',
-        5: 'Cobertura',
-        6: 'Traslado / Alta',
-        7: 'Cierre'
-      };
-
-      currentStepChip.textContent = `Paso actual: ${labels[step]}`;
-
-      if (step === 1) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Admisión del paciente</h3>
-              <p class="screen-caption">Captura de información inicial del caso dentro de Salud Digna.</p>
-            </div>
-            <div class="chip">Salud Digna decide clínicamente</div>
-          </div>
-
-          <div class="form-grid">
-            <div class="field">
-              <label>Nombre del paciente</label>
-              <input type="text" value="${patientName.value}">
-            </div>
-            <div class="field">
-              <label>Edad</label>
-              <input type="text" value="${patientAge.value}">
-            </div>
-            <div class="field">
-              <label>Sexo</label>
-              <input type="text" value="${patientSex.value}">
-            </div>
-            <div class="field">
-              <label>¿Cuenta con seguro?</label>
-              <input type="text" value="${patientInsurance.value}">
-            </div>
-            <div class="field" style="grid-column:1 / -1;">
-              <label>Motivo de atención</label>
-              <textarea>${patientReason.value}</textarea>
-            </div>
-          </div>
-        `;
-        document.getElementById('kpiRuta').textContent = 'Evaluación en clínica';
-        document.getElementById('patientStatusHeader').textContent = 'En admisión';
-      }
-
-      if (step === 2) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Triage y clasificación</h3>
-              <p class="screen-caption">Se determina si el caso es de severidad baja, media o alta.</p>
-            </div>
-            <div class="chip">Clasificación operativa visible</div>
-          </div>
-
-          <div class="triage-row">
-            <div class="triage-card triage-low">
-              <h4>Bajo</h4>
-              <p>Caso estable con probabilidad de resolución ambulatoria.</p>
-            </div>
-            <div class="triage-card triage-mid">
-              <h4>Medio</h4>
-              <p>Requiere estudios y observación para definir traslado o manejo local.</p>
-            </div>
-            <div class="triage-card triage-high">
-              <h4>Alto</h4>
-              <p>Escalamiento hospitalario inmediato por riesgo clínico elevado.</p>
-            </div>
-          </div>
-        `;
-        document.getElementById('kpiTriage').textContent = 'Medio';
-        document.getElementById('patientSeverityHeader').textContent = 'Media';
-        document.getElementById('patientStatusHeader').textContent = 'En triage';
-      }
-
-      if (step === 3) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Estudios realizados</h3>
-              <p class="screen-caption">Se generan estudios y quedan visibles en el expediente para eventual traslado.</p>
-            </div>
-            <div class="chip">Expediente con evidencia clínica</div>
-          </div>
-
-          <div class="study-list">
-            <div class="study-item">
-              <div>
-                <div class="study-item-title">RX Tórax AP</div>
-                <div class="study-item-meta">Cargado al expediente · Estado: disponible</div>
-              </div>
-              <div class="study-view"><button class="btn btn-secondary">Ver</button></div>
-            </div>
-            <div class="study-item">
-              <div>
-                <div class="study-item-title">Laboratorio inicial</div>
-                <div class="study-item-meta">Estado: preliminar · Biomarcadores en revisión</div>
-              </div>
-              <div class="study-view"><button class="btn btn-secondary">Ver</button></div>
-            </div>
-          </div>
-        `;
-        document.getElementById('kpiRuta').textContent = 'Estudios en proceso';
-        document.getElementById('patientStatusHeader').textContent = 'En estudios';
-      }
-
-      if (step === 4) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Diagnóstico preliminar</h3>
-              <p class="screen-caption">Salud Digna define el siguiente paso clínico con soporte diagnóstico previo.</p>
-            </div>
-            <div class="chip">Diagnóstico previo listo</div>
-          </div>
-
-          <div class="chief-complaint">
-            <div class="mini-field-label">Resultado clínico</div>
-            <div class="mini-field-value">Riesgo cardiovascular intermedio</div>
-            <p>
-              La paciente requiere continuidad diagnóstica hospitalaria. El expediente ya contiene estudios
-              y nota clínica para recepción más eficiente.
-            </p>
-          </div>
-        `;
-        document.getElementById('kpiDecision').textContent = 'Traslado sugerido';
-        document.getElementById('decisionTitle').textContent = 'Traslado a hospital con diagnóstico previo';
-        document.getElementById('decisionDescription').textContent =
-          'El caso requiere escalamiento con expediente clínico ya integrado, reduciendo fricción operativa en la recepción hospitalaria.';
-        document.getElementById('patientStatusHeader').textContent = 'Diagnóstico emitido';
-      }
-
-      if (step === 5) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Validación de cobertura</h3>
-              <p class="screen-caption">Se revisa póliza, deducible y regla financiera aplicable al caso.</p>
-            </div>
-            <div class="chip">Cobertura y deducible</div>
-          </div>
-
-          <div class="finance-rule">
-            <div class="finance-row">
-              <strong>${patientInsurance.value === 'Sí' ? 'Cobertura activa' : 'Sin cobertura'}</strong>
-              <span>${patientInsurance.value === 'Sí'
-                ? 'La póliza permite continuar el flujo con deducible y referencia hospitalaria.'
-                : 'El sistema debe mostrar ruta sin seguro y condiciones de pago directo.'}</span>
-            </div>
-            <div class="finance-row">
-              <strong>Regla ambulatoria</strong>
-              <span>Se paga un porcentaje del deducible si el caso no escala a hospital.</span>
-            </div>
-            <div class="finance-row">
-              <strong>Regla hospitalaria</strong>
-              <span>El deducible se liquida en hospital si el caso se traslada.</span>
-            </div>
-          </div>
-        `;
-        document.getElementById('kpiRuta').textContent = 'Validación financiera';
-        document.getElementById('patientStatusHeader').textContent = 'Cobertura en revisión';
-      }
-
-      if (step === 6) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Traslado del paciente</h3>
-              <p class="screen-caption">El paciente puede trasladarse en ambulancia o por sus propios medios al hospital indicado.</p>
-            </div>
-            <div class="chip">Expediente visible para hospital</div>
-          </div>
-
-          <div class="route-box">
-            <div class="route-head">Opciones de traslado</div>
-            <div class="route-flow">
-              <div class="route-node">
-                <div>
-                  <strong>Traslado coordinado</strong>
-                  <span>Activación operativa con hospital receptor y expediente compartido.</span>
-                </div>
-                <div>Disponible</div>
-              </div>
-              <div class="route-node">
-                <div>
-                  <strong>Traslado por medios propios</strong>
-                  <span>Paciente acude al hospital indicado con estudios y diagnóstico visibles en plataforma.</span>
-                </div>
-                <div>Disponible</div>
-              </div>
-            </div>
-          </div>
-        `;
-        document.getElementById('kpiRuta').textContent = 'Traslado a hospital';
-        document.getElementById('tipoResolucion').textContent = 'Hospitalaria';
-        document.getElementById('patientStatusHeader').textContent = 'En traslado';
-      }
-
-      if (step === 7) {
-        mainScreen.innerHTML = `
-          <div class="screen-header">
-            <div>
-              <h3 class="screen-title">Cierre y seguimiento</h3>
-              <p class="screen-caption">Se documenta el cierre clínico y la liquidación financiera correspondiente.</p>
-            </div>
-            <div class="chip">Caso listo para auditoría</div>
-          </div>
-
-          <div class="metrics-grid">
-            <div class="mini-kpi">
-              <div class="label">Estado clínico</div>
-              <div class="value">Cerrado</div>
-              <div class="desc">Paciente referido con expediente completo.</div>
-            </div>
-            <div class="mini-kpi">
-              <div class="label">Estado financiero</div>
-              <div class="value">Pendiente de liquidación</div>
-              <div class="desc">Deducible aplicable según ruta final.</div>
-            </div>
-          </div>
-        `;
-        document.getElementById('kpiSeguimiento').textContent = 'Cierre en proceso';
-        document.getElementById('patientStatusHeader').textContent = 'En seguimiento';
-      }
-    }
-
-    function startAutoDemo() {
-      stopAutoDemo();
-      interval = setInterval(() => {
-        currentStep = currentStep >= 7 ? 1 : currentStep + 1;
-        renderStep(currentStep);
-      }, 2200);
-    }
-
-    function stopAutoDemo() {
-      if (interval) {
-        clearInterval(interval);
-        interval = null;
-      }
-    }
-
-    function resetDemo() {
-      stopAutoDemo();
-
-      patientName.value = 'María Fernanda López';
-      patientAge.value = '38';
-      patientSex.value = 'Femenino';
-      patientInsurance.value = 'Sí';
-      patientReason.value = 'Dolor torácico, opresión en pecho y dificultad respiratoria leve de inicio reciente.';
-
-      document.getElementById('kpiExpediente').textContent = 'MFH-URG-2026-00127';
-      document.getElementById('patientExpBadge').textContent = 'Expediente: MFH-URG-2026-00127';
-      document.getElementById('kpiTriage').textContent = 'Medio';
-      document.getElementById('kpiDecision').textContent = 'Traslado sugerido';
-      document.getElementById('kpiRuta').textContent = 'Evaluación en clínica';
-      document.getElementById('kpiSeguimiento').textContent = 'Activo';
-
-      document.getElementById('decisionTitle').textContent = 'Traslado a hospital con diagnóstico previo';
-      document.getElementById('decisionDescription').textContent =
-        'Se sugiere traslado una vez concluidos estudios y valoración clínica. El expediente viaja con resultados, diagnóstico preliminar y evidencia visible para el hospital receptor.';
-      document.getElementById('diagnosticoActual').textContent = 'Riesgo cardiovascular intermedio';
-      document.getElementById('siguienteAccion').textContent = 'Validar traslado y hospital receptor';
-      document.getElementById('tipoResolucion').textContent = 'Hospitalaria';
-      document.getElementById('miniRutaFinal').textContent = 'Hospital';
-      document.getElementById('patientSeverityHeader').textContent = 'Media';
-
-      syncPatientHeader();
-      renderStep(1);
-    }
-
-    patientName.addEventListener('input', syncPatientHeader);
-    patientAge.addEventListener('input', syncPatientHeader);
-    patientSex.addEventListener('change', syncPatientHeader);
-    patientInsurance.addEventListener('change', syncPatientHeader);
-    patientReason.addEventListener('input', syncPatientHeader);
-
-    btnAutoDemo.addEventListener('click', startAutoDemo);
-    btnPauseDemo.addEventListener('click', stopAutoDemo);
-    btnResetDemo.addEventListener('click', resetDemo);
-
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        stopAutoDemo();
-        renderStep(index + 1);
-      });
-    });
-
-    syncPatientHeader();
-    renderStep(1);
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
