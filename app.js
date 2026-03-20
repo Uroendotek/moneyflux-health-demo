@@ -47,12 +47,15 @@ function sexoTexto(value) {
   return value === "M" ? "Masculino" : "Femenino";
 }
 
+function capitalize(value) {
+  if (!value) return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 function generateFolio() {
   const now = new Date();
   const year = now.getFullYear();
-  const serial = String(
-    Math.floor(Math.random() * 9000) + 1000
-  ).padStart(4, "0");
+  const serial = String(Math.floor(Math.random() * 9000) + 1000).padStart(4, "0");
   return `SD-MFH-${year}-${serial}`;
 }
 
@@ -223,7 +226,9 @@ function updateDerivedUI() {
   const modoTraslado = getEl("modoTraslado");
   if (modoTraslado) {
     if (state.ruta === "hospital") {
-      modoTraslado.textContent = state.filtroRiesgo ? "Ambulancia / traslado prioritario" : "Propios medios o ambulancia";
+      modoTraslado.textContent = state.filtroRiesgo
+        ? "Ambulancia / traslado prioritario"
+        : "Propios medios o ambulancia";
     } else {
       modoTraslado.textContent = "No aplica";
     }
@@ -262,19 +267,6 @@ function updateDerivedUI() {
     resumenFinalCaso.textContent =
       `${nombre}: caso con ${rutaTxt}, ${seguroTxt}, folio ${state.folio || "pendiente"}, estudios cargados y flujo financiero listo para presentación.`;
   }
-}
-
-function capitalize(value) {
-  if (!value) return "";
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function goNext(index) {
-  showScreen(index);
-}
-
-function goPrev(index) {
-  showScreen(index);
 }
 
 function stopAutoFlow() {
@@ -366,10 +358,7 @@ function resetDemo() {
   syncInputsFromState();
   updateSidebar();
   updateDerivedUI();
-
-  screens.forEach((screen, i) => {
-    screen.classList.toggle("active", i === 0);
-  });
+  showScreen(0);
 
   timelineSteps.forEach((step, i) => {
     step.classList.toggle("active", i === 0);
@@ -378,15 +367,14 @@ function resetDemo() {
 
   window.scrollTo(0, 0);
 }
+
 function forceResetDemo() {
-  stopAutoFlow();
+  console.log("forceResetDemo ejecutado");
   resetDemo();
-  showScreen(0);
-  syncInputsFromState();
-  updateSidebar();
-  updateDerivedUI();
 }
+
 window.forceResetDemo = forceResetDemo;
+
 function evaluateFiltro() {
   const flags = [
     getEl("chkViaAerea")?.checked,
@@ -415,11 +403,13 @@ function attachEvents() {
   ingresoInputs.forEach(id => {
     const el = getEl(id);
     if (!el) return;
+
     el.addEventListener("input", () => {
       updatePacienteFromInputs();
       updateSidebar();
       updateDerivedUI();
     });
+
     el.addEventListener("change", () => {
       updatePacienteFromInputs();
       updateSidebar();
@@ -437,11 +427,13 @@ function attachEvents() {
   seguroInputs.forEach(id => {
     const el = getEl(id);
     if (!el) return;
+
     el.addEventListener("input", () => {
       updateSeguroFromInputs();
       updateSidebar();
       updateDerivedUI();
     });
+
     el.addEventListener("change", () => {
       updateSeguroFromInputs();
       updateSidebar();
@@ -475,6 +467,7 @@ function attachEvents() {
   filtroChecks.forEach(id => {
     const el = getEl(id);
     if (!el) return;
+
     el.addEventListener("change", () => {
       evaluateFiltro();
       updateDerivedUI();
@@ -535,7 +528,7 @@ function attachEvents() {
     btn.addEventListener("click", () => {
       stopAutoFlow();
       const next = Number(btn.dataset.next);
-      goNext(next);
+      showScreen(next);
     });
   });
 
@@ -544,7 +537,7 @@ function attachEvents() {
     btn.addEventListener("click", () => {
       stopAutoFlow();
       const prev = Number(btn.dataset.prev);
-      goPrev(prev);
+      showScreen(prev);
     });
   });
 
@@ -563,16 +556,6 @@ function attachEvents() {
     });
   }
 
-  const btnReiniciarDemo = getEl("btnReiniciarDemo");
-if (btnReiniciarDemo) {
-  btnReiniciarDemo.addEventListener("click", function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-    stopAutoFlow();
-    resetDemo();
-  });
-}
-
   const btnCerrarCaso = getEl("btnCerrarCaso");
   if (btnCerrarCaso) {
     btnCerrarCaso.addEventListener("click", () => {
@@ -590,9 +573,6 @@ if (btnReiniciarDemo) {
 }
 
 function init() {
-  if (!state.folio) {
-    state.folio = "";
-  }
   syncInputsFromState();
   updateSidebar();
   updateDerivedUI();
