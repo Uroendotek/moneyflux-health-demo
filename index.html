@@ -29,16 +29,16 @@
       </div>
 
       <div class="topbar-actions">
-  <button class="btn btn-secondary" type="button" id="btnModoInteractivo">
-    Modo interactivo
-  </button>
-  <button class="btn btn-primary" type="button" id="btnModoAutomatico">
-    Iniciar flujo automático
-  </button>
-  <button class="btn btn-ghost" type="button" id="btnReiniciarDemo" onclick="forceResetDemo()">
-    Reiniciar demo
-  </button>
-</div>
+        <button class="btn btn-secondary" type="button" id="btnModoInteractivo">
+          Modo interactivo
+        </button>
+        <button class="btn btn-primary" type="button" id="btnModoAutomatico">
+          Iniciar flujo automático
+        </button>
+        <button class="btn btn-ghost" type="button" id="btnReiniciarDemo" onclick="forceResetDemo()">
+          Reiniciar demo
+        </button>
+      </div>
     </header>
 
     <main class="main-layout">
@@ -466,96 +466,96 @@
         </section>
 
         <!-- PANTALLA 9 -->
-      <section class="screen" id="screen-financiero">
-  <div class="screen-header">
-    <div>
-      <h2>Flujo financiero final</h2>
-      <p>Resumen operativo, clínico y económico del caso.</p>
-    </div>
-    <div class="screen-badge badge-green">Paso 9 de 9</div>
-  </div>
-
-  <div class="card">
-    <div class="case-close">
-      <div class="case-close-hero">
-        <div>
-          <p class="case-close-eyebrow">Cierre del caso</p>
-          <h2 id="closeTitle">Caso cerrado con diagnóstico previo y ruta definida</h2>
-          <p id="closeSubtitle" class="case-close-subtitle">
-            El paciente fue clasificado, diagnosticado y dirigido a la ruta correcta con expediente trazable.
-          </p>
-        </div>
-
-        <div class="case-close-meta">
-          <div class="case-close-meta-item">
-            <span>Folio</span>
-            <strong id="closeFolio">--</strong>
+        <section class="screen" id="screen-financiero">
+          <div class="screen-header">
+            <div>
+              <h2>Flujo financiero final</h2>
+              <p>Resumen operativo, clínico y económico del caso.</p>
+            </div>
+            <div class="screen-badge badge-green">Paso 9 de 9</div>
           </div>
-          <div class="case-close-meta-item">
-            <span>Ruta final</span>
-            <strong id="closeRuta">--</strong>
+
+          <div class="card">
+            <div class="case-close">
+              <div class="case-close-hero">
+                <div>
+                  <p class="case-close-eyebrow">Cierre del caso</p>
+                  <h2 id="closeTitle">Caso cerrado con diagnóstico previo y ruta definida</h2>
+                  <p id="closeSubtitle" class="case-close-subtitle">
+                    El paciente fue clasificado, diagnosticado y dirigido a la ruta correcta con expediente trazable.
+                  </p>
+                </div>
+
+                <div class="case-close-meta">
+                  <div class="case-close-meta-item">
+                    <span>Folio</span>
+                    <strong id="closeFolio">--</strong>
+                  </div>
+                  <div class="case-close-meta-item">
+                    <span>Ruta final</span>
+                    <strong id="closeRuta">--</strong>
+                  </div>
+                  <div class="case-close-meta-item">
+                    <span>Seguro</span>
+                    <strong id="closeSeguro">--</strong>
+                  </div>
+                  <div class="case-close-meta-item">
+                    <span>Estado</span>
+                    <strong id="closeEstado">Cerrado</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="case-close-grid">
+                <article class="case-close-card">
+                  <p class="case-close-label">Resultado clínico</p>
+                  <h3 id="closeClinicalTitle">--</h3>
+                  <p id="closeClinicalText">--</p>
+                </article>
+
+                <article class="case-close-card">
+                  <p class="case-close-label">Resultado operativo</p>
+                  <h3 id="closeOperationalTitle">--</h3>
+                  <p id="closeOperationalText">--</p>
+                </article>
+
+                <article class="case-close-card case-close-card--highlight">
+                  <p class="case-close-label">Resultado financiero</p>
+                  <h3 id="closeFinancialTitle">--</h3>
+                  <p id="closeFinancialText">--</p>
+                </article>
+              </div>
+
+              <div class="case-close-stakeholders">
+                <article class="stake-card">
+                  <p class="case-close-label">Paciente</p>
+                  <p id="closePatientValue">--</p>
+                </article>
+
+                <article class="stake-card">
+                  <p class="case-close-label">Hospital / Salud Digna</p>
+                  <p id="closeSystemValue">--</p>
+                </article>
+
+                <article class="stake-card">
+                  <p class="case-close-label">Aseguradora / Pagador</p>
+                  <p id="closePayerValue">--</p>
+                </article>
+              </div>
+
+              <div class="case-close-footer">
+                <strong id="closeExecutiveLine">
+                  Este modelo ordena la urgencia desde el primer contacto y reduce fricción clínica y financiera.
+                </strong>
+              </div>
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="7">Volver</button>
+              <button class="btn btn-primary" type="button" id="btnCerrarCaso">Cerrar caso</button>
+            </div>
           </div>
-          <div class="case-close-meta-item">
-            <span>Seguro</span>
-            <strong id="closeSeguro">--</strong>
-          </div>
-          <div class="case-close-meta-item">
-            <span>Estado</span>
-            <strong id="closeEstado">Cerrado</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="case-close-grid">
-        <article class="case-close-card">
-          <p class="case-close-label">Resultado clínico</p>
-          <h3 id="closeClinicalTitle">--</h3>
-          <p id="closeClinicalText">--</p>
-        </article>
-
-        <article class="case-close-card">
-          <p class="case-close-label">Resultado operativo</p>
-          <h3 id="closeOperationalTitle">--</h3>
-          <p id="closeOperationalText">--</p>
-        </article>
-
-        <article class="case-close-card case-close-card--highlight">
-          <p class="case-close-label">Resultado financiero</p>
-          <h3 id="closeFinancialTitle">--</h3>
-          <p id="closeFinancialText">--</p>
-        </article>
-      </div>
-
-      <div class="case-close-stakeholders">
-        <article class="stake-card">
-          <p class="case-close-label">Paciente</p>
-          <p id="closePatientValue">--</p>
-        </article>
-
-        <article class="stake-card">
-          <p class="case-close-label">Hospital / Salud Digna</p>
-          <p id="closeSystemValue">--</p>
-        </article>
-
-        <article class="stake-card">
-          <p class="case-close-label">Aseguradora / Pagador</p>
-          <p id="closePayerValue">--</p>
-        </article>
-      </div>
-
-      <div class="case-close-footer">
-        <strong id="closeExecutiveLine">
-          Este modelo ordena la urgencia desde el primer contacto y reduce fricción clínica y financiera.
-        </strong>
-      </div>
-    </div>
-
-    <div class="screen-actions">
-      <button class="btn btn-secondary" type="button" data-prev="7">Volver</button>
-      <button class="btn btn-primary" type="button" id="btnCerrarCaso">Cerrar caso</button>
-    </div>
-  </div>
-</section>
+        </section>
       </section>
     </main>
   </div>
