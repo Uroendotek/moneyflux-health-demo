@@ -341,12 +341,12 @@ function resetDemo() {
 
   checks.forEach(id => {
     const el = getEl(id);
-    if (el) {
-      if (id === "estudioRx" || id === "estudioLab") {
-        el.checked = true;
-      } else {
-        el.checked = false;
-      }
+    if (!el) return;
+
+    if (id === "estudioRx" || id === "estudioLab") {
+      el.checked = true;
+    } else {
+      el.checked = false;
     }
   });
 
@@ -364,9 +364,14 @@ function resetDemo() {
   }
 
   syncInputsFromState();
+  showScreen(0);
   updateSidebar();
   updateDerivedUI();
-  showScreen(0);
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 function evaluateFiltro() {
