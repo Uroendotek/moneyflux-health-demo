@@ -364,14 +364,19 @@ function resetDemo() {
   }
 
   syncInputsFromState();
-  showScreen(0);
   updateSidebar();
   updateDerivedUI();
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
+  screens.forEach((screen, i) => {
+    screen.classList.toggle("active", i === 0);
   });
+
+  timelineSteps.forEach((step, i) => {
+    step.classList.toggle("active", i === 0);
+    step.classList.remove("done");
+  });
+
+  window.scrollTo(0, 0);
 }
 
 function evaluateFiltro() {
@@ -552,8 +557,9 @@ function attachEvents() {
 
   const btnReiniciarDemo = getEl("btnReiniciarDemo");
 if (btnReiniciarDemo) {
-  btnReiniciarDemo.addEventListener("click", (event) => {
+  btnReiniciarDemo.addEventListener("click", function (event) {
     event.preventDefault();
+    event.stopPropagation();
     stopAutoFlow();
     resetDemo();
   });
