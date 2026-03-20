@@ -378,7 +378,15 @@ function resetDemo() {
 
   window.scrollTo(0, 0);
 }
-
+function forceResetDemo() {
+  stopAutoFlow();
+  resetDemo();
+  showScreen(0);
+  syncInputsFromState();
+  updateSidebar();
+  updateDerivedUI();
+}
+window.forceResetDemo = forceResetDemo;
 function evaluateFiltro() {
   const flags = [
     getEl("chkViaAerea")?.checked,
