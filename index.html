@@ -466,66 +466,96 @@
         </section>
 
         <!-- PANTALLA 9 -->
-        <section class="screen" id="screen-financiero">
-          <div class="screen-header">
-            <div>
-              <h2>Flujo financiero final</h2>
-              <p>Resumen operativo y económico del caso.</p>
-            </div>
-            <div class="screen-badge badge-green">Paso 9 de 9</div>
+      <section class="screen" id="screen-financiero">
+  <div class="screen-header">
+    <div>
+      <h2>Flujo financiero final</h2>
+      <p>Resumen operativo, clínico y económico del caso.</p>
+    </div>
+    <div class="screen-badge badge-green">Paso 9 de 9</div>
+  </div>
+
+  <div class="card">
+    <div class="case-close">
+      <div class="case-close-hero">
+        <div>
+          <p class="case-close-eyebrow">Cierre del caso</p>
+          <h2 id="closeTitle">Caso cerrado con diagnóstico previo y ruta definida</h2>
+          <p id="closeSubtitle" class="case-close-subtitle">
+            El paciente fue clasificado, diagnosticado y dirigido a la ruta correcta con expediente trazable.
+          </p>
+        </div>
+
+        <div class="case-close-meta">
+          <div class="case-close-meta-item">
+            <span>Folio</span>
+            <strong id="closeFolio">--</strong>
           </div>
-
-          <div class="card">
-            <div class="finance-grid">
-              <div class="finance-card">
-                <h3>Pagos en Salud Digna</h3>
-                <ul>
-                  <li>Paciente paga <strong>$800</strong> por uso de instalaciones y validación de triage.</li>
-                  <li>Los <strong>estudios realizados</strong> se cobran en Salud Digna.</li>
-                  <li>Salud Digna <strong>no cobra deducible</strong>.</li>
-                  <li>Salud Digna <strong>no retiene porcentaje</strong>.</li>
-                </ul>
-              </div>
-
-              <div class="finance-card">
-                <h3>Seguro y póliza</h3>
-                <ul>
-                  <li>El paciente paga su <strong>póliza</strong> por medio de <strong>Banco Azteca</strong>.</li>
-                  <li>La cobertura se valida antes de la referencia hospitalaria.</li>
-                  <li id="seguroResultadoTexto">Estado de seguro pendiente.</li>
-                </ul>
-              </div>
-
-              <div class="finance-card">
-                <h3>Hospital</h3>
-                <ul>
-                  <li>Si el paciente ingresa al hospital, paga <strong>deducible</strong> en hospital.</li>
-                  <li>Si aplica, paga <strong>coaseguro</strong> en hospital.</li>
-                  <li id="rutaResultadoTexto">Ruta clínica pendiente.</li>
-                </ul>
-              </div>
-
-              <div class="finance-card highlight">
-                <h3>Ingreso del modelo</h3>
-                <ul>
-                  <li>Salud Digna recibe el pago de ingreso y estudios.</li>
-                  <li>La aseguradora paga a Salud Digna un <strong>fee fijo por referencia válida</strong>.</li>
-                  <li><strong>Fee fijo:</strong> $800 por referencia válida.</li>
-                  <li>Solo se reconoce si hubo triage válido, folio generado y referencia efectiva al hospital.</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="summary-banner" id="resumenFinalCaso">
-              Caso listo para presentación.
-            </div>
-
-            <div class="screen-actions">
-              <button class="btn btn-secondary" type="button" data-prev="7">Volver</button>
-              <button class="btn btn-primary" type="button" id="btnCerrarCaso">Cerrar caso</button>
-            </div>
+          <div class="case-close-meta-item">
+            <span>Ruta final</span>
+            <strong id="closeRuta">--</strong>
           </div>
-        </section>
+          <div class="case-close-meta-item">
+            <span>Seguro</span>
+            <strong id="closeSeguro">--</strong>
+          </div>
+          <div class="case-close-meta-item">
+            <span>Estado</span>
+            <strong id="closeEstado">Cerrado</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-close-grid">
+        <article class="case-close-card">
+          <p class="case-close-label">Resultado clínico</p>
+          <h3 id="closeClinicalTitle">--</h3>
+          <p id="closeClinicalText">--</p>
+        </article>
+
+        <article class="case-close-card">
+          <p class="case-close-label">Resultado operativo</p>
+          <h3 id="closeOperationalTitle">--</h3>
+          <p id="closeOperationalText">--</p>
+        </article>
+
+        <article class="case-close-card case-close-card--highlight">
+          <p class="case-close-label">Resultado financiero</p>
+          <h3 id="closeFinancialTitle">--</h3>
+          <p id="closeFinancialText">--</p>
+        </article>
+      </div>
+
+      <div class="case-close-stakeholders">
+        <article class="stake-card">
+          <p class="case-close-label">Paciente</p>
+          <p id="closePatientValue">--</p>
+        </article>
+
+        <article class="stake-card">
+          <p class="case-close-label">Hospital / Salud Digna</p>
+          <p id="closeSystemValue">--</p>
+        </article>
+
+        <article class="stake-card">
+          <p class="case-close-label">Aseguradora / Pagador</p>
+          <p id="closePayerValue">--</p>
+        </article>
+      </div>
+
+      <div class="case-close-footer">
+        <strong id="closeExecutiveLine">
+          Este modelo ordena la urgencia desde el primer contacto y reduce fricción clínica y financiera.
+        </strong>
+      </div>
+    </div>
+
+    <div class="screen-actions">
+      <button class="btn btn-secondary" type="button" data-prev="7">Volver</button>
+      <button class="btn btn-primary" type="button" id="btnCerrarCaso">Cerrar caso</button>
+    </div>
+  </div>
+</section>
       </section>
     </main>
   </div>
