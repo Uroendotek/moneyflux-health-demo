@@ -551,11 +551,13 @@ function attachEvents() {
   }
 
   const btnReiniciarDemo = getEl("btnReiniciarDemo");
-  if (btnReiniciarDemo) {
-    btnReiniciarDemo.addEventListener("click", () => {
-      resetDemo();
-    });
-  }
+if (btnReiniciarDemo) {
+  btnReiniciarDemo.addEventListener("click", (event) => {
+    event.preventDefault();
+    stopAutoFlow();
+    resetDemo();
+  });
+}
 
   const btnCerrarCaso = getEl("btnCerrarCaso");
   if (btnCerrarCaso) {
