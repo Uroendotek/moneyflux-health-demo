@@ -181,7 +181,7 @@ function updateDerivedUI() {
         "No se detectan criterios mayores de exclusión. El caso puede continuar en evaluación diagnóstica en Salud Digna.";
     }
   }
-
+renderCaseClosure();
   const folioGenerado = getEl("folioGenerado");
   if (folioGenerado) {
     folioGenerado.textContent = state.folio || "SD-MFH-2026-0001";
