@@ -59,6 +59,104 @@ function generateFolio() {
   return `SD-MFH-${year}-${serial}`;
 }
 
+function setText(id, value) {
+  const el = getEl(id);
+  if (el) el.textContent = value;
+}
+
+function renderCaseClosure() {
+  const ruta = (state.ruta || "").toLowerCase();
+  const tieneSeguro = (state.seguro.tieneSeguro || "").toLowerCase() === "si";
+  const folio = state.folio || "Pendiente";
+  const nombre = state.paciente.nombre || "Paciente";
+  const triage = state.triage || "no definido";
+
+  setText("closeFolio", folio);
+  setText("closeRuta", ruta === "hospital" ? "Hospital" : ruta === "ambulatorio" ? "Ambulatorio" : "Pendiente");
+  setText("closeSeguro", tieneSeguro ? "Con seguro" : "Sin seguro");
+  setText("closeEstado", "Caso cerrado");
+
+  let clinicalTitle = "Caso en evaluación";
+  let clinicalText = `${nombre} se encuentra en proceso de clasificación clínica.`;
+  let operationalTitle = "Ruta operativa pendiente";
+  let operationalText = "Aún no se define la ruta final del caso.";
+  let financialTitle = "Resolución financiera pendiente";
+  let financialText = "La definición financiera depende de la ruta clínica y del estatus de seguro.";
+  let patientValue = "El paciente cuenta con una ruta clínica ordenada desde el primer punto de contacto.";
+  let systemValue = "Salud Digna actúa como puerta de entrada y organiza el expediente del caso.";
+  let payerValue = "La validación financiera depende del tipo de cobertura y del destino clínico.";
+  let executiveLine = "El modelo integra clasificación clínica, referencia y trazabilidad financiera desde el primer contacto.";
+
+  if (ruta === "hospital" && tieneSeguro) {
+    clinicalTitle = "Referencia hospitalaria procedente";
+    clinicalText = `El caso de ${nombre} fue clasificado para escalamiento hospitalario tras triage ${triage} y validación clínica inicial.`;
+
+    operationalTitle = "Paciente enviado con expediente completo";
+    operationalText = "El hospital recibe folio, estudios y diagnóstico preliminar desde Salud Digna, reduciendo fricción en admisión.";
+
+    financialTitle = "Liquidación hospitalaria conforme a póliza";
+    financialText = "El deducible y el coaseguro se cubren en hospital según la póliza. Salud Digna recibe un fee fijo de $800 por referencia válida pagado por la aseguradora.";
+
+    patientValue = "Llega al hospital con mejor información clínica, menor incertidumbre y una referencia más rápida.";
+    systemValue = "El hospital recibe un paciente filtrado y documentado; Salud Digna monetiza la referencia válida sin participar del deducible.";
+    payerValue = `La aseguradora valida cobertura con ${state.seguro.aseguradora} y paga solo una referencia clínicamente justificada.`;
+    executiveLine = "El modelo convierte una llegada desordenada a urgencias en una referencia validada, trazable y financieramente clara.";
+  } else if (ruta === "ambulatorio" && tieneSeguro) {
+    clinicalTitle = "Caso resuelto en ruta ambulatoria";
+    clinicalText = `El caso de ${nombre} no requirió hospitalización y pudo resolverse con atención ambulatoria posterior al triage ${triage}.`;
+
+    operationalTitle = "Se evita traslado hospitalario innecesario";
+    operationalText = "La capacidad hospitalaria se reserva para casos de mayor complejidad y el paciente recibe atención temprana.";
+
+    financialTitle = "Costo contenido desde el primer contacto";
+    financialText = "Se liquida el porcentaje correspondiente del deducible en Salud Digna conforme al modelo definido. No se genera fee hospitalario de referencia.";
+
+    patientValue = "Recibe atención resolutiva sin entrar a un circuito hospitalario de mayor costo y complejidad.";
+    systemValue = "Salud Digna absorbe una demanda que de otro modo presionaría urgencias hospitalarias.";
+    payerValue = `La aseguradora ${state.seguro.aseguradora} evita un evento hospitalario más costoso y mejora eficiencia del gasto.`;
+    executiveLine = "El valor no solo está en referir bien, sino en evitar hospitalizaciones innecesarias.";
+  } else if (ruta === "hospital" && !tieneSeguro) {
+    clinicalTitle = "Referencia hospitalaria necesaria";
+    clinicalText = `El caso de ${nombre} requiere continuidad hospitalaria posterior al filtro clínico y al diagnóstico previo realizado en Salud Digna.`;
+
+    operationalTitle = "Ingreso hospitalario mejor documentado";
+    operationalText = "El paciente llega con folio, estudios y diagnóstico preliminar, facilitando la continuidad clínica.";
+
+    financialTitle = "Pago hospitalario fuera de Salud Digna";
+    financialText = "La resolución económica ocurre mediante pago directo o alternativa financiera disponible. No aplica fee de aseguradora.";
+
+    patientValue = "Aun sin seguro, llega al hospital con mejor información clínica y una ruta operativa más clara.";
+    systemValue = "El hospital recibe un caso mejor documentado y Salud Digna cumple la función de filtro y punto de referencia.";
+    payerValue = "No existe cobertura aseguradora activa para este caso.";
+    executiveLine = "Aun sin seguro, el modelo ordena la entrada al sistema y mejora la calidad de la referencia clínica.";
+  } else if (ruta === "ambulatorio" && !tieneSeguro) {
+    clinicalTitle = "Caso contenido en atención ambulatoria";
+    clinicalText = `El caso de ${nombre} pudo resolverse sin hospitalización, con intervención inicial, estudios y seguimiento indicado.`;
+
+    operationalTitle = "Se evita escalamiento innecesario";
+    operationalText = "Se reduce presión hospitalaria y el paciente recibe una solución de menor complejidad.";
+
+    financialTitle = "Pago ambulatorio con alternativa definida";
+    financialText = "La atención se liquida en Salud Digna o mediante el mecanismo financiero disponible para población sin seguro.";
+
+    patientValue = "Obtiene acceso temprano a atención resolutiva con menor costo total del episodio.";
+    systemValue = "Se contiene demanda clínica antes de que se convierta en saturación hospitalaria.";
+    payerValue = "No existe aseguradora en este caso; el valor económico está en la contención del costo total.";
+    executiveLine = "La puerta de entrada correcta reduce costo, mejora acceso y evita hospitalización evitable.";
+  }
+
+  setText("closeClinicalTitle", clinicalTitle);
+  setText("closeClinicalText", clinicalText);
+  setText("closeOperationalTitle", operationalTitle);
+  setText("closeOperationalText", operationalText);
+  setText("closeFinancialTitle", financialTitle);
+  setText("closeFinancialText", financialText);
+  setText("closePatientValue", patientValue);
+  setText("closeSystemValue", systemValue);
+  setText("closePayerValue", payerValue);
+  setText("closeExecutiveLine", executiveLine);
+}
+
 function showScreen(index) {
   if (index < 0 || index >= screens.length) return;
 
@@ -234,39 +332,7 @@ function updateDerivedUI() {
     }
   }
 
-  const seguroResultadoTexto = getEl("seguroResultadoTexto");
-  if (seguroResultadoTexto) {
-    if (state.seguro.tieneSeguro === "si") {
-      seguroResultadoTexto.textContent =
-        `Seguro validado con ${state.seguro.aseguradora}. Póliza ${state.seguro.poliza}.`;
-    } else {
-      seguroResultadoTexto.textContent =
-        "Paciente sin seguro. La referencia hospitalaria requeriría resolución financiera alterna.";
-    }
-  }
-
-  const rutaResultadoTexto = getEl("rutaResultadoTexto");
-  if (rutaResultadoTexto) {
-    rutaResultadoTexto.textContent =
-      state.ruta === "hospital"
-        ? "Caso con ingreso hospitalario potencial: deducible y coaseguro se cubren en hospital."
-        : "Caso ambulatorio: no hay deducible hospitalario en Salud Digna.";
-  }
-
-  const resumenFinalCaso = getEl("resumenFinalCaso");
-  if (resumenFinalCaso) {
-    const nombre = state.paciente.nombre || "Paciente";
-    const seguroTxt = state.seguro.tieneSeguro === "si" ? "con seguro validable" : "sin seguro";
-    const rutaTxt =
-      state.ruta === "hospital"
-        ? "referencia hospitalaria"
-        : state.ruta === "ambulatorio"
-        ? "resolución ambulatoria"
-        : "ruta pendiente";
-
-    resumenFinalCaso.textContent =
-      `${nombre}: caso con ${rutaTxt}, ${seguroTxt}, folio ${state.folio || "pendiente"}, estudios cargados y flujo financiero listo para presentación.`;
-  }
+  renderCaseClosure();
 }
 
 function stopAutoFlow() {
@@ -369,7 +435,6 @@ function resetDemo() {
 }
 
 function forceResetDemo() {
-  console.log("forceResetDemo ejecutado");
   resetDemo();
 }
 
