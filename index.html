@@ -1,83 +1,535 @@
-<section class="screen active" id="screen-ingreso">
-  <div class="screen-header">
-    <div>
-      <h2>Ingreso del paciente</h2>
-      <p>Captura rápida para clasificación inicial en Salud Digna.</p>
-    </div>
-    <div class="screen-badge badge-blue">Paso 1 de 5</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modelo de Urgencias con Diagnóstico Previo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand-row">
+          <div class="brand-box sd">
+            <img src="sd.png" alt="Salud Digna" />
+          </div>
+          <div class="brand-box mfh">
+            <img src="mfh.png" alt="MoneyFlux Health" />
+          </div>
+        </div>
+
+        <div class="title-wrap">
+          <h1>Modelo de Urgencias con Diagnóstico Previo</h1>
+          <p>
+            Flujo clínico-financiero para atención inicial en Salud Digna,
+            resolución ambulatoria o referencia hospitalaria.
+          </p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" type="button" id="btnModoInteractivo">
+          Modo interactivo
+        </button>
+        <button class="btn btn-primary" type="button" id="btnModoAutomatico">
+          Iniciar flujo automático
+        </button>
+        <button class="btn btn-ghost" type="button" id="btnReiniciarDemo">
+          Reiniciar demo
+        </button>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <aside class="sidebar card">
+        <div class="sidebar-section">
+          <h3>Resumen del caso</h3>
+          <div class="patient-card">
+            <div class="patient-avatar" id="resumenIniciales">ML</div>
+            <div>
+              <strong id="resumenNombre">María López</strong>
+              <p id="resumenDemograficos">29 años · Femenino</p>
+              <span class="case-chip" id="resumenExpediente">Expediente PROV-001</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>Estado del flujo</h3>
+          <div class="timeline" id="timeline">
+            <div class="timeline-step active" data-step="0">1. Ingreso</div>
+            <div class="timeline-step" data-step="1">2. Triage</div>
+            <div class="timeline-step" data-step="2">3. Filtro</div>
+            <div class="timeline-step" data-step="3">4. Folio</div>
+            <div class="timeline-step" data-step="4">5. Estudios</div>
+            <div class="timeline-step" data-step="5">6. Decisión clínica</div>
+            <div class="timeline-step" data-step="6">7. Referencia</div>
+            <div class="timeline-step" data-step="7">8. Seguro</div>
+            <div class="timeline-step" data-step="8">9. Flujo financiero</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>KPIs del demo</h3>
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <span>Paciente</span>
+              <strong id="kpiPaciente">En captura</strong>
+            </div>
+            <div class="kpi-card">
+              <span>Triage</span>
+              <strong id="kpiTriage">Pendiente</strong>
+            </div>
+            <div class="kpi-card">
+              <span>Ruta</span>
+              <strong id="kpiRuta">Pendiente</strong>
+            </div>
+            <div class="kpi-card">
+              <span>Seguro</span>
+              <strong id="kpiSeguro">Pendiente</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="content-area">
+        <!-- PANTALLA 1 -->
+        <section class="screen active" id="screen-ingreso">
+          <div class="screen-header">
+            <div>
+              <h2>Ingreso del paciente</h2>
+              <p>Captura rápida para clasificación inicial en Salud Digna.</p>
+            </div>
+            <div class="screen-badge badge-blue">Paso 1 de 9</div>
+          </div>
+
+          <div class="card card-form">
+            <div class="card-title-row">
+              <h3>Datos iniciales</h3>
+              <span class="mini-status">Expediente provisional</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="pacienteNombre">Nombre del paciente</label>
+                <input type="text" id="pacienteNombre" value="María López" />
+              </div>
+
+              <div class="form-group">
+                <label for="pacienteEdad">Edad</label>
+                <input type="number" id="pacienteEdad" value="29" min="0" max="110" />
+              </div>
+
+              <div class="form-group">
+                <label for="pacienteSexo">Sexo</label>
+                <select id="pacienteSexo">
+                  <option value="F" selected>Femenino</option>
+                  <option value="M">Masculino</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="pacienteSintoma">Síntoma principal</label>
+                <input type="text" id="pacienteSintoma" value="Dificultad leve para respirar" />
+              </div>
+
+              <div class="form-group">
+                <label for="categoriaRapida">Categoría rápida</label>
+                <select id="categoriaRapida">
+                  <option value="respiratorio" selected>Respiratorio</option>
+                  <option value="gastrointestinal">Gastrointestinal</option>
+                  <option value="trauma_leve">Trauma leve</option>
+                  <option value="cardiovascular">Cardiovascular</option>
+                  <option value="metabolico">Metabólico</option>
+                  <option value="embarazo">Complicación del embarazo</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="horaIngreso">Hora de ingreso</label>
+                <input type="text" id="horaIngreso" value="10:42" />
+              </div>
+            </div>
+
+            <div class="quick-summary">
+              <div class="summary-item">
+                <span class="summary-label">Sede</span>
+                <strong>Salud Digna</strong>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Objetivo</span>
+                <strong>Clasificación inicial rápida</strong>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Siguiente paso</span>
+                <strong>Filtro de seguridad</strong>
+              </div>
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" id="btnReiniciarIngreso">
+                Reiniciar datos
+              </button>
+              <button class="btn btn-primary" type="button" id="btnContinuarIngreso">
+                Continuar evaluación
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 2 -->
+        <section class="screen" id="screen-triage">
+          <div class="screen-header">
+            <div>
+              <h2>Triage simplificado</h2>
+              <p>Clasificación inicial por nivel de riesgo clínico.</p>
+            </div>
+            <div class="screen-badge badge-purple">Paso 2 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title-row">
+              <h3>Selección de triage</h3>
+              <span class="mini-status" id="triageSeleccionActual">Nivel no definido</span>
+            </div>
+
+            <div class="triage-grid">
+              <button class="triage-card" type="button" data-triage="bajo">
+                <strong>Triage bajo</strong>
+                <span>Síntomas leves, resolución ambulatoria probable.</span>
+              </button>
+
+              <button class="triage-card" type="button" data-triage="medio">
+                <strong>Triage medio</strong>
+                <span>Requiere estudios y valoración médica dirigida.</span>
+              </button>
+
+              <button class="triage-card triage-high" type="button" data-triage="alto">
+                <strong>Triage alto</strong>
+                <span>Riesgo importante, probable referencia hospitalaria.</span>
+              </button>
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="0">Volver</button>
+              <button class="btn btn-primary" type="button" id="btnContinuarTriage">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 3 -->
+        <section class="screen" id="screen-filtro">
+          <div class="screen-header">
+            <div>
+              <h2>Filtro de seguridad</h2>
+              <p>Verificación rápida para confirmar si el caso puede seguir en Salud Digna.</p>
+            </div>
+            <div class="screen-badge badge-yellow">Paso 3 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="checklist-grid">
+              <label class="check-item">
+                <input type="checkbox" id="chkViaAerea" />
+                <span>Compromiso de vía aérea</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="chkDolorToracico" />
+                <span>Dolor torácico agudo / probable infarto</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="chkShock" />
+                <span>Datos de choque / inestabilidad hemodinámica</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="chkNeurologico" />
+                <span>Déficit neurológico súbito</span>
+              </label>
+            </div>
+
+            <div class="decision-box" id="resultadoFiltro">
+              Filtro pendiente.
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="1">Volver</button>
+              <button class="btn btn-primary" type="button" id="btnContinuarFiltro">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 4 -->
+        <section class="screen" id="screen-folio">
+          <div class="screen-header">
+            <div>
+              <h2>Generación de folio</h2>
+              <p>Se crea el identificador único del caso para trazabilidad y referencia.</p>
+            </div>
+            <div class="screen-badge badge-green">Paso 4 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="folio-box">
+              <span>Folio generado</span>
+              <strong id="folioGenerado">SD-MFH-2026-0001</strong>
+            </div>
+
+            <div class="quick-summary">
+              <div class="summary-item">
+                <span class="summary-label">Validez</span>
+                <strong id="estadoTriageValido">Triage válido</strong>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Destino del folio</span>
+                <strong>Expediente + aseguradora + hospital</strong>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Uso</span>
+                <strong>Referencia y conciliación</strong>
+              </div>
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="2">Volver</button>
+              <button class="btn btn-primary" type="button" data-next="4">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 5 -->
+        <section class="screen" id="screen-estudios">
+          <div class="screen-header">
+            <div>
+              <h2>Estudios diagnósticos</h2>
+              <p>Registro de estudios realizados en Salud Digna y disponibilidad para hospital.</p>
+            </div>
+            <div class="screen-badge badge-blue">Paso 5 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="study-grid">
+              <label class="check-item">
+                <input type="checkbox" id="estudioRx" checked />
+                <span>Rayos X</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="estudioLab" checked />
+                <span>Laboratorio</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="estudioElectro" />
+                <span>Electrocardiograma</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="estudioUltrasonido" />
+                <span>Ultrasonido</span>
+              </label>
+            </div>
+
+            <div class="form-grid single-col">
+              <div class="form-group">
+                <label for="diagnosticoClinico">Diagnóstico clínico preliminar</label>
+                <textarea id="diagnosticoClinico" rows="4">Probable infección respiratoria sin datos de insuficiencia aguda.</textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="notaEstudios">Disponibilidad de estudios</label>
+                <textarea id="notaEstudios" rows="3">Los estudios quedan cargados en plataforma y visibles para el hospital receptor.</textarea>
+              </div>
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="3">Volver</button>
+              <button class="btn btn-primary" type="button" data-next="5">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 6 -->
+        <section class="screen" id="screen-decision">
+          <div class="screen-header">
+            <div>
+              <h2>Decisión clínica</h2>
+              <p>Determinación médica: resolución ambulatoria o referencia hospitalaria.</p>
+            </div>
+            <div class="screen-badge badge-purple">Paso 6 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="decision-options">
+              <button class="route-card" type="button" data-ruta="ambulatorio">
+                <strong>Resolución ambulatoria</strong>
+                <span>Paciente continúa fuera de hospital.</span>
+              </button>
+
+              <button class="route-card route-hospital" type="button" data-ruta="hospital">
+                <strong>Referencia hospitalaria</strong>
+                <span>Paciente requiere atención hospitalaria.</span>
+              </button>
+            </div>
+
+            <div class="decision-box" id="resultadoDecision">
+              Ruta clínica pendiente.
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="4">Volver</button>
+              <button class="btn btn-primary" type="button" id="btnContinuarDecision">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 7 -->
+        <section class="screen" id="screen-referencia">
+          <div class="screen-header">
+            <div>
+              <h2>Referencia hospitalaria</h2>
+              <p>Traslado y envío de expediente, estudios y diagnóstico al hospital.</p>
+            </div>
+            <div class="screen-badge badge-red">Paso 7 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="quick-summary">
+              <div class="summary-item">
+                <span class="summary-label">Hospital sugerido</span>
+                <strong id="hospitalAsignado">Hospital de Red Preferente</strong>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Modo de traslado</span>
+                <strong id="modoTraslado">Por definir</strong>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Expediente enviado</span>
+                <strong>Sí, con estudios y diagnóstico</strong>
+              </div>
+            </div>
+
+            <div class="referral-note">
+              El paciente puede trasladarse en ambulancia o por sus propios medios al
+              hospital indicado por la red y cubierto por su póliza, llevando ya estudios
+              y diagnóstico cargados en la plataforma.
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="5">Volver</button>
+              <button class="btn btn-primary" type="button" data-next="7">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 8 -->
+        <section class="screen" id="screen-seguro">
+          <div class="screen-header">
+            <div>
+              <h2>Validación de seguro</h2>
+              <p>Confirmación de póliza, cobertura y mecanismo de pago.</p>
+            </div>
+            <div class="screen-badge badge-yellow">Paso 8 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="tieneSeguro">¿Cuenta con seguro?</label>
+                <select id="tieneSeguro">
+                  <option value="si" selected>Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="aseguradora">Aseguradora</label>
+                <input type="text" id="aseguradora" value="Aseguradora Demo" />
+              </div>
+
+              <div class="form-group">
+                <label for="numeroPoliza">Número de póliza</label>
+                <input type="text" id="numeroPoliza" value="POL-4589201" />
+              </div>
+
+              <div class="form-group">
+                <label for="pagoPoliza">Pago de póliza</label>
+                <select id="pagoPoliza">
+                  <option value="banco_azteca" selected>Banco Azteca</option>
+                  <option value="otro">Otro canal</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="6">Volver</button>
+              <button class="btn btn-primary" type="button" data-next="8">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 9 -->
+        <section class="screen" id="screen-financiero">
+          <div class="screen-header">
+            <div>
+              <h2>Flujo financiero final</h2>
+              <p>Resumen operativo y económico del caso.</p>
+            </div>
+            <div class="screen-badge badge-green">Paso 9 de 9</div>
+          </div>
+
+          <div class="card">
+            <div class="finance-grid">
+              <div class="finance-card">
+                <h3>Pagos en Salud Digna</h3>
+                <ul>
+                  <li>Paciente paga <strong>$800</strong> por uso de instalaciones y validación de triage.</li>
+                  <li>Los <strong>estudios realizados</strong> se cobran en Salud Digna.</li>
+                  <li>Salud Digna <strong>no cobra deducible</strong>.</li>
+                  <li>Salud Digna <strong>no retiene porcentaje</strong>.</li>
+                </ul>
+              </div>
+
+              <div class="finance-card">
+                <h3>Seguro y póliza</h3>
+                <ul>
+                  <li>El paciente paga su <strong>póliza</strong> por medio de <strong>Banco Azteca</strong>.</li>
+                  <li>La cobertura se valida antes de la referencia hospitalaria.</li>
+                  <li id="seguroResultadoTexto">Estado de seguro pendiente.</li>
+                </ul>
+              </div>
+
+              <div class="finance-card">
+                <h3>Hospital</h3>
+                <ul>
+                  <li>Si el paciente ingresa al hospital, paga <strong>deducible</strong> en hospital.</li>
+                  <li>Si aplica, paga <strong>coaseguro</strong> en hospital.</li>
+                  <li id="rutaResultadoTexto">Ruta clínica pendiente.</li>
+                </ul>
+              </div>
+
+              <div class="finance-card highlight">
+                <h3>Ingreso del modelo</h3>
+                <ul>
+                  <li>Salud Digna recibe el pago de ingreso y estudios.</li>
+                  <li>La aseguradora paga a Salud Digna un <strong>fee fijo por referencia válida</strong>.</li>
+                  <li><strong>Fee fijo:</strong> $800 por referencia válida.</li>
+                  <li>Solo se reconoce si hubo triage válido, folio generado y referencia efectiva al hospital.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="summary-banner" id="resumenFinalCaso">
+              Caso listo para presentación.
+            </div>
+
+            <div class="screen-actions">
+              <button class="btn btn-secondary" type="button" data-prev="7">Volver</button>
+              <button class="btn btn-primary" type="button" id="btnCerrarCaso">Cerrar caso</button>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
   </div>
 
-  <div class="card card-form">
-    <div class="card-title-row">
-      <h3>Datos iniciales</h3>
-      <span class="mini-status">Expediente provisional</span>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="pacienteNombre">Nombre del paciente</label>
-        <input type="text" id="pacienteNombre" value="María López" />
-      </div>
-
-      <div class="form-group">
-        <label for="pacienteEdad">Edad</label>
-        <input type="number" id="pacienteEdad" value="29" min="0" max="110" />
-      </div>
-
-      <div class="form-group">
-        <label for="pacienteSexo">Sexo</label>
-        <select id="pacienteSexo">
-          <option value="F" selected>Femenino</option>
-          <option value="M">Masculino</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="pacienteSintoma">Síntoma principal</label>
-        <input type="text" id="pacienteSintoma" value="Dificultad leve para respirar" />
-      </div>
-
-      <div class="form-group">
-        <label for="categoriaRapida">Categoría rápida</label>
-        <select id="categoriaRapida">
-          <option value="respiratorio" selected>Respiratorio</option>
-          <option value="gastrointestinal">Gastrointestinal</option>
-          <option value="trauma_leve">Trauma leve</option>
-          <option value="cardiovascular">Cardiovascular</option>
-          <option value="metabolico">Metabólico</option>
-          <option value="embarazo">Complicación del embarazo</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="horaIngreso">Hora de ingreso</label>
-        <input type="text" id="horaIngreso" value="10:42" />
-      </div>
-    </div>
-
-    <div class="quick-summary">
-      <div class="summary-item">
-        <span class="summary-label">Sede</span>
-        <strong>Salud Digna</strong>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Objetivo</span>
-        <strong>Clasificación inicial rápida</strong>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">Siguiente paso</span>
-        <strong>Filtro de seguridad</strong>
-      </div>
-    </div>
-
-    <div class="screen-actions">
-      <button class="btn btn-secondary" type="button" id="btnReiniciarIngreso">
-        Reiniciar datos
-      </button>
-
-      <button class="btn btn-primary" type="button" id="btnContinuarIngreso">
-        Continuar evaluación
-      </button>
-    </div>
-  </div>
-</section>
+  <script src="app.js"></script>
+</body>
+</html>
